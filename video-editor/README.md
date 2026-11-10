@@ -45,6 +45,15 @@ Oppure pubblicala gratis con **GitHub Pages** (Settings → Pages → branch e c
 ### Scorciatoie
 `Spazio` play/pausa · `S` dividi · `←/→` ±1 s (Maiusc ±5 s) · `Canc` elimina clip selezionata · `Ctrl+Z` annulla taglio
 
+### Sottotitoli IA senza internet (modello incorporato)
+Se la webapp viene pubblicata in un posto che blocca i download esterni (per esempio come artifact su claude.ai), si può includere il modello Whisper accanto alla pagina:
+
+```bash
+python3 video-editor/tools/bundle_model.py --model base   # ~100 MB in video-editor/vendor/ (non va su git)
+```
+
+Se esiste `vendor/manifest.json`, l'app usa automaticamente il modello incorporato; altrimenti lo scarica da Hugging Face.
+
 ## Note tecniche
 - Nessuna build: `index.html`, `styles.css`, `app.js`.
 - Trascrizione: [transformers.js](https://github.com/huggingface/transformers.js) con modelli Whisper ONNX scaricati da Hugging Face al primo uso (poi in cache). Usa WebGPU se disponibile, altrimenti WebAssembly.

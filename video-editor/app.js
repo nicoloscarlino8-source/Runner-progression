@@ -775,30 +775,90 @@
     return pcm;
   }
 
-  const WORKER_CODE = `
-    import { pipeline, env } from '${TRANSFORMERS_URL}';
+  // Pacchetto "incorporato" (vendor/manifest.json): modello e motore serviti
+  // insieme alla pagina, per gli ambienti che non possono scaricare da internet.
+  let bundlePromise = null;
+  function getBundle() {
+    if (!bundlePromise) {
+      bundlePromise = fetch(new URL('vendor/manifest.json', document.baseURI))
+        .then((r) => (r.ok ? r.json() : null))
+        .then((m) => {
+          if (!m) return null;
+          const abs = (p) => new URL(p, document.baseURI).href;
+          m.lib = abs(m.lib);
+          m.wasm = m.wasm.map(abs);
+          Object.values(m.files).forEach((f) => { f.parts = f.parts.map(abs); });
+          return m;
+        })
+        .catch(() => null);
+    }
+    return bundlePromise;
+  }
+
+  function workerCode(bundle) {
+    return `
+    import { pipeline, env } from '${bundle ? bundle.lib : TRANSFORMERS_URL}';
+    const BUNDLE = ${JSON.stringify(bundle)};
     env.allowLocalModels = false;
+    async function fetchParts(urls, file, size) {
+      const bufs = []; let loaded = 0;
+      for (const u of urls) {
+        const r = await fetch(u);
+        if (!r.ok) throw new Error('File del modello non trovato (' + r.status + ')');
+        const b = await r.arrayBuffer();
+        bufs.push(b); loaded += b.byteLength;
+        if (file) self.postMessage({ type: 'progress', p: { status: 'progress', file, loaded, total: size || loaded } });
+      }
+      return new Blob(bufs);
+    }
+    let ready = null;
+    function setupBundle() {
+      if (!BUNDLE) return Promise.resolve();
+      if (!ready) ready = (async () => {
+        env.useBrowserCache = false;
+        env.useCustomCache = true;
+        env.customCache = {
+          async match(key) {
+            const m = String(key).match(/\\/resolve\\/[^/]+\\/(.+)$/);
+            const f = m && BUNDLE.files[m[1]];
+            if (!f) return undefined;
+            const blob = await fetchParts(f.parts, m[1], f.size);
+            return new Response(blob, { status: 200, headers: { 'content-length': String(blob.size) } });
+          },
+          async put() {},
+        };
+        const wasm = await fetchParts(BUNDLE.wasm, 'motore IA');
+        env.backends.onnx.wasm.wasmPaths = {};
+        env.backends.onnx.wasm.wasmBinary = await wasm.arrayBuffer();
+      })();
+      return ready;
+    }
     let asr = null, loaded = null;
     async function load(model) {
       const progress_callback = (p) => self.postMessage({ type: 'progress', p });
-      if (self.navigator && self.navigator.gpu) {
+      if (!BUNDLE && self.navigator && self.navigator.gpu) {
         try {
           asr = await pipeline('automatic-speech-recognition', model, { device: 'webgpu', dtype: { encoder_model: 'fp32', decoder_model_merged: 'q4' }, progress_callback });
           loaded = model; return 'webgpu';
         } catch (e) { /* ripiego su wasm */ }
       }
-      asr = await pipeline('automatic-speech-recognition', model, { progress_callback });
+      asr = await pipeline('automatic-speech-recognition', model, { device: 'wasm', dtype: 'q8', progress_callback });
       loaded = model; return 'wasm';
     }
     self.onmessage = async (e) => {
-      const { audio, model, fallback, language } = e.data;
+      const { audio, fallback, language } = e.data;
+      const model = BUNDLE ? BUNDLE.model : e.data.model;
       try {
-        let usedModel = model;
+        await setupBundle();
         if (!asr || loaded !== model) {
           try { await load(model); }
-          catch (err) { self.postMessage({ type: 'status', msg: 'Modello non disponibile, uso ' + fallback }); usedModel = fallback; await load(fallback); }
+          catch (err) {
+            if (BUNDLE) throw err;
+            self.postMessage({ type: 'status', msg: 'Modello non disponibile, uso ' + fallback });
+            await load(fallback);
+          }
         }
-        self.postMessage({ type: 'status', msg: 'Trascrizione in corso…' });
+        self.postMessage({ type: 'status', msg: 'Trascrizione in corso… (può richiedere circa la durata del video)' });
         const opts = { language, task: 'transcribe', chunk_length_s: 30, stride_length_s: 5 };
         let out, mode = 'word';
         try { out = await asr(audio, { ...opts, return_timestamps: 'word' }); }
@@ -808,14 +868,17 @@
         self.postMessage({ type: 'error', msg: String((err && err.message) || err) });
       }
     };`;
+  }
   let worker = null;
-  function getWorker() {
-    if (!worker) worker = new Worker(URL.createObjectURL(new Blob([WORKER_CODE], { type: 'text/javascript' })), { type: 'module' });
+  async function getWorker() {
+    if (!worker) {
+      const bundle = await getBundle();
+      worker = new Worker(URL.createObjectURL(new Blob([workerCode(bundle)], { type: 'text/javascript' })), { type: 'module' });
+    }
     return worker;
   }
   function runWhisper(audio) {
-    return new Promise((resolve, reject) => {
-      const w = getWorker();
+    return getWorker().then((w) => new Promise((resolve, reject) => {
       const files = {};
       w.onmessage = (e) => {
         const d = e.data;
@@ -827,7 +890,7 @@
             const tot = vals.reduce((a, v) => a + v[1], 0), ld = vals.reduce((a, v) => a + v[0], 0);
             const pct = tot ? ld / tot * 100 : 0;
             $('trProgress').firstElementChild.style.width = pct + '%';
-            $('trStatus').textContent = `Download modello IA… ${Math.round(pct)}% (${(ld / 1048576).toFixed(0)} MB)`;
+            $('trStatus').textContent = `Caricamento modello IA… ${Math.round(pct)}% (${(ld / 1048576).toFixed(0)} MB)`;
           }
         } else if (d.type === 'status') {
           $('trStatus').textContent = d.msg;
@@ -837,7 +900,7 @@
       };
       w.onerror = (e) => reject(new Error(e.message || 'Errore del worker IA'));
       w.postMessage({ audio, model: S.model || 'onnx-community/whisper-base_timestamped', fallback: FALLBACK_MODEL, language: S.lang || 'italian' });
-    });
+    }));
   }
   function chunksToWords(res, duration) {
     const out = [];
@@ -882,7 +945,7 @@
       toast('Sottotitoli generati! Controlla il testo e scegli lo stile.');
     } catch (e) {
       console.error(e);
-      $('trStatus').textContent = 'Errore: ' + e.message + '. Serve una connessione per scaricare il modello la prima volta. Se stai usando la versione aperta dentro Claude, il download del modello è bloccato: apri la webapp in locale o su GitHub Pages, oppure importa un file .srt.';
+      $('trStatus').textContent = 'Errore: ' + e.message + '. Ricarica la pagina e riprova; in alternativa importa un file .srt.';
     } finally {
       btn.disabled = false;
       setTimeout(() => { $('trProgress').hidden = true; }, 800);
@@ -1369,6 +1432,12 @@
   previewRes();
   renderTimeline();
   requestAnimationFrame(tick);
+  getBundle().then((b) => {
+    if (!b) return;
+    $('model').disabled = true;
+    $('model').value = b.model;
+    $('model').title = 'Modello incluso nella webapp: funziona senza scaricare nulla';
+  });
 
   // espone alcune funzioni per debug / test
   window.RPStudio = { st, S, setTime, total, buildCues, importSrt };

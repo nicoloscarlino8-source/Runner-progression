@@ -882,7 +882,7 @@
       toast('Sottotitoli generati! Controlla il testo e scegli lo stile.');
     } catch (e) {
       console.error(e);
-      $('trStatus').textContent = 'Errore: ' + e.message + '. Serve una connessione per scaricare il modello la prima volta.';
+      $('trStatus').textContent = 'Errore: ' + e.message + '. Serve una connessione per scaricare il modello la prima volta. Se stai usando la versione aperta dentro Claude, il download del modello è bloccato: apri la webapp in locale o su GitHub Pages, oppure importa un file .srt.';
     } finally {
       btn.disabled = false;
       setTimeout(() => { $('trProgress').hidden = true; }, 800);
@@ -1015,7 +1015,17 @@
       'video/webm;codecs=vp9,opus', 'video/webm;codecs=vp8,opus', 'video/webm'];
     return list.find((m) => MediaRecorder.isTypeSupported(m)) || '';
   }
-  function download(blob, name) {
+  async function download(blob, name) {
+    // dentro claude.ai i download passano dalla capability "downloads"
+    if (window.claude && typeof window.claude.use === 'function') {
+      const dl = await window.claude.use('downloads').catch(() => null);
+      if (dl) {
+        const fn = /\.srt$/i.test(name) ? name + '.txt' : name;
+        try { await dl.save({ filename: fn, data: blob }); toast('File salvato'); }
+        catch (e) { if (e && e.code !== 'declined') toast('Salvataggio non riuscito: ' + (e.message || e.code), 5000); }
+        return;
+      }
+    }
     const a = document.createElement('a');
     a.href = URL.createObjectURL(blob); a.download = name;
     document.body.appendChild(a); a.click(); a.remove();
@@ -1239,7 +1249,13 @@
     $('btnSrt').addEventListener('click', exportSrt);
     $('fileSrt').addEventListener('change', (e) => { if (e.target.files[0]) importSrt(e.target.files[0]); e.target.value = ''; });
     $('btnClearSubs').addEventListener('click', () => {
-      if (!confirm('Cancellare tutti i sottotitoli?')) return;
+      const b = $('btnClearSubs');
+      if (!b.dataset.armed) {
+        b.dataset.armed = '1'; b.textContent = 'Clicca di nuovo per confermare';
+        setTimeout(() => { delete b.dataset.armed; b.textContent = 'Cancella tutto'; }, 3000);
+        return;
+      }
+      delete b.dataset.armed; b.textContent = 'Cancella tutto';
       st.sources.forEach((s) => { s.words = []; }); dirtyCues(); renderTranscript();
     });
     const tr = $('transcript');

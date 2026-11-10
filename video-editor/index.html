@@ -1,0 +1,330 @@
+<!doctype html>
+<html lang="it">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>RP Studio</title>
+  <meta name="description" content="Montaggio video con IA per YouTube e Instagram: sottotitoli automatici, taglio silenzi, font virali, export pronto da pubblicare." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=Archivo+Black&family=Bangers&family=Barlow+Condensed:wght@600;800&family=Bebas+Neue&family=Inter:wght@400;600;800&family=Lilita+One&family=Luckiest+Guy&family=Montserrat:wght@500;700;800;900&family=Oswald:wght@500;700&family=Permanent+Marker&family=Poppins:wght@500;600;800&family=Roboto:wght@500;700;900&family=Rubik:wght@600;800&display=swap" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <span class="logo">RP</span>
+      <div>
+        <strong>RP Studio</strong>
+        <small>Montaggio video IA · YouTube &amp; Instagram</small>
+      </div>
+    </div>
+    <div class="formats" role="group" aria-label="Formato">
+      <button class="fmt active" data-ratio="9:16" title="Reels, Shorts, TikTok">9:16 <small>Reels/Shorts</small></button>
+      <button class="fmt" data-ratio="16:9" title="YouTube classico">16:9 <small>YouTube</small></button>
+      <button class="fmt" data-ratio="4:5" title="Post Instagram">4:5 <small>Post IG</small></button>
+      <button class="fmt" data-ratio="1:1" title="Quadrato">1:1 <small>Quadrato</small></button>
+    </div>
+    <button id="btnExportTop" class="btn primary">Esporta video</button>
+  </header>
+
+  <main class="layout">
+    <!-- PANNELLO SINISTRO -->
+    <aside class="panel">
+      <nav class="tabs" role="tablist">
+        <button class="tab active" data-tab="media">Media</button>
+        <button class="tab" data-tab="subs">Sottotitoli IA</button>
+        <button class="tab" data-tab="style">Stile</button>
+        <button class="tab" data-tab="look">Look</button>
+        <button class="tab" data-tab="brand">Testi &amp; Brand</button>
+        <button class="tab" data-tab="audio">Audio</button>
+        <button class="tab" data-tab="export">Esporta</button>
+      </nav>
+
+      <!-- MEDIA -->
+      <section class="tabpane active" data-pane="media">
+        <label class="drop" id="drop">
+          <input type="file" id="fileVideo" accept="video/*" multiple hidden />
+          <span class="drop-icon">＋</span>
+          <strong>Trascina qui i tuoi video</strong>
+          <small>oppure clicca per sceglierli (MP4, MOV, WEBM). Restano sul tuo computer: nulla viene caricato online.</small>
+        </label>
+
+        <h3>Inquadratura</h3>
+        <div class="field">
+          <label>Adattamento al formato</label>
+          <select id="fit">
+            <option value="blur">Sfondo sfocato (consigliato orizzontale → verticale)</option>
+            <option value="cover">Riempi (crop)</option>
+            <option value="contain">Intero con bande nere</option>
+          </select>
+        </div>
+        <div class="field range">
+          <label>Zoom <output id="zoomOut">100%</output></label>
+          <input type="range" id="zoom" min="100" max="250" value="100" />
+        </div>
+        <div class="field range">
+          <label>Posizione orizzontale <output id="panXOut">0</output></label>
+          <input type="range" id="panX" min="-100" max="100" value="0" />
+        </div>
+        <div class="field range">
+          <label>Posizione verticale <output id="panYOut">0</output></label>
+          <input type="range" id="panY" min="-100" max="100" value="0" />
+        </div>
+        <label class="check"><input type="checkbox" id="punchZoom" /> Zoom dinamico ai tagli (effetto jump-cut)</label>
+
+        <h3>Taglio silenzi automatico <span class="tag">IA</span></h3>
+        <p class="hint">Analizza l'audio e rimuove pause e respiri: il video diventa più ritmato, come quello dei creator professionisti.</p>
+        <div class="field range">
+          <label>Soglia silenzio <output id="silDbOut">-38 dB</output></label>
+          <input type="range" id="silDb" min="-60" max="-20" value="-38" />
+        </div>
+        <div class="field range">
+          <label>Pausa minima da tagliare <output id="silMinOut">0.45 s</output></label>
+          <input type="range" id="silMin" min="20" max="200" value="45" />
+        </div>
+        <div class="field range">
+          <label>Margine attorno al parlato <output id="silPadOut">0.10 s</output></label>
+          <input type="range" id="silPad" min="0" max="40" value="10" />
+        </div>
+        <button id="btnSilence" class="btn">Taglia i silenzi</button>
+        <p class="status" id="silStatus"></p>
+      </section>
+
+      <!-- SOTTOTITOLI -->
+      <section class="tabpane" data-pane="subs">
+        <h3>Trascrizione automatica <span class="tag">IA</span></h3>
+        <p class="hint">Whisper gira direttamente nel tuo browser. Al primo utilizzo scarica il modello (una volta sola, poi resta in cache).</p>
+        <div class="field">
+          <label>Lingua</label>
+          <select id="lang">
+            <option value="italian">Italiano</option>
+            <option value="english">Inglese</option>
+            <option value="spanish">Spagnolo</option>
+            <option value="french">Francese</option>
+            <option value="german">Tedesco</option>
+            <option value="portuguese">Portoghese</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Modello</label>
+          <select id="model">
+            <option value="onnx-community/whisper-base_timestamped">Base · bilanciato (~80 MB)</option>
+            <option value="onnx-community/whisper-tiny_timestamped">Tiny · veloce (~40 MB)</option>
+            <option value="onnx-community/whisper-small_timestamped">Small · più preciso (~250 MB)</option>
+          </select>
+        </div>
+        <button id="btnTranscribe" class="btn primary wide">Genera sottotitoli</button>
+        <div class="progress" id="trProgress" hidden><div></div></div>
+        <p class="status" id="trStatus"></p>
+
+        <h3>Modifica il testo</h3>
+        <p class="hint">Clicca una parola per saltare a quel punto e scrivi per correggerla (svuotala per nasconderla). <b>Maiusc + clic</b> per evidenziarla ★: le parole evidenziate escono colorate e più grandi.</p>
+        <div class="field row">
+          <button id="btnAutoEmph" class="btn small">★ Evidenzia parole chiave</button>
+          <button id="btnClearEmph" class="btn small ghost">Rimuovi ★</button>
+        </div>
+        <div id="transcript" class="transcript"><p class="empty">Nessun sottotitolo. Genera con l'IA o importa un file .srt.</p></div>
+        <div class="field row">
+          <label class="btn small ghost">Importa .srt<input type="file" id="fileSrt" accept=".srt,.vtt,text/plain" hidden /></label>
+          <button id="btnSrt" class="btn small ghost">Scarica .srt</button>
+          <button id="btnClearSubs" class="btn small ghost danger">Cancella tutto</button>
+        </div>
+      </section>
+
+      <!-- STILE SOTTOTITOLI -->
+      <section class="tabpane" data-pane="style">
+        <h3>Preset virali</h3>
+        <div class="presets" id="presets"></div>
+
+        <h3>Font</h3>
+        <div class="fonts" id="fonts"></div>
+
+        <div class="grid2">
+          <div class="field"><label>Testo</label><input type="color" id="subColor" value="#ffffff" /></div>
+          <div class="field"><label>Evidenziato</label><input type="color" id="subHi" value="#ffe100" /></div>
+          <div class="field"><label>Contorno</label><input type="color" id="subStroke" value="#000000" /></div>
+          <div class="field"><label>Box parola</label><input type="color" id="subBox" value="#7c3aed" /></div>
+        </div>
+        <div class="field">
+          <label>Animazione parola attiva</label>
+          <select id="subMode">
+            <option value="highlight">Colore sulla parola detta</option>
+            <option value="box">Box colorato sulla parola detta</option>
+            <option value="karaoke">Karaoke (si colora man mano)</option>
+            <option value="word">Una parola alla volta</option>
+            <option value="none">Statico</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Entrata</label>
+          <select id="subAnim">
+            <option value="pop">Pop (rimbalzo)</option>
+            <option value="fade">Dissolvenza</option>
+            <option value="slide">Scorrimento dal basso</option>
+            <option value="none">Nessuna</option>
+          </select>
+        </div>
+        <div class="field range"><label>Dimensione <output id="subSizeOut">7%</output></label><input type="range" id="subSize" min="3" max="14" step="0.5" value="7" /></div>
+        <div class="field range"><label>Parole per riga <output id="subWordsOut">3</output></label><input type="range" id="subWords" min="1" max="10" value="3" /></div>
+        <div class="field range"><label>Posizione verticale <output id="subYOut">70%</output></label><input type="range" id="subY" min="10" max="92" value="70" /></div>
+        <div class="field range"><label>Spessore contorno <output id="subStrokeWOut">10</output></label><input type="range" id="subStrokeW" min="0" max="24" value="10" /></div>
+        <div class="field range"><label>Ombra <output id="subShadowOut">40</output></label><input type="range" id="subShadow" min="0" max="100" value="40" /></div>
+        <div class="field range"><label>Sfondo riga <output id="subBgOut">0%</output></label><input type="range" id="subBg" min="0" max="100" value="0" /></div>
+        <label class="check"><input type="checkbox" id="subUpper" checked /> MAIUSCOLO</label>
+        <label class="check"><input type="checkbox" id="subNoPunct" checked /> Rimuovi punteggiatura</label>
+        <label class="check"><input type="checkbox" id="subRotate" /> Leggera rotazione casuale (stile cartoon)</label>
+      </section>
+
+      <!-- LOOK -->
+      <section class="tabpane" data-pane="look">
+        <h3>Color grading</h3>
+        <div class="presets" id="grades"></div>
+        <div class="field range"><label>Luminosità <output id="briOut">100</output></label><input type="range" id="bri" min="50" max="150" value="100" /></div>
+        <div class="field range"><label>Contrasto <output id="conOut">100</output></label><input type="range" id="con" min="50" max="160" value="100" /></div>
+        <div class="field range"><label>Saturazione <output id="satOut">100</output></label><input type="range" id="sat" min="0" max="200" value="100" /></div>
+        <div class="field range"><label>Calore <output id="warmOut">0</output></label><input type="range" id="warm" min="0" max="40" value="0" /></div>
+        <div class="field range"><label>Tonalità <output id="hueOut">0°</output></label><input type="range" id="hue" min="-30" max="30" value="0" /></div>
+        <div class="field range"><label>Vignettatura <output id="vigOut">0</output></label><input type="range" id="vig" min="0" max="100" value="0" /></div>
+        <div class="field range"><label>Velocità <output id="speedOut">1.00×</output></label><input type="range" id="speed" min="50" max="200" step="5" value="100" /></div>
+      </section>
+
+      <!-- TESTI & BRAND -->
+      <section class="tabpane" data-pane="brand">
+        <h3>Titolo hook iniziale</h3>
+        <p class="hint">I primi 3 secondi decidono se la gente resta: scrivi una frase che incuriosisce.</p>
+        <div class="field"><input type="text" id="hookText" placeholder="Es. Come ho corso 10 km in 35 minuti" /></div>
+        <div class="grid2">
+          <div class="field"><label>Durata (s)</label><input type="number" id="hookDur" min="0" max="30" step="0.5" value="3" /></div>
+          <div class="field"><label>Font</label><select id="hookFont"></select></div>
+          <div class="field"><label>Testo</label><input type="color" id="hookColor" value="#111111" /></div>
+          <div class="field"><label>Sfondo</label><input type="color" id="hookBg" value="#ffffff" /></div>
+        </div>
+        <div class="field range"><label>Posizione verticale <output id="hookYOut">18%</output></label><input type="range" id="hookY" min="5" max="90" value="18" /></div>
+
+        <h3>Firma / handle</h3>
+        <div class="field"><input type="text" id="handle" placeholder="@runnerprogression" /></div>
+        <div class="field">
+          <label>Posizione</label>
+          <select id="handlePos">
+            <option value="tr">In alto a destra</option>
+            <option value="tl">In alto a sinistra</option>
+            <option value="br">In basso a destra</option>
+            <option value="bl">In basso a sinistra</option>
+          </select>
+        </div>
+
+        <h3>Logo</h3>
+        <div class="field row">
+          <label class="btn small ghost">Carica logo (PNG)<input type="file" id="fileLogo" accept="image/*" hidden /></label>
+          <button id="btnLogoClear" class="btn small ghost">Rimuovi</button>
+        </div>
+        <div class="field range"><label>Dimensione logo <output id="logoSizeOut">14%</output></label><input type="range" id="logoSize" min="5" max="40" value="14" /></div>
+        <div class="field range"><label>Opacità logo <output id="logoOpOut">85%</output></label><input type="range" id="logoOp" min="10" max="100" value="85" /></div>
+
+        <h3>Barra di avanzamento</h3>
+        <label class="check"><input type="checkbox" id="progBar" /> Mostra barra (aumenta la retention sui Reels)</label>
+        <div class="grid2">
+          <div class="field"><label>Colore</label><input type="color" id="progColor" value="#ff6b00" /></div>
+          <div class="field"><label>Posizione</label><select id="progPos"><option value="bottom">Sotto</option><option value="top">Sopra</option></select></div>
+        </div>
+
+        <h3>Call to action finale</h3>
+        <div class="field"><input type="text" id="ctaText" placeholder="Seguimi per altri allenamenti 🏃" /></div>
+        <div class="field"><label>Ultimi secondi</label><input type="number" id="ctaDur" min="0" max="15" step="0.5" value="3" /></div>
+      </section>
+
+      <!-- AUDIO -->
+      <section class="tabpane" data-pane="audio">
+        <h3>Audio originale</h3>
+        <div class="field range"><label>Volume voce <output id="volOrigOut">100%</output></label><input type="range" id="volOrig" min="0" max="200" value="100" /></div>
+        <h3>Musica di sottofondo</h3>
+        <div class="field row">
+          <label class="btn small ghost">Carica musica<input type="file" id="fileMusic" accept="audio/*" hidden /></label>
+          <button id="btnMusicClear" class="btn small ghost">Rimuovi</button>
+        </div>
+        <p class="status" id="musicName">Nessuna musica caricata.</p>
+        <div class="field range"><label>Volume musica <output id="volMusicOut">25%</output></label><input type="range" id="volMusic" min="0" max="100" value="25" /></div>
+        <label class="check"><input type="checkbox" id="duck" checked /> Ducking automatico: abbassa la musica quando parli</label>
+        <div class="field range"><label>Dissolvenza in/out <output id="fadeOut">1.5 s</output></label><input type="range" id="fade" min="0" max="50" value="15" /></div>
+        <p class="hint">Usa solo musica di cui hai i diritti (es. libreria audio di YouTube o di Instagram) per evitare blocchi del copyright.</p>
+      </section>
+
+      <!-- EXPORT -->
+      <section class="tabpane" data-pane="export">
+        <h3>Esportazione</h3>
+        <div class="field">
+          <label>Qualità</label>
+          <select id="quality">
+            <option value="1080">1080p · Full HD (consigliato)</option>
+            <option value="720">720p · più leggero</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Fotogrammi al secondo</label>
+          <select id="fps"><option value="30">30 fps</option><option value="60">60 fps</option></select>
+        </div>
+        <div class="field">
+          <label>Bitrate</label>
+          <select id="bitrate">
+            <option value="12000000">Alta (12 Mbps)</option>
+            <option value="8000000" selected>Standard (8 Mbps)</option>
+            <option value="4000000">Leggera (4 Mbps)</option>
+          </select>
+        </div>
+        <p class="hint" id="codecInfo"></p>
+        <button id="btnExport" class="btn primary wide">Esporta video</button>
+        <div class="progress" id="exProgress" hidden><div></div></div>
+        <p class="status" id="exStatus"></p>
+        <div class="tips">
+          <strong>Specifiche consigliate</strong>
+          <ul>
+            <li><b>Reels / Shorts / TikTok:</b> 9:16, 1080×1920, max 90 s (Shorts fino a 3 min)</li>
+            <li><b>YouTube:</b> 16:9, 1920×1080</li>
+            <li><b>Post Instagram:</b> 4:5, 1080×1350</li>
+          </ul>
+          <p>L'esportazione avviene in tempo reale: tieni questa scheda aperta e in primo piano.</p>
+        </div>
+      </section>
+    </aside>
+
+    <!-- PREVIEW -->
+    <section class="stage">
+      <div class="canvas-wrap" id="canvasWrap">
+        <canvas id="canvas" width="1080" height="1920"></canvas>
+        <div class="empty-stage" id="emptyStage">
+          <p>Carica un video per iniziare</p>
+        </div>
+      </div>
+      <div class="transport">
+        <button id="btnPlay" class="btn round" title="Play/Pausa (spazio)">▶</button>
+        <span class="tc" id="tc">00:00.0 / 00:00.0</span>
+        <input type="range" id="scrub" min="0" max="1000" value="0" step="1" />
+        <button id="btnSplit" class="btn small" title="Dividi la clip nel punto attuale (S)">✂ Dividi</button>
+      </div>
+    </section>
+  </main>
+
+  <!-- TIMELINE -->
+  <footer class="timeline-wrap">
+    <div class="timeline-head">
+      <strong>Timeline</strong>
+      <span class="hint" id="tlInfo">Seleziona una clip per regolarne inizio e fine.</span>
+      <div class="clip-edit" id="clipEdit" hidden>
+        <label>Inizio <input type="number" id="clipIn" step="0.1" min="0" /></label>
+        <label>Fine <input type="number" id="clipOut" step="0.1" min="0" /></label>
+        <button class="btn small ghost" id="clipLeft" title="Sposta a sinistra">◀</button>
+        <button class="btn small ghost" id="clipRight" title="Sposta a destra">▶</button>
+        <button class="btn small ghost danger" id="clipDel">Elimina</button>
+      </div>
+    </div>
+    <div class="timeline" id="timeline">
+      <div class="playhead" id="playhead"></div>
+    </div>
+  </footer>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <script src="app.js"></script>
+</body>
+</html>

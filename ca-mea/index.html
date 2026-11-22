@@ -1,0 +1,480 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Ristorante Ca' Mea · Badalucco</title>
+<meta name="description" content="Ristorante Ca' Mea a Ravezza di Badalucco (IM): cucina di funghi porcini in un piccolo locale a conduzione familiare in Valle Argentina. Prenota online.">
+<meta property="og:title" content="Ristorante Ca' Mea · Badalucco">
+<meta property="og:description" content="Funghi porcini, tagliatelle e risotti in un locale di famiglia in Valle Argentina.">
+<meta property="og:type" content="restaurant">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Young+Serif&family=Figtree:wght@400;500;600;700&display=swap">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Restaurant",
+  "name": "Ristorante Ca' Mea",
+  "servesCuisine": ["Ligure", "Funghi porcini"],
+  "priceRange": "€€",
+  "telephone": "+39 349 150 0498",
+  "url": "https://ristorantecamea.com",
+  "address": {
+    "@type": "PostalAddress",
+    "streetAddress": "Strada Statale 548, Km 13, Località Ravezza",
+    "addressLocality": "Badalucco",
+    "postalCode": "18010",
+    "addressRegion": "IM",
+    "addressCountry": "IT"
+  },
+  "acceptsReservations": "True",
+  "aggregateRating": { "@type": "AggregateRating", "ratingValue": "4.6", "reviewCount": "1162" }
+}
+</script>
+<style>
+/* Layout: una sola colonna narrativa, dalla fascia scura "del bosco" alla sala calda, poi prenotazione e contatti. */
+:root{
+  --bark:#2b211b;        /* corteccia di castagno */
+  --bark-2:#3a2d24;
+  --cap:#b07a45;         /* cappello del porcino */
+  --copper:#c2703d;      /* paiolo di rame */
+  --moss:#4f6b3a;        /* muschio */
+  --paper:#f7f3ec;
+  --ink:#231c17;
+  --muted:#6e6158;
+  --line:#e3d9cc;
+  --card:#ffffff;
+  --ok:#3f7a3a; --err:#a23b2a;
+  --f-display:"Young Serif", Georgia, "Times New Roman", serif;
+  --f-body:"Figtree", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+}
+@media (prefers-color-scheme: dark){
+  :root{ --paper:#1d1713; --ink:#f1e9de; --muted:#b5a698; --line:#3d322a; --card:#262019; --moss:#88a86e; --cap:#d29a62; color-scheme:dark }
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+@media (prefers-reduced-motion: reduce){html{scroll-behavior:auto}*{transition:none!important;animation:none!important}}
+body{margin:0;background:var(--paper);color:var(--ink);font:400 1.0625rem/1.6 var(--f-body)}
+img{max-width:100%}
+a{color:inherit}
+:focus-visible{outline:3px solid var(--copper);outline-offset:3px;border-radius:4px}
+.wrap{max-width:68rem;margin:0 auto;padding-left:max(16px, env(safe-area-inset-left, 0px));padding-right:max(16px, env(safe-area-inset-right, 0px))}
+h1,h2,h3{font-family:var(--f-display);font-weight:400;line-height:1.15;text-wrap:balance;margin:0}
+h2{font-size:clamp(1.9rem,4vw,2.6rem)}
+.eyebrow{font-size:.78rem;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--cap)}
+.lead{color:var(--muted);max-width:38rem}
+section{padding-block:clamp(3.5rem,8vw,6rem)}
+
+/* Barra */
+.bar{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:var(--bark);color:#f3e7d8}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);background:var(--bark);z-index:21}
+.bar .wrap{display:flex;align-items:center;gap:1rem;padding-block:.7rem}
+.brand{font-family:var(--f-display);font-size:1.25rem;text-decoration:none;margin-right:auto}
+.bar nav{display:flex;gap:1.2rem;font-size:.95rem}
+.bar nav a{text-decoration:none;opacity:.85}
+.bar nav a:hover{opacity:1}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:.5rem;border:0;border-radius:999px;padding:.75rem 1.4rem;font:600 1rem var(--f-body);cursor:pointer;text-decoration:none;transition:transform .15s,background .15s}
+.btn:hover{transform:translateY(-1px)}
+.btn-copper{background:var(--copper);color:#fff}
+.btn-copper:hover{background:#ad5f30}
+.btn-ghost{background:transparent;color:inherit;box-shadow:inset 0 0 0 1.5px currentColor}
+.btn-sm{padding:.5rem 1rem;font-size:.9rem}
+@media (max-width:720px){.bar nav{display:none}}
+
+/* Hero */
+.hero{background:radial-gradient(120% 90% at 85% 10%, #4a382b 0%, var(--bark) 55%);color:#f3e7d8;overflow:hidden}
+.hero .wrap{display:grid;grid-template-columns:1.25fr .75fr;gap:2rem;align-items:center;padding-block:clamp(3.5rem,9vw,6.5rem)}
+.hero h1{font-size:clamp(2.6rem,7vw,4.8rem)}
+.hero h1 em{font-style:normal;color:var(--cap)}
+.hero p{color:#d9c8b5;max-width:32rem;font-size:1.15rem}
+.hero .actions{display:flex;flex-wrap:wrap;gap:.8rem;margin-top:1.8rem}
+.facts{display:flex;flex-wrap:wrap;gap:1.6rem;margin-top:2.4rem;padding-top:1.4rem;border-top:1px solid #4d3d31;font-size:.92rem;color:#cdbba7}
+.facts b{display:block;font-family:var(--f-display);font-weight:400;font-size:1.5rem;color:#f3e7d8}
+.paiolo{width:100%;max-width:300px;justify-self:center}
+.paiolo .swing{transform-origin:150px 10px;animation:swing 6s ease-in-out infinite}
+@keyframes swing{0%,100%{transform:rotate(-2deg)}50%{transform:rotate(2deg)}}
+@media (max-width:760px){.hero .wrap{grid-template-columns:1fr}.paiolo{max-width:180px;order:-1;justify-self:start}}
+
+/* Storia */
+.story{display:grid;grid-template-columns:1fr 1fr;gap:3rem;align-items:start}
+.story p{margin:1rem 0 0}
+.quote{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1.6rem}
+.quote blockquote{margin:0;font-family:var(--f-display);font-size:1.2rem;line-height:1.45}
+.quote figcaption{margin-top:1rem;font-size:.88rem;color:var(--muted)}
+.stars{color:var(--copper);letter-spacing:.1em}
+@media (max-width:760px){.story{grid-template-columns:1fr;gap:2rem}}
+
+/* Piatti */
+.menu-head{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:end;gap:1rem;margin-bottom:2rem}
+.dishes{display:grid;grid-template-columns:repeat(auto-fit,minmax(15rem,1fr));gap:0;border-top:1px solid var(--line)}
+.dish{padding:1.3rem 1rem 1.3rem 0;border-bottom:1px solid var(--line);display:grid;grid-template-columns:auto 1fr;gap:.9rem;align-items:start}
+.dish h3{font-size:1.2rem}
+.dish p{margin:.25rem 0 0;color:var(--muted);font-size:.95rem}
+.dish .tag{font-size:.72rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--moss)}
+.dish svg{width:34px;height:34px;flex:none;margin-top:.2rem}
+.note{font-size:.9rem;color:var(--muted);margin-top:1.4rem}
+
+/* Servizi */
+.services{background:var(--bark-2);color:#f3e7d8}
+.svc{display:grid;grid-template-columns:repeat(auto-fit,minmax(14rem,1fr));gap:2rem;margin-top:2rem}
+.svc h3{font-size:1.25rem;color:var(--cap)}
+.svc p{margin:.4rem 0 0;color:#d4c3b0}
+
+/* Prenota */
+.book{display:grid;grid-template-columns:.85fr 1.15fr;gap:3rem;align-items:start}
+.panel{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:clamp(1.2rem,3vw,2rem);box-shadow:0 18px 40px -28px rgba(43,33,27,.5)}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+.field{display:flex;flex-direction:column;gap:.35rem;min-width:0}
+.field.full{grid-column:1/-1}
+label{font-size:.85rem;font-weight:600}
+input,select,textarea{font:inherit;color:var(--ink);background:var(--paper);border:1.5px solid var(--line);border-radius:10px;padding:.7rem .8rem;width:100%}
+input:focus,select:focus,textarea:focus{border-color:var(--copper);outline:none}
+textarea{min-height:5rem;resize:vertical}
+.slots{display:flex;flex-wrap:wrap;gap:.5rem}
+.slot{border:1.5px solid var(--line);background:var(--paper);color:var(--ink);border-radius:999px;padding:.5rem .95rem;font:600 .95rem var(--f-body);cursor:pointer;font-variant-numeric:tabular-nums}
+.slot[aria-pressed="true"]{background:var(--moss);border-color:var(--moss);color:#fff}
+.slot:disabled{opacity:.4;cursor:not-allowed;text-decoration:line-through}
+.slot small{font-weight:500;opacity:.8}
+.hint{font-size:.85rem;color:var(--muted)}
+.check{display:flex;gap:.6rem;align-items:flex-start;font-size:.88rem;color:var(--muted)}
+.check input{width:auto;margin-top:.25rem}
+.msg{border-radius:12px;padding:1rem 1.1rem;font-size:.95rem}
+.msg.ok{background:color-mix(in srgb,var(--ok) 14%,transparent);border:1px solid var(--ok)}
+.msg.err{background:color-mix(in srgb,var(--err) 12%,transparent);border:1px solid var(--err)}
+.steps{list-style:none;padding:0;margin:1.6rem 0 0;display:grid;gap:1rem}
+.steps li{display:grid;grid-template-columns:2rem 1fr;gap:.8rem}
+.steps span{width:2rem;height:2rem;border-radius:50%;background:var(--moss);color:#fff;display:grid;place-items:center;font-weight:700;font-size:.9rem}
+.steps p{margin:0;color:var(--muted);font-size:.95rem}
+.steps b{color:var(--ink)}
+@media (max-width:860px){.book{grid-template-columns:1fr}}
+@media (max-width:480px){.grid2{grid-template-columns:1fr}}
+
+/* Info */
+.info{display:grid;grid-template-columns:repeat(auto-fit,minmax(15rem,1fr));gap:2rem}
+.info h3{font-size:1.2rem;margin-bottom:.6rem}
+.info p,.info dl{margin:0;color:var(--muted)}
+dl.hours{display:grid;grid-template-columns:auto 1fr;gap:.3rem 1rem;font-variant-numeric:tabular-nums}
+dl.hours dt{color:var(--ink);font-weight:600}
+dl.hours dd{margin:0}
+.phone{font-family:var(--f-display);font-size:1.5rem;color:var(--ink);text-decoration:none}
+footer{background:var(--bark);color:#bfae9b;font-size:.88rem}
+footer .wrap{display:flex;flex-wrap:wrap;justify-content:space-between;gap:1rem;padding-block:2rem}
+.wa{position:fixed;right:calc(16px + env(safe-area-inset-right,0px));bottom:calc(16px + env(safe-area-inset-bottom,0px));z-index:30;background:#1f8f4e;color:#fff;border-radius:999px;padding:.8rem 1.1rem;font-weight:600;text-decoration:none;box-shadow:0 10px 30px -10px rgba(0,0,0,.5);display:flex;gap:.5rem;align-items:center}
+</style>
+</head>
+<body>
+
+<header class="bar">
+  <div class="wrap">
+    <a class="brand" href="#top">Ca' Mea</a>
+    <nav aria-label="Sezioni">
+      <a href="#storia">Il locale</a>
+      <a href="#piatti">Piatti</a>
+      <a href="#info">Orari e contatti</a>
+    </nav>
+    <a class="btn btn-copper btn-sm" href="#prenota">Prenota</a>
+  </div>
+</header>
+
+<main id="top">
+  <section class="hero" aria-labelledby="h1">
+    <div class="wrap">
+      <div>
+        <p class="eyebrow">Ravezza · Badalucco · Valle Argentina</p>
+        <h1 id="h1">La casa dei <em>funghi porcini</em></h1>
+        <p>Un piccolo ristorante di famiglia lungo la statale 548, tra castagni e paioli di rame. Porcini fritti e trifolati, tagliatelle, risotto e frittata di funghi, come si fanno in casa.</p>
+        <div class="actions">
+          <a class="btn btn-copper" href="#prenota">Prenota un tavolo</a>
+          <a class="btn btn-ghost" href="#piatti">Guarda i piatti</a>
+        </div>
+        <div class="facts">
+          <div><b>4,6 <span class="stars" aria-hidden="true">★</span></b>1.162 recensioni Google</div>
+          <div><b>40–50 €</b>a persona</div>
+          <div><b data-open-time>19:30</b>apertura cena</div>
+        </div>
+      </div>
+      <svg class="paiolo" viewBox="0 0 300 300" role="img" aria-label="Disegno di un paiolo di rame appeso">
+        <g class="swing">
+          <line x1="150" y1="0" x2="150" y2="70" stroke="#8d7766" stroke-width="4"/>
+          <path d="M70 120 Q150 30 230 120" fill="none" stroke="#8d7766" stroke-width="5"/>
+          <path d="M60 120 H240 L226 230 Q150 285 74 230 Z" fill="#c2703d"/>
+          <path d="M60 120 H240 L236 150 H64 Z" fill="#a95b2e"/>
+          <path d="M92 165 Q100 220 130 245" fill="none" stroke="#e6a77a" stroke-width="7" stroke-linecap="round" opacity=".55"/>
+          <ellipse cx="150" cy="120" rx="92" ry="12" fill="#7d4322"/>
+        </g>
+      </svg>
+    </div>
+  </section>
+
+  <section id="storia" aria-labelledby="h-storia">
+    <div class="wrap story">
+      <div>
+        <p class="eyebrow">Il locale</p>
+        <h2 id="h-storia">Una sala piccola, una cucina di famiglia</h2>
+        <p class="lead">Ca' Mea, in ligure "casa mia", è un ristorante a conduzione familiare in località Ravezza, al chilometro 13 della strada che sale da Taggia verso Badalucco e Molini di Triora.</p>
+        <p>Alle pareti ci sono paioli e vecchi oggetti di campagna. In cucina c'è soprattutto il porcino, preparato in tanti modi diversi. Nelle sere miti si mangia anche sulla piccola terrazza.</p>
+        <p class="hint">Vengono a trovarci tanti ospiti dalla Costa Azzurra: on parle français.</p>
+      </div>
+      <figure class="quote">
+        <div class="stars" aria-label="5 stelle su 5">★★★★★</div>
+        <blockquote lang="fr">"Endroit fabuleux, calme, service parfait, plats multiples et tous plus délicieux les uns des autres… mais il faut avoir faim. Qualité-prix parfaite, petite terrasse très sympathique."</blockquote>
+        <figcaption>Recensione di un ospite su Google Maps</figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <section id="piatti" aria-labelledby="h-piatti" style="padding-top:0">
+    <div class="wrap">
+      <div class="menu-head">
+        <div>
+          <p class="eyebrow">I più amati</p>
+          <h2 id="h-piatti">Dal bosco al piatto</h2>
+        </div>
+        <a class="btn btn-ghost btn-sm" href="#prenota">Prenota per assaggiarli</a>
+      </div>
+      <div class="dishes" id="dishes"></div>
+      <p class="note">Il menù cambia con la stagione dei funghi. Allergie o intolleranze? Scrivicelo nella prenotazione.</p>
+    </div>
+  </section>
+
+  <section class="services" aria-labelledby="h-serv">
+    <div class="wrap">
+      <p class="eyebrow">Come vuoi</p>
+      <h2 id="h-serv">In sala, da asporto o a casa tua</h2>
+      <div class="svc">
+        <div><h3>In sala e in terrazza</h3><p>Pochi tavoli, quindi conviene prenotare, soprattutto nel weekend e in autunno.</p></div>
+        <div><h3>Ritiro all'esterno</h3><p>Ordina per telefono o WhatsApp e passa a ritirare a Ravezza.</p></div>
+        <div><h3>Consegna a domicilio</h3><p>Nelle zone vicine. Chiamaci per sapere se arriviamo fino a te.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="prenota" aria-labelledby="h-book">
+    <div class="wrap book">
+      <div>
+        <p class="eyebrow">Prenotazioni</p>
+        <h2 id="h-book">Prenota il tuo tavolo</h2>
+        <p class="lead">Ci vuole un minuto. I posti liberi si aggiornano in tempo reale.</p>
+        <ol class="steps">
+          <li><span>1</span><p><b>Scegli giorno, orario e persone.</b> Gli orari pieni non si possono selezionare.</p></li>
+          <li><span>2</span><p><b>Ricevi subito un'email</b> con il riepilogo e il link per annullare.</p></li>
+          <li><span>3</span><p><b>Il giorno prima</b> ti mandiamo un promemoria.</p></li>
+        </ol>
+        <p class="hint" style="margin-top:1.6rem">Gruppi oltre <span data-max-online>8</span> persone: chiamaci allo <a href="tel:+393491500498">349 150 0498</a>.</p>
+      </div>
+
+      <form class="panel" id="bookForm" novalidate>
+        <div class="grid2">
+          <div class="field">
+            <label for="f-date">Giorno</label>
+            <input id="f-date" name="date" type="date" required>
+          </div>
+          <div class="field">
+            <label for="f-people">Persone</label>
+            <select id="f-people" name="people" required></select>
+          </div>
+          <div class="field full">
+            <label id="l-slots">Orario</label>
+            <div class="slots" id="slots" role="group" aria-labelledby="l-slots"><span class="hint">Scegli prima il giorno.</span></div>
+          </div>
+          <div class="field">
+            <label for="f-name">Nome e cognome</label>
+            <input id="f-name" name="name" autocomplete="name" required>
+          </div>
+          <div class="field">
+            <label for="f-phone">Telefono</label>
+            <input id="f-phone" name="phone" type="tel" autocomplete="tel" required placeholder="+39 …">
+          </div>
+          <div class="field full">
+            <label for="f-email">Email</label>
+            <input id="f-email" name="email" type="email" autocomplete="email" required>
+          </div>
+          <div class="field full">
+            <label for="f-notes">Note (allergie, seggiolone, compleanno, terrazza…)</label>
+            <textarea id="f-notes" name="notes" maxlength="500"></textarea>
+          </div>
+          <label class="check full field" style="flex-direction:row" for="f-privacy">
+            <input id="f-privacy" name="privacy" type="checkbox" required>
+            <span>Acconsento al trattamento dei dati solo per gestire la prenotazione e inviarmi conferma e promemoria.</span>
+          </label>
+          <!-- campo trappola anti-spam: le persone non lo vedono -->
+          <input type="text" name="website" id="f-website" tabindex="-1" autocomplete="off" style="position:absolute;left:-9999px" aria-hidden="true">
+          <div class="field full" id="formMsg" aria-live="polite"></div>
+          <div class="field full">
+            <button class="btn btn-copper" type="submit" id="submitBtn">Conferma prenotazione</button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </section>
+
+  <section id="info" aria-labelledby="h-info" style="padding-top:0">
+    <div class="wrap">
+      <h2 id="h-info" style="margin-bottom:2rem">Orari e contatti</h2>
+      <div class="info">
+        <div>
+          <h3>Orari</h3>
+          <dl class="hours" id="hours"></dl>
+        </div>
+        <div>
+          <h3>Dove siamo</h3>
+          <p>Strada Statale 548, Km 13<br>Località Ravezza<br>18010 Badalucco (IM)</p>
+          <p style="margin-top:.8rem"><a href="https://maps.app.goo.gl/PJqK5xBTXWLtqt48A" target="_blank" rel="noopener">Apri in Google Maps →</a></p>
+        </div>
+        <div>
+          <h3>Chiamaci</h3>
+          <a class="phone" href="tel:+393491500498">349 150 0498</a>
+          <p style="margin-top:.6rem">Anche su <a href="https://wa.me/393491500498" target="_blank" rel="noopener">WhatsApp</a>.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <span>© <span id="year"></span> Ristorante Ca' Mea · Ravezza, Badalucco (IM)</span>
+    <span>P.IVA da inserire · <a href="#">Privacy</a></span>
+  </div>
+</footer>
+
+<a class="wa" href="https://wa.me/393491500498?text=Ciao%2C%20vorrei%20informazioni%20per%20una%20prenotazione" target="_blank" rel="noopener" aria-label="Scrivici su WhatsApp">
+  <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2Zm0 18.2a8.2 8.2 0 0 1-4.2-1.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2Zm4.5-6.1c-.2-.1-1.5-.7-1.7-.8-.2-.1-.4-.1-.6.1l-.8 1c-.1.2-.3.2-.5.1a6.7 6.7 0 0 1-3.3-2.9c-.2-.4.2-.4.7-1.3.1-.2 0-.3 0-.4l-.8-1.8c-.2-.5-.4-.4-.6-.4h-.5a1 1 0 0 0-.7.3 3 3 0 0 0-.9 2.2 5.2 5.2 0 0 0 1.1 2.7 11.8 11.8 0 0 0 4.5 4c1.7.7 2.3.8 3.2.6.5-.1 1.5-.6 1.7-1.2.2-.6.2-1.1.2-1.2-.1-.1-.3-.2-.5-.3Z"/></svg>
+  WhatsApp
+</a>
+
+<script>
+/* ============================================================
+   CONFIGURAZIONE: modifica solo questa parte
+   ============================================================ */
+const CONFIG = {
+  // URL della Web App di Google Apps Script (vedi README). Vuoto = modalità demo.
+  BOOKING_API: "",
+  WHATSAPP: "393491500498",
+  // Orari dei turni di cena (devono coincidere con il foglio "Impostazioni")
+  SLOTS: ["19:30", "20:00", "20:30", "21:00", "21:30"],
+  // Giorni di chiusura settimanale: 0=domenica, 1=lunedì, ... 6=sabato. DA CONFERMARE.
+  CLOSED_WEEKDAYS: [],
+  MAX_ONLINE_PARTY: 8,         // oltre questo numero si chiede di telefonare
+  MIN_HOURS_AHEAD: 2,          // non si prenota a meno di 2 ore dall'orario
+  MAX_DAYS_AHEAD: 60,
+  // Testo degli orari mostrato sul sito. DA CONFERMARE con il ristorante.
+  HOURS: [
+    ["Cena", "dalle 19:30"],
+    ["Pranzo", "da confermare"],
+    ["Chiusura", "da confermare"]
+  ]
+};
+
+const DISHES = [
+  ["Antipasto", "Porcini fritti e trifolati", "Il piatto più richiesto: metà croccanti in pastella, metà in padella con aglio e prezzemolo."],
+  ["Primo", "Tagliatelle ai funghi porcini", "Pasta all'uovo con sugo di porcini."],
+  ["Primo", "Risotto ai funghi", "Mantecato con i porcini della valle."],
+  ["Secondo", "Frittata di funghi", "Uova e porcini, alta e morbida come una volta."],
+  ["Contorno", "Funghi trifolati", "In padella con aglio, olio e prezzemolo."],
+  ["Dolce", "Tiramisù della casa", "Fatto da noi ogni giorno."],
+  ["Cantina", "Vino rosso della casa", "Da accompagnare a tutto il menù."],
+  ["Digestivo", "Limoncello", "Per chiudere la serata."]
+];
+
+/* ============================================================ */
+const $ = s => document.querySelector(s);
+const porcino = '<svg viewBox="0 0 40 40" aria-hidden="true"><path d="M5 19C5 10 12 5 20 5s15 5 15 14c0 2-2 3-4 3H9c-2 0-4-1-4-3Z" fill="var(--cap)"/><path d="M14 22h12l1 9c0 3-3 5-7 5s-7-2-7-5Z" fill="var(--line)" stroke="var(--muted)" stroke-width="1"/></svg>';
+$("#dishes").innerHTML = DISHES.map(([t,n,d]) =>
+  `<article class="dish">${porcino}<div><span class="tag">${t}</span><h3>${n}</h3><p>${d}</p></div></article>`).join("");
+$("#hours").innerHTML = CONFIG.HOURS.map(([a,b]) => `<dt>${a}</dt><dd>${b}</dd>`).join("");
+$("#year").textContent = new Date().getFullYear();
+document.querySelector("[data-max-online]").textContent = CONFIG.MAX_ONLINE_PARTY;
+
+const people = $("#f-people");
+for (let i = 1; i <= CONFIG.MAX_ONLINE_PARTY; i++) people.add(new Option(i + (i === 1 ? " persona" : " persone"), i, i === 2, i === 2));
+
+const toISO = d => new Date(d.getTime() - d.getTimezoneOffset()*6e4).toISOString().slice(0,10);
+const dateIn = $("#f-date");
+const today = new Date(); const max = new Date(); max.setDate(max.getDate() + CONFIG.MAX_DAYS_AHEAD);
+dateIn.min = toISO(today); dateIn.max = toISO(max);
+
+let chosenSlot = null;
+const slotsBox = $("#slots");
+
+function slotTooSoon(dateStr, slot){
+  const [h,m] = slot.split(":").map(Number);
+  const d = new Date(dateStr + "T00:00:00"); d.setHours(h, m);
+  return d - Date.now() < CONFIG.MIN_HOURS_AHEAD * 36e5;
+}
+
+async function loadAvailability(){
+  chosenSlot = null;
+  const d = dateIn.value;
+  if (!d) return;
+  const wd = new Date(d + "T12:00:00").getDay();
+  if (CONFIG.CLOSED_WEEKDAYS.includes(wd)) { slotsBox.innerHTML = '<span class="hint">Siamo chiusi questo giorno. Scegline un altro.</span>'; return; }
+  slotsBox.innerHTML = '<span class="hint">Controllo i posti liberi…</span>';
+  let avail = null; // { "19:30": postiLiberi, ... } oppure {closed:true}
+  if (CONFIG.BOOKING_API) {
+    try {
+      const r = await fetch(`${CONFIG.BOOKING_API}?action=availability&date=${d}`);
+      avail = await r.json();
+    } catch (e) { avail = null; }
+  }
+  if (avail && avail.closed) { slotsBox.innerHTML = `<span class="hint">${avail.message || "Siamo chiusi questo giorno."}</span>`; return; }
+  const need = Number(people.value);
+  slotsBox.innerHTML = "";
+  CONFIG.SLOTS.forEach(s => {
+    const free = avail && avail.slots ? avail.slots[s] : null;
+    const b = document.createElement("button");
+    b.type = "button"; b.className = "slot"; b.setAttribute("aria-pressed","false");
+    b.innerHTML = s + (free != null && free < 10 && free >= need ? ` <small>· ${free} posti</small>` : "");
+    b.disabled = slotTooSoon(d, s) || (free != null && free < need);
+    b.onclick = () => { slotsBox.querySelectorAll(".slot").forEach(x => x.setAttribute("aria-pressed","false")); b.setAttribute("aria-pressed","true"); chosenSlot = s; };
+    slotsBox.appendChild(b);
+  });
+  if (![...slotsBox.children].some(b => !b.disabled)) slotsBox.insertAdjacentHTML("beforeend", '<span class="hint">Tutto pieno. Prova un altro giorno o chiamaci.</span>');
+}
+dateIn.addEventListener("change", loadAvailability);
+people.addEventListener("change", loadAvailability);
+
+const msg = (type, html) => $("#formMsg").innerHTML = html ? `<div class="msg ${type}">${html}</div>` : "";
+const esc = s => String(s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+
+$("#bookForm").addEventListener("submit", async e => {
+  e.preventDefault();
+  const f = e.target, data = Object.fromEntries(new FormData(f));
+  if (data.website) return; // bot
+  const missing = [];
+  if (!data.date) missing.push("il giorno");
+  if (!chosenSlot) missing.push("l'orario");
+  if (!data.name?.trim()) missing.push("il nome");
+  if (!/^[+0-9 ()-]{6,}$/.test(data.phone || "")) missing.push("un telefono valido");
+  if (!/^\S+@\S+\.\S+$/.test(data.email || "")) missing.push("un'email valida");
+  if (!f.privacy.checked) missing.push("il consenso privacy");
+  if (missing.length) return msg("err", "Manca " + missing.join(", ") + ".");
+
+  const payload = { action: "book", date: data.date, time: chosenSlot, people: Number(data.people),
+    name: data.name.trim(), phone: data.phone.trim(), email: data.email.trim(), notes: (data.notes||"").trim(), lang: navigator.language };
+  const btn = $("#submitBtn"); btn.disabled = true; btn.textContent = "Invio in corso…";
+
+  try {
+    let res;
+    if (CONFIG.BOOKING_API) {
+      // text/plain evita il preflight CORS con Google Apps Script
+      const r = await fetch(CONFIG.BOOKING_API, { method: "POST", headers: { "Content-Type": "text/plain;charset=utf-8" }, body: JSON.stringify(payload) });
+      res = await r.json();
+    } else {
+      res = { ok: true, demo: true, id: "DEMO-" + Math.random().toString(36).slice(2,7).toUpperCase() };
+    }
+    if (!res.ok) throw new Error(res.error || "Prenotazione non riuscita.");
+    const dateTxt = new Date(payload.date + "T12:00:00").toLocaleDateString("it-IT", { weekday:"long", day:"numeric", month:"long" });
+    msg("ok", `<b>Prenotazione ricevuta.</b> ${esc(payload.name)}, ti aspettiamo ${dateTxt} alle ${payload.time} (${payload.people} pers.). Codice <b>${esc(res.id)}</b>.<br>
+      ${res.demo ? "<i>Modalità demo: nessuna email inviata. Collega Google Apps Script per attivarla.</i>" : "Ti abbiamo mandato un'email di conferma."}`);
+    f.reset(); people.value = 2; chosenSlot = null; slotsBox.innerHTML = '<span class="hint">Scegli prima il giorno.</span>';
+  } catch (err) {
+    const wa = `https://wa.me/${CONFIG.WHATSAPP}?text=` + encodeURIComponent(`Ciao, vorrei prenotare per ${payload.people} persone il ${payload.date} alle ${payload.time}. ${payload.name}`);
+    msg("err", `${esc(err.message)} Puoi prenotare anche su <a href="${wa}" target="_blank" rel="noopener">WhatsApp</a> o al 349 150 0498.`);
+    if (CONFIG.BOOKING_API) loadAvailability();
+  } finally { btn.disabled = false; btn.textContent = "Conferma prenotazione"; }
+});
+</script>
+</body>
+</html>

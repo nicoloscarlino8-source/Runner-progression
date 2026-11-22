@@ -247,16 +247,31 @@ $("tab-clienti").addEventListener("click", () => vaiTab("clienti"));
 /* ================= FOTOCAMERA / SCANNER ================= */
 let stream = null, scanning = false, detector = null, canvas = null, lastCode = "", lastAt = 0;
 
+function aiutoCamera(e) {
+  const nome = e && e.name;
+  let incorporata = false; try { incorporata = window.self !== window.top; } catch (x) { incorporata = true; }
+  if (incorporata) return "La fotocamera non funziona in questa anteprima. Sul sito pubblicato funziona: per ora scrivi il numero della tessera qui sotto.";
+  if (nome === "NotFoundError" || nome === "OverconstrainedError") return "Nessuna fotocamera trovata su questo dispositivo. Scrivi il numero della tessera qui sotto.";
+  if (nome === "NotReadableError") return "La fotocamera è usata da un'altra app: chiudila e riprova.";
+  const ios = /iphone|ipad|ipod/i.test(navigator.userAgent) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+  const passi = ios
+    ? "Su iPhone: tocca <b>aA</b> nella barra dell'indirizzo → <b>Impostazioni sito web</b> → <b>Fotocamera: Consenti</b>. Oppure Impostazioni → Safari → Fotocamera → Consenti."
+    : "Su Android: tocca il <b>lucchetto</b> accanto all'indirizzo → <b>Autorizzazioni</b> → <b>Fotocamera: Consenti</b>, poi ricarica la pagina.";
+  return "Accesso alla fotocamera negato. Quando il telefono lo chiede, tocca <b>Consenti</b>.<br>" + passi;
+}
+
 async function apriCamera() {
   $("cam-err").textContent = "";
   if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-    $("cam-err").textContent = "Fotocamera non disponibile: serve un indirizzo https. Usa il campo numero qui sotto.";
+    $("cam-err").textContent = (window.self !== window.top)
+      ? "La fotocamera non funziona in questa anteprima. Sul sito pubblicato funziona: per ora scrivi il numero della tessera qui sotto."
+      : "Fotocamera non disponibile: il sito deve essere su un indirizzo https. Per ora scrivi il numero della tessera qui sotto.";
     return;
   }
   try {
     stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment", width: { ideal: 1280 }, height: { ideal: 1280 } }, audio: false });
   } catch (e) {
-    $("cam-err").textContent = "Permesso fotocamera negato. Abilitalo nelle impostazioni del browser.";
+    $("cam-err").innerHTML = aiutoCamera(e);
     return;
   }
   const v = $("video"); v.srcObject = stream; v.hidden = false; $("frame").hidden = false; $("cam-placeholder").hidden = true;

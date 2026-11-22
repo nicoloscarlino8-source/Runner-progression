@@ -1,20 +1,15 @@
 # Tessera digitale – Bar Pradio (Badalucco)
 
-Tessera fedeltà digitale per i clienti del Bar Pradio: si apre dal telefono, si aggiunge alla schermata Home come un'app e funziona anche offline.
+Tessera fedeltà digitale con QR code e raccolta timbri, collegata a un database (Supabase).
 
-## Cosa fa
-- **Registrazione**: il cliente inserisce nome, cognome e (facoltativo) la data di nascita.
-- **Tessera**: numero univoco (`PRD-XXXX-XXXX`), nome del titolare, "cliente dal".
-- **QR code**: da mostrare alla cassa.
-- **Raccolta timbri**: 10 timbri = premio. I timbri li aggiunge solo lo staff con un PIN.
-- **Vantaggi**, **dove trovarci**, istruzioni per **aggiungere alla Home** (iPhone e Android).
+- `index.html`: **tessera del cliente** (registrazione, QR, timbri che si aggiornano da soli, vantaggi, installazione sulla Home)
+- `cassa.html`: **area staff** (login, scanner QR con fotocamera, +1 timbro, premio, annulla, link di recupero, elenco clienti, statistiche, compleanni, export CSV)
+- `privacy.html`: informativa privacy (modello da completare)
+- `config.js`: **l'unico file da modificare** (collegamento a Supabase, testi, contatti, vantaggi)
+- `api.js`: collegamento ai dati (Supabase oppure modalità demo in locale)
+- `supabase/schema.sql`: tabelle, sicurezza e funzioni del database
+- `vendor/`: librerie incluse (supabase-js 2.118.0, qrcode-generator 1.4.4, jsQR 1.4.0)
 
-## Da personalizzare
-Tutto è nell'oggetto `CONFIG` in `index.html`: stagione, numero di timbri, premio, **PIN staff (da cambiare!)**, indirizzo, telefono, Instagram, orari, lista vantaggi.
+👉 **Per metterla online segui [GUIDA.md](GUIDA.md).**
 
-## Come pubblicarla
-Sono file statici: basta caricare la cartella su un hosting gratuito (GitHub Pages, Netlify, Cloudflare Pages) o sul sito del bar. Serve **HTTPS** per l'installazione sulla Home e il funzionamento offline. Poi si condivide il link via WhatsApp, Instagram o con un QR stampato sul bancone.
-
-## Limiti da conoscere
-- I dati restano **solo sul telefono del cliente** (localStorage): se cancella i dati del browser o cambia telefono, la tessera riparte da zero.
-- Il PIN staff è un controllo semplice lato client: scoraggia i furbetti ma non è a prova di esperto. Per un sistema con database centrale (elenco clienti, statistiche, timbri sincronizzati) serve un backend.
+Senza Supabase configurato il sito funziona in **modalità demo** (dati solo nel browser, password cassa: `demo`).

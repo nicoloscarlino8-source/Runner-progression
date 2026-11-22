@@ -1,0 +1,448 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Cassa Bar Pradio</title>
+<meta name="description" content="Area staff del Bar Pradio: scansiona le tessere e aggiungi i timbri.">
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#7a1f1c">
+<link rel="manifest" href="manifest-cassa.webmanifest">
+<link rel="icon" type="image/png" href="icons/icon-192.png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Cassa Pradio">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Marcellus&family=Josefin+Sans:wght@300;400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+<style>
+  .wrap { max-width: 560px; }
+  header.top.small { display: flex; align-items: center; justify-content: space-between; padding: 0 0 14px; }
+  header.top.small img { width: 64px; margin: 0; }
+  header.top.small .ttl { font-family: "Marcellus", serif; font-size: 1.35rem; color: var(--gold); }
+  header.top.small .who { font-size: .78rem; color: var(--ink-soft); text-align: right; }
+
+  .tabs { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 5px; }
+  .tabs button { font: inherit; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; font-size: .85rem; border: 0; border-radius: 10px; padding: 11px; background: transparent; color: var(--ink-soft); cursor: pointer; }
+  .tabs button[aria-selected="true"] { background: linear-gradient(135deg, var(--brand), var(--brand-2)); color: #fff; }
+
+  .scanner { position: relative; border-radius: 18px; overflow: hidden; background: #140c0a; aspect-ratio: 1; display: grid; place-items: center; }
+  .scanner video { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .scanner .frame { position: absolute; inset: 18%; border: 3px solid rgba(255,255,255,.85); border-radius: 18px; box-shadow: 0 0 0 999px rgba(0,0,0,.35); pointer-events: none; }
+  .scanner .placeholder { color: #f6e9dc; text-align: center; padding: 24px; }
+  .scanner .placeholder .btn { width: auto; }
+  .manual { display: flex; gap: 8px; margin-top: 14px; }
+  .manual input { flex: 1; min-width: 0; text-transform: uppercase; letter-spacing: .08em; }
+  .manual input::placeholder { text-transform: none; letter-spacing: 0; }
+  .manual .btn { width: auto; margin: 0; }
+
+  .cliente-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; }
+  .cliente-head .nome { font-family: "Marcellus", serif; font-size: 1.5rem; line-height: 1.15; color: var(--ink); }
+  .cliente-head .num { font-weight: 600; letter-spacing: .12em; color: var(--ink-soft); font-size: .9rem; margin-top: 4px; }
+  .badge { display: inline-block; font-size: .75rem; font-weight: 600; letter-spacing: .05em; padding: 4px 10px; border-radius: 999px; background: var(--accent-soft); color: var(--brand-2); border: 1px solid var(--accent); margin-top: 8px; }
+  .big-count { font-family: "Marcellus", serif; font-size: 2.6rem; line-height: 1; color: var(--brand-2); text-align: right; white-space: nowrap; }
+  .big-count small { font-size: 1rem; color: var(--ink-soft); }
+  .btn.huge { font-size: 1.25rem; padding: 22px; border-radius: 18px; }
+  .row-btns { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 12px; }
+  .row-btns .btn { margin: 0; font-size: .78rem; padding: 12px 8px; }
+  .mov { list-style: none; padding: 0; margin: 8px 0 0; font-size: .88rem; color: var(--ink-soft); }
+  .mov li { display: flex; justify-content: space-between; padding: 6px 0; border-top: 1px solid var(--line); }
+  .mov li:first-child { border-top: 0; }
+
+  .stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+  .stat { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 12px; }
+  .stat b { display: block; font-family: "Marcellus", serif; font-weight: 400; font-size: 1.7rem; color: var(--brand-2); line-height: 1.1; }
+  .stat span { font-size: .72rem; letter-spacing: .06em; text-transform: uppercase; color: var(--ink-soft); }
+  @media (max-width: 380px) { .stats { grid-template-columns: repeat(2, 1fr); } }
+
+  .lista { list-style: none; padding: 0; margin: 10px 0 0; }
+  .lista li { display: flex; justify-content: space-between; align-items: center; gap: 10px; padding: 12px 4px; border-top: 1px solid var(--line); cursor: pointer; }
+  .lista li:first-child { border-top: 0; }
+  .lista li:hover { background: var(--bg); }
+  .lista .n { font-weight: 600; }
+  .lista .s { font-size: .8rem; color: var(--ink-soft); }
+  .lista .t { font-weight: 600; color: var(--brand-2); white-space: nowrap; }
+  .lista .t.full { color: var(--accent); }
+  .tools { display: flex; gap: 8px; align-items: center; }
+  .tools input { flex: 1; }
+  .empty { text-align: center; color: var(--ink-soft); padding: 18px 0 6px; }
+</style>
+</head>
+<body>
+<div class="demo-bar" id="demo-bar" hidden>Modalità demo · password: <b>demo</b> · <a href="index.html">Apri la tessera cliente</a></div>
+<div class="wrap">
+
+  <!-- ================= LOGIN ================= -->
+  <section id="view-login" hidden>
+    <header class="top"><img src="logo.png" alt="Pradio – Bar, Pasticceria, Gelati" width="410" height="403"></header>
+    <h1>Cassa · Area staff</h1>
+    <p class="lead">Accedi per scansionare le tessere e mettere i timbri.</p>
+    <form class="panel" id="login-form">
+      <label for="l-email">Email</label>
+      <input type="text" id="l-email" inputmode="email" autocomplete="username" autocapitalize="off">
+      <label for="l-pwd">Password</label>
+      <input type="password" id="l-pwd" autocomplete="current-password">
+      <div class="err" id="login-err" role="alert"></div>
+      <button class="btn" type="submit" id="btn-login">Accedi</button>
+    </form>
+  </section>
+
+  <!-- ================= APP STAFF ================= -->
+  <section id="view-app" hidden>
+    <header class="top small">
+      <img src="logo.png" alt="Pradio" width="410" height="403">
+      <div class="ttl">Cassa</div>
+      <div class="who"><span id="who"></span><br><button class="link-btn" id="btn-logout" type="button" style="padding:0">Esci</button></div>
+    </header>
+
+    <div class="tabs" role="tablist">
+      <button role="tab" id="tab-scan" aria-selected="true">Scansiona</button>
+      <button role="tab" id="tab-clienti" aria-selected="false">Clienti</button>
+    </div>
+
+    <!-- ---- Scansiona ---- -->
+    <div id="pane-scan">
+      <div class="panel" id="scan-panel">
+        <div class="scanner" id="scanner">
+          <video id="video" playsinline muted hidden></video>
+          <div class="frame" id="frame" hidden></div>
+          <div class="placeholder" id="cam-placeholder">
+            <p style="margin:0 0 6px">Inquadra il QR code sulla tessera del cliente</p>
+            <button class="btn accent" id="btn-cam" type="button">Apri fotocamera</button>
+            <p class="err" id="cam-err" style="color:#f3b26b"></p>
+          </div>
+        </div>
+        <form class="manual" id="manual-form">
+          <input type="text" id="manual-num" placeholder="o scrivi il N° tessera" autocomplete="off" aria-label="Numero tessera">
+          <button class="btn" type="submit">Cerca</button>
+        </form>
+        <div class="err" id="scan-err" role="alert"></div>
+      </div>
+
+      <div class="panel" id="cliente-panel" hidden>
+        <div class="cliente-head">
+          <div>
+            <div class="nome" id="c-nome"></div>
+            <div class="num" id="c-num"></div>
+            <span class="badge" id="c-bday" hidden>🎂 Oggi compie gli anni!</span>
+          </div>
+          <div class="big-count"><span id="c-timbri"></span><small id="c-obiettivo"></small></div>
+        </div>
+        <div class="stamps" id="c-stamps" style="margin-top:16px"></div>
+        <button class="btn huge" id="btn-timbro" type="button">+1 Timbro</button>
+        <div class="row-btns">
+          <button class="btn ghost" id="btn-annulla" type="button">Togli un timbro</button>
+          <button class="btn ghost" id="btn-nuova" type="button">Nuova scansione</button>
+        </div>
+        <p class="muted" style="margin:16px 0 0" id="c-info"></p>
+        <ul class="mov" id="c-mov"></ul>
+        <div class="row-btns">
+          <button class="btn ghost" id="btn-recupero" type="button">Link di recupero</button>
+          <button class="btn ghost" id="btn-elimina" type="button">Elimina cliente</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ---- Clienti ---- -->
+    <div id="pane-clienti" hidden>
+      <div class="stats" style="margin-top:18px" id="stats"></div>
+      <div class="panel" id="bday-panel" hidden>
+        <h2>Compleanni 🎂</h2>
+        <ul class="lista" id="bday-list"></ul>
+      </div>
+      <div class="panel">
+        <div class="tools">
+          <input type="text" id="search" placeholder="Cerca nome o numero" aria-label="Cerca cliente">
+          <button class="btn ghost small" id="btn-csv" type="button">CSV</button>
+        </div>
+        <ul class="lista" id="lista"></ul>
+      </div>
+    </div>
+  </section>
+
+  <footer class="copy">Bar Pradio · Area staff</footer>
+</div>
+
+<!-- Modale -->
+<div class="modal" id="modal" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+  <div class="sheet" style="text-align:center">
+    <h2 id="modal-title">Link di recupero</h2>
+    <p class="muted" style="margin:0 0 14px">Il cliente ha cambiato telefono? Fagli inquadrare questo QR con la fotocamera del nuovo telefono: ritroverà la sua tessera con tutti i timbri.</p>
+    <div class="qr" id="rec-qr"></div>
+    <div class="actions"><button class="btn" type="button" id="modal-close">Chiudi</button></div>
+  </div>
+</div>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script src="config.js"></script>
+<script src="vendor/supabase.js"></script>
+<script src="vendor/qrcode.js"></script>
+<script src="vendor/jsQR.js"></script>
+<script src="api.js"></script>
+<script>
+const CFG = window.PRADIO_CONFIG;
+const API = PradioAPI.crea({ staff: true });
+const $ = (id) => document.getElementById(id);
+const esc = (s) => String(s ?? "").replace(/[&<>"']/g, c => ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;" }[c]));
+const msg = (e) => PradioAPI.messaggio(e);
+
+function toast(t) {
+  const el = $("toast"); el.textContent = t; el.classList.add("show");
+  clearTimeout(toast._t); toast._t = setTimeout(() => el.classList.remove("show"), 2600);
+}
+function quando(iso) {
+  if (!iso) return "—";
+  const d = new Date(iso), oggi = new Date();
+  const ora = d.toLocaleTimeString("it-IT", { hour: "2-digit", minute: "2-digit" });
+  if (d.toDateString() === oggi.toDateString()) return "oggi " + ora;
+  const ieri = new Date(oggi); ieri.setDate(oggi.getDate() - 1);
+  if (d.toDateString() === ieri.toDateString()) return "ieri " + ora;
+  return d.toLocaleDateString("it-IT", { day: "2-digit", month: "2-digit", year: "2-digit" });
+}
+function compleannoOggi(n) {
+  if (!n) return false; const [, m, g] = n.split("-").map(Number), o = new Date();
+  return o.getMonth() + 1 === m && o.getDate() === g;
+}
+function beep() {
+  try {
+    const ctx = beep.ctx || (beep.ctx = new (window.AudioContext || window.webkitAudioContext)());
+    const o = ctx.createOscillator(), g = ctx.createGain();
+    o.frequency.value = 880; g.gain.value = .08; o.connect(g); g.connect(ctx.destination);
+    o.start(); o.stop(ctx.currentTime + .09);
+  } catch (e) {}
+  if (navigator.vibrate) try { navigator.vibrate(50); } catch (e) {}
+}
+
+/* ================= LOGIN ================= */
+function mostra(v) { $("view-login").hidden = v !== "login"; $("view-app").hidden = v !== "app"; }
+
+$("login-form").addEventListener("submit", async (e) => {
+  e.preventDefault(); $("login-err").textContent = ""; $("btn-login").disabled = true;
+  try {
+    const s = await API.login($("l-email").value.trim(), $("l-pwd").value);
+    entra(s);
+  } catch (err) { $("login-err").textContent = msg(err); }
+  finally { $("btn-login").disabled = false; }
+});
+$("btn-logout").addEventListener("click", async () => {
+  fermaCamera(); await API.logout(); $("l-pwd").value = ""; mostra("login");
+});
+function entra(s) {
+  $("who").textContent = s.email; mostra("app"); vaiTab("scan");
+}
+
+/* ================= TAB ================= */
+function vaiTab(t) {
+  $("tab-scan").setAttribute("aria-selected", t === "scan");
+  $("tab-clienti").setAttribute("aria-selected", t === "clienti");
+  $("pane-scan").hidden = t !== "scan";
+  $("pane-clienti").hidden = t !== "clienti";
+  if (t === "clienti") { fermaCamera(); caricaPannello(); }
+}
+$("tab-scan").addEventListener("click", () => vaiTab("scan"));
+$("tab-clienti").addEventListener("click", () => vaiTab("clienti"));
+
+/* ================= FOTOCAMERA / SCANNER ================= */
+let stream = null, scanning = false, detector = null, canvas = null, lastCode = "", lastAt = 0;
+
+async function apriCamera() {
+  $("cam-err").textContent = "";
+  if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+    $("cam-err").textContent = "Fotocamera non disponibile: serve un indirizzo https. Usa il campo numero qui sotto.";
+    return;
+  }
+  try {
+    stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment", width: { ideal: 1280 }, height: { ideal: 1280 } }, audio: false });
+  } catch (e) {
+    $("cam-err").textContent = "Permesso fotocamera negato. Abilitalo nelle impostazioni del browser.";
+    return;
+  }
+  const v = $("video"); v.srcObject = stream; v.hidden = false; $("frame").hidden = false; $("cam-placeholder").hidden = true;
+  await v.play().catch(() => {});
+  if ("BarcodeDetector" in window) {
+    try { const f = await BarcodeDetector.getSupportedFormats(); if (f.includes("qr_code")) detector = new BarcodeDetector({ formats: ["qr_code"] }); } catch (e) {}
+  }
+  scanning = true; loop();
+}
+function fermaCamera() {
+  scanning = false;
+  if (stream) { stream.getTracks().forEach(t => t.stop()); stream = null; }
+  $("video").hidden = true; $("frame").hidden = true; $("cam-placeholder").hidden = false;
+}
+async function loop() {
+  if (!scanning) return;
+  const v = $("video");
+  if (v.readyState >= 2) {
+    let code = null;
+    try {
+      if (detector) {
+        const r = await detector.detect(v); if (r.length) code = r[0].rawValue;
+      } else if (window.jsQR) {
+        canvas = canvas || document.createElement("canvas");
+        const w = 480, h = Math.round(w * v.videoHeight / v.videoWidth) || 480;
+        canvas.width = w; canvas.height = h;
+        const ctx = canvas.getContext("2d", { willReadFrequently: true });
+        ctx.drawImage(v, 0, 0, w, h);
+        const img = ctx.getImageData(0, 0, w, h);
+        const r = jsQR(img.data, w, h, { inversionAttempts: "dontInvert" }); if (r) code = r.data;
+      }
+    } catch (e) {}
+    if (code) {
+      const num = PradioAPI.normalizzaNumero(code);
+      if (num && !(num === lastCode && Date.now() - lastAt < 4000)) {
+        lastCode = num; lastAt = Date.now(); beep(); fermaCamera(); apriCliente(num); return;
+      }
+    }
+  }
+  setTimeout(() => requestAnimationFrame(loop), 120);
+}
+$("btn-cam").addEventListener("click", apriCamera);
+$("manual-form").addEventListener("submit", (e) => {
+  e.preventDefault();
+  const num = PradioAPI.normalizzaNumero($("manual-num").value);
+  if (!num) { $("scan-err").textContent = "Il numero tessera ha 8 cifre, es. PRD-1234-5678."; return; }
+  apriCliente(num);
+});
+
+/* ================= SCHEDA CLIENTE ================= */
+let corrente = null, busy = false;
+
+async function apriCliente(num) {
+  $("scan-err").textContent = "";
+  try {
+    corrente = await API.cerca(num);
+    vaiTab("scan"); renderCliente();
+    $("scan-panel").hidden = true; $("manual-num").value = "";
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  } catch (e) { $("scan-err").textContent = msg(e); if (e.code === "non_autorizzato") esci(); }
+}
+
+const CUP = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9h12v5a5 5 0 0 1-5 5H9a5 5 0 0 1-5-5V9z"/><path d="M16 11h1.5a2.5 2.5 0 0 1 0 5H16"/><path d="M9 3c-1 1 1 2 0 3.5M12.5 3c-1 1 1 2 0 3.5"/></svg>';
+const GIFT = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="9" width="18" height="12" rx="1.5"/><path d="M3 13h18M12 9v12"/><path d="M12 9C9 9 7 7.5 8 5.5S12 6 12 9zM12 9c3 0 5-1.5 4-3.5S12 6 12 9z"/></svg>';
+const TIPI = { timbro: "☕ Timbro", premio: "🎁 Premio ritirato", annullato: "↩︎ Timbro tolto" };
+
+function renderCliente(pop) {
+  const c = corrente, n = c.obiettivo || 10, full = c.timbri >= n;
+  $("cliente-panel").hidden = false;
+  $("c-nome").textContent = c.nome + " " + c.cognome;
+  $("c-num").textContent = c.numero;
+  $("c-bday").hidden = !compleannoOggi(c.nascita);
+  $("c-timbri").textContent = c.timbri;
+  $("c-obiettivo").textContent = " / " + n;
+  let h = "";
+  for (let i = 0; i < n; i++) {
+    const last = i === n - 1, on = i < c.timbri;
+    h += '<div class="stamp' + (on ? " on" : "") + (last && !on ? " gift" : "") + (pop && i === c.timbri - 1 ? " pop" : "") + '">' + (last ? GIFT : CUP) + "</div>";
+  }
+  $("c-stamps").innerHTML = h;
+  $("c-stamps").style.gridTemplateColumns = "repeat(" + (n <= 6 ? n : Math.ceil(n / 2)) + ", 1fr)";
+  const b = $("btn-timbro");
+  b.textContent = full ? "🎁 Consegna premio" : "+1 Timbro";
+  b.className = "btn huge" + (full ? " accent" : "");
+  $("btn-annulla").disabled = c.timbri <= 0;
+  $("c-info").textContent = "Cliente dal " + new Date(c.creato_il).toLocaleDateString("it-IT") +
+    " · timbri totali " + c.timbri_totali + " · premi " + c.premi + (full ? " · " + CFG.premio : "");
+  $("c-mov").innerHTML = (c.movimenti || []).map(m => "<li><span>" + (TIPI[m.tipo] || m.tipo) + "</span><span>" + quando(m.creato_il) + "</span></li>").join("");
+}
+
+async function azione(fn, okMsg) {
+  if (busy || !corrente) return;
+  busy = true; document.querySelectorAll("#cliente-panel .btn").forEach(b => b.disabled = true);
+  try { const prima = corrente.timbri; corrente = await fn(corrente.numero); renderCliente(corrente.timbri > prima); toast(okMsg(corrente)); }
+  catch (e) { toast(msg(e)); if (e.code === "non_autorizzato") esci(); }
+  finally {
+    busy = false;
+    document.querySelectorAll("#cliente-panel .btn").forEach(b => b.disabled = false);
+    if (corrente) $("btn-annulla").disabled = corrente.timbri <= 0;
+  }
+}
+$("btn-timbro").addEventListener("click", () => {
+  const full = corrente.timbri >= (corrente.obiettivo || 10);
+  if (full) {
+    if (!confirm("Confermi la consegna del premio a " + corrente.nome + "? La raccolta ripartirà da zero.")) return;
+    azione(API.premio, () => "Premio consegnato 🎁");
+  } else {
+    azione(API.timbro, (c) => c.timbri >= (c.obiettivo || 10) ? "Tessera completa! Premio sbloccato 🎁" : "Timbro aggiunto ☕ (" + c.timbri + "/" + (c.obiettivo || 10) + ")");
+  }
+});
+$("btn-annulla").addEventListener("click", () => {
+  if (!confirm("Togliere un timbro a " + corrente.nome + "?")) return;
+  azione(API.annulla, () => "Timbro tolto");
+});
+$("btn-nuova").addEventListener("click", () => {
+  corrente = null; $("cliente-panel").hidden = true; $("scan-panel").hidden = false; apriCamera();
+});
+$("btn-elimina").addEventListener("click", async () => {
+  if (!confirm("Eliminare DEFINITIVAMENTE la tessera di " + corrente.nome + " " + corrente.cognome + "? (es. richiesta di cancellazione dati)")) return;
+  try { await API.eliminaCliente(corrente.numero); toast("Cliente eliminato"); corrente = null; $("cliente-panel").hidden = true; $("scan-panel").hidden = false; }
+  catch (e) { toast(msg(e)); }
+});
+$("btn-recupero").addEventListener("click", () => {
+  const url = new URL("index.html?t=" + encodeURIComponent(corrente.token), location.href).href;
+  try { const q = qrcode(0, "M"); q.addData(url); q.make(); $("rec-qr").innerHTML = q.createSvgTag({ cellSize: 5, margin: 0, scalable: true }); }
+  catch (e) { $("rec-qr").textContent = url; }
+  $("modal").classList.add("open");
+});
+$("modal-close").addEventListener("click", () => $("modal").classList.remove("open"));
+$("modal").addEventListener("click", (e) => { if (e.target.id === "modal") $("modal").classList.remove("open"); });
+
+async function esci() { fermaCamera(); await API.logout(); mostra("login"); $("login-err").textContent = "Sessione scaduta: accedi di nuovo."; }
+
+/* ================= PANNELLO CLIENTI ================= */
+let pannello = null;
+async function caricaPannello() {
+  $("lista").innerHTML = '<li class="empty">Caricamento…</li>';
+  try { pannello = await API.pannello(); renderPannello(); }
+  catch (e) { $("lista").innerHTML = '<li class="empty">' + esc(msg(e)) + "</li>"; if (e.code === "non_autorizzato") esci(); }
+}
+function renderPannello() {
+  const s = pannello.stats, n = pannello.obiettivo;
+  const tiles = [["Clienti", s.clienti], ["Nuovi 30 gg", s.nuovi_30gg], ["Premi totali", s.premi_totali], ["Timbri oggi", s.timbri_oggi], ["Timbri 7 gg", s.timbri_7gg], ["Premi oggi", s.premi_oggi]];
+  $("stats").innerHTML = tiles.map(t => '<div class="stat"><b>' + t[1] + "</b><span>" + t[0] + "</span></div>").join("");
+
+  const mese = new Date().getMonth() + 1, oggiG = new Date().getDate();
+  const bd = pannello.clienti.filter(c => c.nascita && Number(c.nascita.split("-")[1]) === mese)
+    .sort((a, b) => Number(a.nascita.split("-")[2]) - Number(b.nascita.split("-")[2]));
+  $("bday-panel").hidden = bd.length === 0;
+  $("bday-list").innerHTML = bd.map(c => {
+    const g = Number(c.nascita.split("-")[2]);
+    return '<li data-num="' + esc(c.numero) + '"><div><div class="n">' + esc(c.nome + " " + c.cognome) + '</div><div class="s">' + esc(c.numero) + '</div></div><div class="t' + (g === oggiG ? " full" : "") + '">' + (g === oggiG ? "OGGI 🎉" : g + "/" + mese) + "</div></li>";
+  }).join("");
+  renderLista();
+}
+function renderLista() {
+  if (!pannello) return;
+  const q = $("search").value.trim().toLowerCase(), qn = q.replace(/[^0-9]/g, "");
+  const n = pannello.obiettivo;
+  const l = pannello.clienti.filter(c => !q || (c.nome + " " + c.cognome).toLowerCase().includes(q) || (qn && c.numero.replace(/[^0-9]/g, "").includes(qn)));
+  $("lista").innerHTML = l.length ? l.slice(0, 300).map(c =>
+    '<li data-num="' + esc(c.numero) + '"><div><div class="n">' + esc(c.nome + " " + c.cognome) + '</div><div class="s">' + esc(c.numero) + " · ultima visita " + quando(c.ultimo_timbro) + '</div></div><div class="t' + (c.timbri >= n ? " full" : "") + '">' + (c.timbri >= n ? "🎁 " : "") + c.timbri + "/" + n + "</div></li>"
+  ).join("") : '<li class="empty">' + (pannello.clienti.length ? "Nessun risultato" : "Ancora nessun cliente. Condividi il link della tessera!") + "</li>";
+}
+$("search").addEventListener("input", renderLista);
+[$("lista"), $("bday-list")].forEach(el => el.addEventListener("click", (e) => {
+  const li = e.target.closest("li[data-num]"); if (li) apriCliente(li.dataset.num);
+}));
+$("btn-csv").addEventListener("click", () => {
+  if (!pannello) return;
+  const righe = [["Numero", "Nome", "Cognome", "Data di nascita", "Timbri attuali", "Timbri totali", "Premi", "Iscritto il", "Ultimo timbro"]]
+    .concat(pannello.clienti.map(c => [c.numero, c.nome, c.cognome, c.nascita || "", c.timbri, c.timbri_totali, c.premi,
+      new Date(c.creato_il).toLocaleDateString("it-IT"), c.ultimo_timbro ? new Date(c.ultimo_timbro).toLocaleString("it-IT") : ""]));
+  const csv = "﻿" + righe.map(r => r.map(v => '"' + String(v).replace(/"/g, '""') + '"').join(";")).join("\r\n");
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(new Blob([csv], { type: "text/csv;charset=utf-8" }));
+  a.download = "clienti-pradio-" + new Date().toISOString().slice(0, 10) + ".csv";
+  document.body.appendChild(a); a.click(); a.remove();
+});
+
+/* ================= AVVIO ================= */
+$("demo-bar").hidden = !API.demo;
+if (API.demo) $("l-email").value = "staff@barpradio.demo";
+document.addEventListener("visibilitychange", () => { if (document.visibilityState === "hidden") fermaCamera(); });
+if ("serviceWorker" in navigator && location.protocol === "https:") navigator.serviceWorker.register("sw.js").catch(() => {});
+(async () => { const s = await API.sessione(); s ? entra(s) : mostra("login"); })();
+</script>
+</body>
+</html>

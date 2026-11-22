@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Privacy Tessera Pradio</title>
+<meta name="theme-color" content="#7a1f1c">
+<link rel="icon" type="image/png" href="icons/icon-192.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Marcellus&family=Josefin+Sans:wght@300;400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+<style>
+  .doc h2 { margin-top: 22px; font-size: 1.1rem; }
+  .doc p, .doc li { color: var(--ink); font-size: .95rem; }
+  .doc ul { padding-left: 20px; }
+  .fill { background: var(--accent-soft); padding: 0 4px; border-radius: 4px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top"><a href="index.html"><img src="logo.png" alt="Pradio – Bar, Pasticceria, Gelati" width="410" height="403"></a></header>
+  <h1>Informativa privacy</h1>
+  <p class="lead">Tessera fedeltà digitale · art. 13 Regolamento UE 2016/679 (GDPR)</p>
+
+  <div class="panel doc">
+    <h2>Titolare del trattamento</h2>
+    <p id="titolare"></p>
+
+    <h2>Quali dati raccogliamo</h2>
+    <ul>
+      <li>Nome e cognome;</li>
+      <li>data di nascita (facoltativa, solo per la sorpresa di compleanno);</li>
+      <li>numero della tessera, timbri raccolti, premi ritirati e data/ora di ogni timbro.</li>
+    </ul>
+    <p>Non raccogliamo email, telefono, posizione né dati di pagamento.</p>
+
+    <h2>Perché li usiamo</h2>
+    <p>Esclusivamente per gestire la tessera fedeltà: riconoscerti alla cassa, registrare i timbri, consegnarti i premi e la sorpresa di compleanno. La base giuridica è il tuo consenso e l'adesione al programma fedeltà (art. 6.1 lett. a e b GDPR). I dati non vengono venduti né ceduti a terzi e non sono usati per pubblicità.</p>
+
+    <h2>Dove sono conservati</h2>
+    <p>I dati sono salvati su un database gestito da Supabase Inc. (fornitore del servizio, nominato responsabile del trattamento) su server nell'Unione Europea. Sul tuo telefono resta solo un codice segreto che collega il browser alla tua tessera.</p>
+
+    <h2>Per quanto tempo</h2>
+    <p>Finché la tessera è attiva. Le tessere non utilizzate per 24 mesi vengono cancellate.</p>
+
+    <h2>I tuoi diritti</h2>
+    <p>Puoi in qualsiasi momento vedere, correggere o cancellare i tuoi dati: il nome si modifica dalla tessera, e con <b>"Elimina tessera"</b> cancelli subito e definitivamente tutti i tuoi dati. Puoi anche chiederlo al bar di persona<span id="email-txt"></span>. Hai inoltre diritto di proporre reclamo al Garante per la protezione dei dati personali (www.garanteprivacy.it).</p>
+  </div>
+
+  <div class="footer-actions"><a class="link-btn" href="index.html">← Torna alla tessera</a></div>
+  <footer class="copy">Bar Pradio · Badalucco</footer>
+</div>
+<script src="config.js"></script>
+<script>
+  const C = window.PRADIO_CONFIG || {};
+  const esc = (s) => String(s).replace(/[&<>"']/g, c => ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;" }[c]));
+  document.getElementById("titolare").innerHTML = C.titolareTrattamento
+    ? esc(C.titolareTrattamento)
+    : '<span class="fill">[Da completare in config.js: ragione sociale, P.IVA e indirizzo del Bar Pradio]</span>';
+  if (C.emailPrivacy) document.getElementById("email-txt").innerHTML =
+    ' o scrivendo a <a class="privacy-link" href="mailto:' + esc(C.emailPrivacy) + '">' + esc(C.emailPrivacy) + "</a>";
+</script>
+</body>
+</html>

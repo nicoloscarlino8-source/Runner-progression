@@ -3,6 +3,7 @@
   "short_name": "Bar Pradio",
   "description": "La tessera fedeltà digitale del Bar Pradio di Badalucco",
   "lang": "it",
+  "id": "./",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",

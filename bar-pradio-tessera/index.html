@@ -15,216 +15,41 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Marcellus&family=Josefin+Sans:wght@300;400;600&display=swap" rel="stylesheet">
-<style>
-  :root {
-    --bg: #fbf5ec;
-    --surface: #ffffff;
-    --ink: #3b2219;
-    --ink-soft: #7a5b4d;
-    --line: #e8d9c6;
-    --brand: #7a1f1c;      /* rosso scuro degli archi */
-    --brand-2: #a8322a;
-    --accent: #e8892b;     /* arancio del vapore */
-    --accent-soft: #fbe3c8;
-    --gold: #b5622f;       /* marrone/rame della scritta */
-    --shadow: 0 10px 30px rgba(90, 30, 20, .14);
-  }
-  @media (prefers-color-scheme: dark) {
-    :root:not([data-theme="light"]) {
-      --bg: #1c1310;
-      --surface: #281b16;
-      --ink: #f6e9dc;
-      --ink-soft: #c9ab98;
-      --line: #3e2b23;
-      --accent-soft: #4a2e1a;
-      --shadow: 0 10px 30px rgba(0, 0, 0, .45);
-    }
-  }
-  :root[data-theme="dark"] {
-    --bg: #1c1310; --surface: #281b16; --ink: #f6e9dc; --ink-soft: #c9ab98;
-    --line: #3e2b23; --accent-soft: #4a2e1a; --shadow: 0 10px 30px rgba(0,0,0,.45);
-  }
-
-  * { box-sizing: border-box; }
-  html, body { margin: 0; }
-  body {
-    background: var(--bg);
-    color: var(--ink);
-    font-family: "Josefin Sans", system-ui, sans-serif;
-    font-size: 16px;
-    line-height: 1.5;
-    -webkit-font-smoothing: antialiased;
-    padding: env(safe-area-inset-top) 0 env(safe-area-inset-bottom);
-  }
-  .wrap { max-width: 460px; margin: 0 auto; padding: 20px 16px 48px; }
-
-  header.top { text-align: center; padding: 8px 0 18px; }
-  header.top img { width: 120px; height: auto; display: block; margin: 0 auto; }
-  @media (prefers-color-scheme: dark) {
-    :root:not([data-theme="light"]) header.top img { background: #fbf5ec; border-radius: 18px; padding: 10px; }
-  }
-  :root[data-theme="dark"] header.top img { background: #fbf5ec; border-radius: 18px; padding: 10px; }
-
-  h1, h2, .serif { font-family: "Marcellus", Georgia, serif; font-weight: 400; }
-  h1 { font-size: 1.7rem; margin: 0 0 6px; color: var(--gold); text-align: center; }
-  h2 { font-size: 1.25rem; margin: 0 0 12px; color: var(--gold); }
-  .lead { text-align: center; color: var(--ink-soft); margin: 0 0 22px; }
-
-  .panel {
-    background: var(--surface);
-    border: 1px solid var(--line);
-    border-radius: 18px;
-    padding: 20px;
-    margin-top: 18px;
-    box-shadow: var(--shadow);
-  }
-
-  /* ---------- Form ---------- */
-  label { display: block; font-size: .85rem; letter-spacing: .06em; text-transform: uppercase; color: var(--ink-soft); margin: 14px 0 6px; }
-  input[type=text], input[type=tel], input[type=password], input[type=date] {
-    width: 100%; font: inherit; font-size: 1rem; color: var(--ink);
-    background: var(--bg); border: 1px solid var(--line); border-radius: 12px;
-    padding: 13px 14px; outline: none;
-  }
-  input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 25%, transparent); }
-  .check { display: flex; gap: 10px; align-items: flex-start; margin-top: 16px; font-size: .9rem; color: var(--ink-soft); text-transform: none; letter-spacing: 0; }
-  .check input { margin-top: 3px; accent-color: var(--brand); width: 18px; height: 18px; flex: none; }
-
-  .btn {
-    display: inline-flex; align-items: center; justify-content: center; gap: 8px;
-    width: 100%; font: inherit; font-weight: 600; font-size: 1rem; letter-spacing: .08em; text-transform: uppercase;
-    border: 0; border-radius: 14px; padding: 15px 18px; cursor: pointer;
-    background: linear-gradient(135deg, var(--brand), var(--brand-2)); color: #fff;
-    margin-top: 20px; transition: transform .1s ease, opacity .2s;
-  }
-  .btn:active { transform: scale(.98); }
-  .btn.ghost { background: transparent; color: var(--brand-2); border: 1px solid var(--line); }
-  .btn.accent { background: linear-gradient(135deg, var(--accent), #d36a1c); }
-  .btn.small { width: auto; padding: 10px 14px; font-size: .8rem; margin: 0; }
-  .err { color: #c0392b; font-size: .9rem; margin-top: 10px; min-height: 1.2em; }
-
-  /* ---------- Tessera ---------- */
-  .card {
-    position: relative; overflow: hidden;
-    aspect-ratio: 1.586 / 1;
-    border-radius: 20px; padding: 20px 22px;
-    color: #fff;
-    background:
-      radial-gradient(120% 90% at 100% 0%, rgba(232,137,43,.55) 0%, rgba(232,137,43,0) 55%),
-      linear-gradient(140deg, #5e1513 0%, #7a1f1c 45%, #a8322a 100%);
-    box-shadow: 0 18px 40px rgba(94, 21, 19, .38);
-    display: flex; flex-direction: column; justify-content: space-between;
-  }
-  .card::before, .card::after {         /* archi che richiamano la tazzina del logo */
-    content: ""; position: absolute; border-radius: 50%;
-    border: 2px solid rgba(255,255,255,.12); border-top-color: transparent;
-    left: 50%; transform: translateX(-50%);
-  }
-  .card::before { width: 140%; aspect-ratio: 1; bottom: -112%; }
-  .card::after  { width: 110%; aspect-ratio: 1; bottom: -92%; border-color: rgba(232,137,43,.28); border-top-color: transparent; }
-  .card .row { display: flex; justify-content: space-between; align-items: flex-start; position: relative; z-index: 1; }
-  .card .brand { font-family: "Marcellus", serif; font-size: 1.7rem; letter-spacing: .08em; line-height: 1; }
-  .card .brand small { display: block; font-family: "Josefin Sans", sans-serif; font-size: .56rem; letter-spacing: .18em; margin-top: 6px; opacity: .85; white-space: nowrap; }
-  .card .tag { font-size: .62rem; letter-spacing: .22em; text-transform: uppercase; background: rgba(255,255,255,.14); padding: 5px 9px; border-radius: 999px; white-space: nowrap; }
-  .card .name { font-family: "Marcellus", serif; font-size: 1.35rem; letter-spacing: .04em; line-height: 1.15; word-break: break-word; }
-  .card .meta { display: flex; justify-content: space-between; align-items: flex-end; gap: 12px; position: relative; z-index: 1; }
-  .card .meta span { display: block; font-size: .58rem; letter-spacing: .2em; text-transform: uppercase; opacity: .7; }
-  .card .meta b { font-weight: 600; font-size: .95rem; letter-spacing: .1em; font-variant-numeric: tabular-nums; }
-  .card .steam { position: absolute; right: 18px; bottom: 50%; width: 46px; opacity: .22; z-index: 0; }
-
-  .qr-box { text-align: center; }
-  .qr {
-    display: inline-block; background: #fff; padding: 14px; border-radius: 16px;
-    border: 1px solid var(--line); line-height: 0;
-  }
-  .qr svg { width: 210px; height: 210px; display: block; }
-  .qr-hint { color: var(--ink-soft); font-size: .9rem; margin: 12px 0 0; }
-  .code-txt { font-weight: 600; letter-spacing: .18em; font-size: 1.05rem; margin-top: 4px; color: var(--ink); }
-
-  /* ---------- Timbri ---------- */
-  .stamps { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; margin: 6px 0 4px; }
-  .stamp {
-    aspect-ratio: 1; border-radius: 50%;
-    border: 2px dashed var(--line); display: grid; place-items: center;
-    color: var(--line); transition: all .25s ease;
-  }
-  .stamp svg { width: 58%; height: 58%; }
-  .stamp.on { border: 2px solid var(--brand-2); background: var(--accent-soft); color: var(--brand-2); }
-  .stamp.on.pop { animation: pop .45s ease; }
-  .stamp.gift { border-style: solid; border-color: var(--accent); color: var(--accent); }
-  @keyframes pop { 0% { transform: scale(.4); } 70% { transform: scale(1.15); } 100% { transform: scale(1); } }
-  .stamp-head { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; }
-  .stamp-count { font-weight: 600; color: var(--brand-2); white-space: nowrap; }
-  .reward {
-    display: none; margin-top: 14px; padding: 14px; border-radius: 14px; text-align: center;
-    background: var(--accent-soft); color: var(--ink); border: 1px solid var(--accent);
-  }
-  .reward.show { display: block; }
-  .reward strong { font-family: "Marcellus", serif; font-weight: 400; font-size: 1.2rem; color: var(--brand-2); display: block; }
-  .muted { color: var(--ink-soft); font-size: .9rem; }
-
-  /* ---------- Vantaggi ---------- */
-  ul.perks { list-style: none; padding: 0; margin: 0; }
-  ul.perks li { display: flex; gap: 12px; padding: 12px 0; border-top: 1px solid var(--line); }
-  ul.perks li:first-child { border-top: 0; padding-top: 0; }
-  ul.perks .ico { flex: none; width: 36px; height: 36px; border-radius: 10px; background: var(--accent-soft); display: grid; place-items: center; font-size: 1.1rem; }
-  ul.perks b { display: block; font-weight: 600; }
-  ul.perks small { color: var(--ink-soft); font-size: .88rem; }
-
-  .info a { color: var(--brand-2); text-decoration: none; font-weight: 600; }
-  .info p { margin: 6px 0; }
-
-  .install ol { margin: 8px 0 0; padding-left: 20px; color: var(--ink-soft); }
-  .install li { margin: 4px 0; }
-
-  .footer-actions { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; margin-top: 24px; }
-  .link-btn { background: none; border: 0; font: inherit; color: var(--ink-soft); text-decoration: underline; cursor: pointer; font-size: .88rem; padding: 6px; }
-  footer.copy { text-align: center; color: var(--ink-soft); font-size: .78rem; letter-spacing: .14em; text-transform: uppercase; margin-top: 26px; }
-
-  /* ---------- Modale staff ---------- */
-  .modal { position: fixed; inset: 0; background: rgba(30, 10, 8, .55); display: none; align-items: flex-end; justify-content: center; z-index: 50; padding: 16px; }
-  .modal.open { display: flex; }
-  .sheet { background: var(--surface); width: 100%; max-width: 460px; border-radius: 20px; padding: 22px 20px 20px; box-shadow: var(--shadow); animation: up .25s ease; }
-  @keyframes up { from { transform: translateY(30px); opacity: 0; } to { transform: none; opacity: 1; } }
-  .sheet .actions { display: flex; gap: 10px; margin-top: 16px; }
-  .sheet .actions .btn { margin: 0; }
-  .pin { text-align: center; letter-spacing: .6em; font-size: 1.4rem !important; }
-
-  .toast { position: fixed; left: 50%; bottom: calc(24px + env(safe-area-inset-bottom)); transform: translate(-50%, 30px); opacity: 0; background: var(--ink); color: var(--bg); padding: 12px 18px; border-radius: 999px; font-size: .92rem; transition: all .3s ease; z-index: 60; max-width: calc(100% - 32px); text-align: center; }
-  .toast.show { opacity: 1; transform: translate(-50%, 0); }
-
-  [hidden] { display: none !important; }
-</style>
+<link rel="stylesheet" href="style.css">
 </head>
 <body>
+<div class="demo-bar" id="demo-bar" hidden>Modalità demo · i dati restano su questo dispositivo · <a href="cassa.html">Apri la Cassa</a></div>
 <div class="wrap">
   <header class="top">
     <img src="logo.png" alt="Pradio – Bar, Pasticceria, Gelati" width="410" height="403">
   </header>
 
+  <div class="spinner" id="loading" aria-label="Caricamento"></div>
+
   <!-- ================= REGISTRAZIONE ================= -->
   <section id="view-signup" hidden>
     <h1>La tua tessera digitale</h1>
     <p class="lead">Attivala in 30 secondi: raccogli timbri ad ogni consumazione e scopri i vantaggi riservati ai clienti del Bar Pradio.</p>
+    <div class="banner" id="signup-msg" hidden></div>
     <form class="panel" id="signup-form" novalidate>
       <label for="f-nome">Nome</label>
-      <input type="text" id="f-nome" autocomplete="given-name" required>
+      <input type="text" id="f-nome" autocomplete="given-name" maxlength="60" required>
       <label for="f-cognome">Cognome</label>
-      <input type="text" id="f-cognome" autocomplete="family-name" required>
+      <input type="text" id="f-cognome" autocomplete="family-name" maxlength="60" required>
       <label for="f-nascita">Data di nascita <span style="text-transform:none;letter-spacing:0">(facoltativa · per la sorpresa di compleanno)</span></label>
       <input type="date" id="f-nascita" autocomplete="bday">
       <label class="check">
         <input type="checkbox" id="f-privacy" required>
-        <span>Ho letto l'informativa: i miei dati restano salvati solo su questo telefono e servono a mostrare la tessera alla cassa.</span>
+        <span>Ho letto l'<a href="privacy.html" class="privacy-link" target="_blank">informativa privacy</a> e acconsento al trattamento dei miei dati per la tessera fedeltà.</span>
       </label>
       <div class="err" id="signup-err" role="alert"></div>
-      <button class="btn" type="submit">Crea la mia tessera</button>
+      <button class="btn" type="submit" id="btn-signup">Crea la mia tessera</button>
     </form>
   </section>
 
   <!-- ================= TESSERA ================= -->
   <section id="view-card" hidden>
-    <div class="card" id="card" aria-label="Tessera fedeltà">
+    <div class="card" aria-label="Tessera fedeltà">
       <div class="row">
         <div class="brand">PRADIO<small>BAR · PASTICCERIA · GELATI</small></div>
         <div class="tag" id="card-season">Tessera</div>
@@ -233,16 +58,15 @@
         <path d="M20 58 C 6 46, 34 38, 18 26 C 6 16, 26 6, 32 4"/>
       </svg>
       <div class="meta">
-        <div>
-          <span>Titolare</span>
-          <div class="name" id="card-name"></div>
-        </div>
+        <div><span>Titolare</span><div class="name" id="card-name"></div></div>
       </div>
       <div class="meta">
         <div><span>N° tessera</span><b id="card-num"></b></div>
         <div style="text-align:right"><span>Cliente dal</span><b id="card-since"></b></div>
       </div>
     </div>
+
+    <div class="banner" id="bday" hidden><strong>Buon compleanno! 🎂</strong>Passa al bar: oggi c'è una sorpresa per te.</div>
 
     <div class="panel qr-box">
       <div class="qr" id="qr"></div>
@@ -259,10 +83,12 @@
       <div class="stamps" id="stamps"></div>
       <div class="reward" id="reward">
         <strong>Hai completato la tessera!</strong>
-        <span id="reward-txt"></span>
+        <span id="reward-txt"></span><br>
+        <span class="muted">Mostra il QR alla cassa per ritirare il premio.</span>
       </div>
-      <button class="btn ghost" id="btn-staff" type="button">Area staff · aggiungi timbro</button>
-      <p class="muted" style="text-align:center;margin:10px 0 0" id="redeemed-info"></p>
+      <p class="muted" style="text-align:center;margin:14px 0 0" id="stamp-hint">Fai inquadrare il QR alla cassa: il timbro comparirà qui in automatico.</p>
+      <p class="muted" style="text-align:center;margin:6px 0 0" id="redeemed-info"></p>
+      <div class="status" id="status"></div>
     </div>
 
     <div class="panel">
@@ -277,7 +103,7 @@
 
     <div class="panel install" id="install-panel">
       <h2>Tienila sempre a portata di mano</h2>
-      <p class="muted" style="margin:0">Aggiungi la tessera alla schermata Home: si apre come un'app, anche senza connessione.</p>
+      <p class="muted" style="margin:0">Aggiungi la tessera alla schermata Home: si apre come un'app.</p>
       <button class="btn accent" id="btn-install" type="button" hidden>Aggiungi alla Home</button>
       <div id="install-ios" hidden>
         <ol>
@@ -296,6 +122,7 @@
 
     <div class="footer-actions">
       <button class="link-btn" id="btn-edit" type="button">Modifica nome</button>
+      <a class="link-btn" href="privacy.html">Privacy</a>
       <button class="link-btn" id="btn-delete" type="button">Elimina tessera</button>
     </div>
   </section>
@@ -303,213 +130,195 @@
   <footer class="copy">Bar Pradio · Badalucco</footer>
 </div>
 
-<!-- Modale area staff -->
-<div class="modal" id="modal" role="dialog" aria-modal="true" aria-labelledby="modal-title">
-  <div class="sheet">
-    <h2 id="modal-title">Area staff</h2>
-    <p class="muted" id="modal-txt" style="margin:0">Inserisci il PIN del bar per confermare.</p>
-    <input type="password" inputmode="numeric" class="pin" id="pin" maxlength="8" autocomplete="off" aria-label="PIN staff" style="margin-top:14px">
-    <div class="err" id="pin-err" role="alert"></div>
-    <div class="actions">
-      <button class="btn ghost" type="button" id="modal-cancel">Annulla</button>
-      <button class="btn" type="button" id="modal-ok">Conferma</button>
-    </div>
-  </div>
-</div>
-
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
-<script src="qrcode.js"></script>
+<script src="config.js"></script>
+<script src="vendor/supabase.js"></script>
+<script src="vendor/qrcode.js"></script>
+<script src="api.js"></script>
 <script>
-/* =====================================================================
-   CONFIGURAZIONE – modifica qui i dati del bar
-   ===================================================================== */
-const CONFIG = {
-  stagione: "2025/26",                 // etichetta in alto a destra sulla tessera
-  timbriPerPremio: 10,                 // quanti timbri servono per il premio
-  premio: "Il prossimo caffè (o cappuccino) te lo offriamo noi!",
-  regola: "Un timbro ogni colazione o consumazione al bancone.",
-  pinStaff: "2024",                    // ⚠️ CAMBIARE prima di pubblicare
-  indirizzo: "Badalucco (IM)",
-  mappa: "https://maps.google.com/?q=Bar+Pradio+Badalucco",
-  telefono: "",                        // es. "+39 0184 000000"
-  instagram: "",                       // es. "barpradio"
-  orari: "",                           // es. "Tutti i giorni 6:30 – 20:00 · Chiuso il mercoledì"
-  vantaggi: [
-    { ico: "☕", titolo: "Caffè omaggio", testo: "Completa la raccolta timbri e il prossimo è offerto da noi." },
-    { ico: "🎂", titolo: "Sorpresa di compleanno", testo: "Nel giorno del tuo compleanno una pasta o un gelato in omaggio." },
-    { ico: "🍰", titolo: "-10% su torte su ordinazione", testo: "Per i titolari della tessera, su tutte le torte della nostra pasticceria." },
-    { ico: "🍨", titolo: "Gusti in anteprima", testo: "Assaggia per primo i nuovi gusti di gelato della stagione." }
-  ]
-};
-
-/* ===================================================================== */
-const KEY = "pradio-tessera-v1";
+const CFG = window.PRADIO_CONFIG;
+const API = PradioAPI.crea({ staff: false });
+const TKEY = "pradio-tessera-token", CKEY = "pradio-tessera-cache";
 const $ = (id) => document.getElementById(id);
+const ls = {
+  get(k) { try { return localStorage.getItem(k); } catch (e) { return null; } },
+  set(k, v) { try { localStorage.setItem(k, v); return true; } catch (e) { return false; } },
+  del(k) { try { localStorage.removeItem(k); } catch (e) {} }
+};
+const esc = (s) => String(s ?? "").replace(/[&<>"']/g, c => ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;" }[c]));
 
-function load() {
-  try { return JSON.parse(localStorage.getItem(KEY)) || null; } catch (e) { return null; }
-}
-function save(d) {
-  try { localStorage.setItem(KEY, JSON.stringify(d)); return true; } catch (e) { return false; }
-}
-function clear() { try { localStorage.removeItem(KEY); } catch (e) {} }
-
-let data = load();
-
-function newCardNumber() {
-  const a = new Uint32Array(2);
-  (window.crypto || window.msCrypto).getRandomValues(a);
-  const n = String(a[0] % 100000000).padStart(8, "0");
-  return "PRD-" + n.slice(0, 4) + "-" + n.slice(4);
-}
-function fmtDate(iso) {
-  try { return new Date(iso).toLocaleDateString("it-IT", { month: "2-digit", year: "numeric" }); }
-  catch (e) { return ""; }
-}
-function esc(s) { return String(s).replace(/[&<>"']/g, c => ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;" }[c])); }
+let token = ls.get(TKEY);
+let card = null;
+try { card = JSON.parse(ls.get(CKEY)); } catch (e) {}
 
 function toast(msg) {
   const t = $("toast"); t.textContent = msg; t.classList.add("show");
-  clearTimeout(toast._t); toast._t = setTimeout(() => t.classList.remove("show"), 2600);
+  clearTimeout(toast._t); toast._t = setTimeout(() => t.classList.remove("show"), 2800);
 }
+function fmtMese(iso) {
+  try { return new Date(iso).toLocaleDateString("it-IT", { month: "2-digit", year: "numeric" }); } catch (e) { return ""; }
+}
+function isCompleanno(nascita) {
+  if (!nascita) return false;
+  const [, m, d] = nascita.split("-").map(Number), o = new Date();
+  return o.getMonth() + 1 === m && o.getDate() === d;
+}
+
+/* ---------- Link di recupero (?t=...) dato dal bar ---------- */
+(function recupero() {
+  const p = new URLSearchParams(location.search), t = p.get("t");
+  if (t && /^[0-9a-f-]{20,40}$/i.test(t)) {
+    token = t; ls.set(TKEY, t); ls.del(CKEY); card = null;
+    history.replaceState(null, "", location.pathname);
+  }
+})();
 
 /* ---------- Viste ---------- */
-function show() {
-  $("view-signup").hidden = !!data;
-  $("view-card").hidden = !data;
-  if (data) renderCard();
+function mostra(vista) {
+  $("loading").hidden = vista !== "loading";
+  $("view-signup").hidden = vista !== "signup";
+  $("view-card").hidden = vista !== "card";
 }
 
-function renderCard() {
-  $("card-season").textContent = "Tessera " + CONFIG.stagione;
-  $("card-name").textContent = (data.nome + " " + data.cognome).toUpperCase();
-  $("card-num").textContent = data.numero;
-  $("card-since").textContent = fmtDate(data.creata);
-  $("qr-code-txt").textContent = data.numero;
+function renderCard(prev) {
+  $("card-season").textContent = "Tessera " + CFG.stagione;
+  $("card-name").textContent = (card.nome + " " + card.cognome).toUpperCase();
+  $("card-num").textContent = card.numero;
+  $("card-since").textContent = fmtMese(card.creato_il);
+  $("qr-code-txt").textContent = card.numero;
+  $("bday").hidden = !isCompleanno(card.nascita);
 
-  // QR code: contiene numero tessera + nome, leggibile da qualsiasi lettore
-  try {
-    const qr = qrcode(0, "M");
-    qr.addData("PRADIO|" + data.numero + "|" + data.nome + " " + data.cognome);
-    qr.make();
-    $("qr").innerHTML = qr.createSvgTag({ cellSize: 6, margin: 0, scalable: true });
-  } catch (e) { $("qr").textContent = data.numero; }
-
-  renderStamps();
-  renderPerks();
-  renderInfo();
+  if ($("qr").dataset.num !== card.numero) {
+    try {
+      const qr = qrcode(0, "M");
+      qr.addData(card.numero);
+      qr.make();
+      $("qr").innerHTML = qr.createSvgTag({ cellSize: 6, margin: 0, scalable: true });
+      $("qr").dataset.num = card.numero;
+    } catch (e) { $("qr").textContent = card.numero; }
+  }
+  renderStamps(prev);
 }
 
 const CUP = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9h12v5a5 5 0 0 1-5 5H9a5 5 0 0 1-5-5V9z"/><path d="M16 11h1.5a2.5 2.5 0 0 1 0 5H16"/><path d="M9 3c-1 1 1 2 0 3.5M12.5 3c-1 1 1 2 0 3.5"/></svg>';
 const GIFT = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="9" width="18" height="12" rx="1.5"/><path d="M3 13h18M12 9v12"/><path d="M12 9C9 9 7 7.5 8 5.5S12 6 12 9zM12 9c3 0 5-1.5 4-3.5S12 6 12 9z"/></svg>';
 
-function renderStamps(popIndex) {
-  const n = CONFIG.timbriPerPremio, have = Math.min(data.timbri || 0, n);
-  $("stamp-rule").textContent = CONFIG.regola;
+function renderStamps(prev) {
+  const n = card.obiettivo || 10, have = Math.min(card.timbri || 0, n);
+  const nuovi = prev && prev.numero === card.numero && have > prev.timbri ? have - prev.timbri : 0;
+  $("stamp-rule").textContent = CFG.regola;
   $("stamp-count").textContent = have + " / " + n;
   let html = "";
   for (let i = 0; i < n; i++) {
-    const last = i === n - 1;
-    const on = i < have;
-    html += '<div class="stamp' + (on ? " on" : "") + (last && !on ? " gift" : "") + (i === popIndex ? " pop" : "") + '">' + (last ? GIFT : CUP) + "</div>";
+    const last = i === n - 1, on = i < have, pop = nuovi && i >= have - nuovi && i < have;
+    html += '<div class="stamp' + (on ? " on" : "") + (last && !on ? " gift" : "") + (pop ? " pop" : "") + '">' + (last ? GIFT : CUP) + "</div>";
   }
   $("stamps").innerHTML = html;
+  $("stamps").style.gridTemplateColumns = "repeat(" + (n <= 6 ? n : Math.ceil(n / 2)) + ", 1fr)";
   const full = have >= n;
   $("reward").classList.toggle("show", full);
-  $("reward-txt").textContent = CONFIG.premio;
-  $("btn-staff").textContent = full ? "Area staff · riscatta premio" : "Area staff · aggiungi timbro";
-  $("redeemed-info").textContent = data.premiRiscattati ? "Premi già riscattati: " + data.premiRiscattati : "";
+  $("stamp-hint").hidden = full;
+  $("reward-txt").textContent = CFG.premio;
+  $("redeemed-info").textContent = card.premi ? "Premi già ritirati: " + card.premi : "";
+
+  if (nuovi) {
+    toast(full ? "Tessera completa! Premio sbloccato 🎁" : "Timbro aggiunto ☕ Grazie!");
+    if (navigator.vibrate) try { navigator.vibrate(60); } catch (e) {}
+  } else if (prev && prev.numero === card.numero && card.premi > prev.premi) {
+    toast("Premio ritirato, buona pausa! 🧡");
+  }
 }
 
-function renderPerks() {
-  $("perks").innerHTML = CONFIG.vantaggi.map(v =>
-    '<li><div class="ico" aria-hidden="true">' + v.ico + '</div><div><b>' + esc(v.titolo) + '</b><small>' + esc(v.testo) + '</small></div></li>'
+function renderStatico() {
+  $("perks").innerHTML = (CFG.vantaggi || []).map(v =>
+    '<li><div class="ico" aria-hidden="true">' + esc(v.ico) + '</div><div><b>' + esc(v.titolo) + '</b><small>' + esc(v.testo) + '</small></div></li>'
   ).join("");
-}
-
-function renderInfo() {
   const rows = [];
-  if (CONFIG.indirizzo) rows.push('<p>📍 ' + (CONFIG.mappa ? '<a href="' + esc(CONFIG.mappa) + '" target="_blank" rel="noopener">' + esc(CONFIG.indirizzo) + '</a>' : esc(CONFIG.indirizzo)) + '</p>');
-  if (CONFIG.orari) rows.push('<p>🕒 ' + esc(CONFIG.orari) + '</p>');
-  if (CONFIG.telefono) rows.push('<p>📞 <a href="tel:' + esc(CONFIG.telefono.replace(/\s/g, "")) + '">' + esc(CONFIG.telefono) + '</a></p>');
-  if (CONFIG.instagram) rows.push('<p>📷 <a href="https://instagram.com/' + esc(CONFIG.instagram) + '" target="_blank" rel="noopener">@' + esc(CONFIG.instagram) + '</a></p>');
+  if (CFG.indirizzo) rows.push('<p>📍 ' + (CFG.mappa ? '<a href="' + esc(CFG.mappa) + '" target="_blank" rel="noopener">' + esc(CFG.indirizzo) + '</a>' : esc(CFG.indirizzo)) + '</p>');
+  if (CFG.orari) rows.push('<p>🕒 ' + esc(CFG.orari) + '</p>');
+  if (CFG.telefono) rows.push('<p>📞 <a href="tel:' + esc(CFG.telefono.replace(/\s/g, "")) + '">' + esc(CFG.telefono) + '</a></p>');
+  if (CFG.instagram) rows.push('<p>📷 <a href="https://instagram.com/' + esc(CFG.instagram) + '" target="_blank" rel="noopener">@' + esc(CFG.instagram) + '</a></p>');
   $("info").innerHTML = rows.join("");
   $("info-panel").hidden = rows.length === 0;
+  $("demo-bar").hidden = !API.demo;
 }
+
+function stato(online) {
+  $("status").className = "status" + (online ? "" : " off");
+  $("status").innerHTML = online ? '<span class="dot"></span>Tessera aggiornata' : '<span class="dot"></span>Offline · ultimi dati salvati';
+}
+
+/* ---------- Sincronizzazione con il bar ---------- */
+let syncing = false;
+async function sync() {
+  if (!token || syncing) return;
+  syncing = true;
+  try {
+    const dati = await API.leggi(token);
+    if (!dati) {   // tessera eliminata
+      ls.del(TKEY); ls.del(CKEY); token = null; card = null;
+      $("signup-msg").innerHTML = "<strong>Tessera non più attiva</strong>Puoi crearne una nuova qui sotto.";
+      $("signup-msg").hidden = false;
+      mostra("signup");
+      return;
+    }
+    const prev = card;
+    card = dati; ls.set(CKEY, JSON.stringify(dati));
+    mostra("card"); renderCard(prev); stato(true);
+  } catch (e) {
+    if (card) { mostra("card"); renderCard(); stato(false); }
+    else { mostra("signup"); $("signup-err").textContent = PradioAPI.messaggio(e); }
+  } finally { syncing = false; }
+}
+
+// controlla i timbri ogni 4 secondi mentre la tessera è aperta
+setInterval(() => { if (document.visibilityState === "visible") sync(); }, 4000);
+document.addEventListener("visibilitychange", () => { if (document.visibilityState === "visible") sync(); });
+window.addEventListener("online", sync);
 
 /* ---------- Registrazione ---------- */
-$("signup-form").addEventListener("submit", (e) => {
+$("signup-form").addEventListener("submit", async (e) => {
   e.preventDefault();
+  $("signup-err").textContent = "";
   const nome = $("f-nome").value.trim(), cognome = $("f-cognome").value.trim();
   if (!nome || !cognome) { $("signup-err").textContent = "Inserisci nome e cognome."; return; }
-  if (!$("f-privacy").checked) { $("signup-err").textContent = "Per continuare accetta l'informativa."; return; }
-  data = {
-    nome, cognome,
-    nascita: $("f-nascita").value || "",
-    numero: newCardNumber(),
-    creata: new Date().toISOString(),
-    timbri: 0,
-    premiRiscattati: 0
-  };
-  if (!save(data)) toast("Attenzione: il browser non permette di salvare la tessera.");
-  show();
-  window.scrollTo({ top: 0, behavior: "smooth" });
-  toast("Benvenuto, " + nome + "! La tua tessera è attiva ☕");
-});
-
-/* ---------- Area staff (PIN) ---------- */
-let pendingAction = null;
-function openModal(text, action) {
-  pendingAction = action;
-  $("modal-txt").textContent = text;
-  $("pin").value = ""; $("pin-err").textContent = "";
-  $("modal").classList.add("open");
-  setTimeout(() => $("pin").focus(), 50);
-}
-function closeModal() { $("modal").classList.remove("open"); pendingAction = null; }
-$("modal-cancel").addEventListener("click", closeModal);
-$("modal").addEventListener("click", (e) => { if (e.target.id === "modal") closeModal(); });
-$("pin").addEventListener("keydown", (e) => { if (e.key === "Enter") $("modal-ok").click(); });
-$("modal-ok").addEventListener("click", () => {
-  if ($("pin").value !== CONFIG.pinStaff) { $("pin-err").textContent = "PIN non corretto."; $("pin").value = ""; return; }
-  const act = pendingAction; closeModal(); if (act) act();
-});
-
-$("btn-staff").addEventListener("click", () => {
-  const n = CONFIG.timbriPerPremio;
-  if ((data.timbri || 0) >= n) {
-    openModal("Conferma la consegna del premio: la raccolta timbri ripartirà da zero.", () => {
-      data.timbri = 0; data.premiRiscattati = (data.premiRiscattati || 0) + 1; save(data);
-      renderStamps(); toast("Premio riscattato! Grazie 🧡");
-    });
-  } else {
-    openModal("Aggiungi un timbro alla tessera di " + data.nome + ".", () => {
-      data.timbri = (data.timbri || 0) + 1; save(data);
-      renderStamps(data.timbri - 1);
-      toast(data.timbri >= n ? "Tessera completa! Premio sbloccato 🎁" : "Timbro aggiunto ☕");
-    });
-  }
+  if (!$("f-privacy").checked) { $("signup-err").textContent = "Per continuare accetta l'informativa privacy."; return; }
+  $("btn-signup").disabled = true;
+  try {
+    const r = await API.registra({ nome, cognome, nascita: $("f-nascita").value || null, consenso: true });
+    token = r.token; ls.set(TKEY, token);
+    delete r.token; card = r; ls.set(CKEY, JSON.stringify(card));
+    $("signup-msg").hidden = true;
+    mostra("card"); renderCard(); stato(true);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+    toast("Benvenuto, " + nome + "! La tua tessera è attiva ☕");
+  } catch (err) {
+    $("signup-err").textContent = PradioAPI.messaggio(err);
+  } finally { $("btn-signup").disabled = false; }
 });
 
 /* ---------- Modifica / elimina ---------- */
-$("btn-edit").addEventListener("click", () => {
-  const nome = prompt("Nome", data.nome); if (nome === null) return;
-  const cognome = prompt("Cognome", data.cognome); if (cognome === null) return;
+$("btn-edit").addEventListener("click", async () => {
+  const nome = prompt("Nome", card.nome); if (nome === null) return;
+  const cognome = prompt("Cognome", card.cognome); if (cognome === null) return;
   if (!nome.trim() || !cognome.trim()) return;
-  data.nome = nome.trim(); data.cognome = cognome.trim(); save(data); renderCard(); toast("Dati aggiornati");
+  try { card = await API.aggiornaNome(token, nome.trim(), cognome.trim()); ls.set(CKEY, JSON.stringify(card)); renderCard(); toast("Dati aggiornati"); }
+  catch (e) { toast(PradioAPI.messaggio(e)); }
 });
-$("btn-delete").addEventListener("click", () => {
-  if (!confirm("Eliminare la tessera da questo telefono? Timbri e numero tessera andranno persi.")) return;
-  clear(); data = null; $("signup-form").reset(); show();
+$("btn-delete").addEventListener("click", async () => {
+  if (!confirm("Eliminare definitivamente la tessera? Timbri e premi andranno persi e i tuoi dati verranno cancellati.")) return;
+  try { await API.eliminaTessera(token); }
+  catch (e) { toast(PradioAPI.messaggio(e)); return; }
+  ls.del(TKEY); ls.del(CKEY); token = null; card = null;
+  $("signup-form").reset(); mostra("signup"); toast("Tessera eliminata");
 });
 
 /* ---------- Installazione su Home ---------- */
 const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
 const isStandalone = window.matchMedia("(display-mode: standalone)").matches || navigator.standalone === true;
-if (isStandalone) { $("install-panel").hidden = true; }
+if (isStandalone) $("install-panel").hidden = true;
 else if (isIOS) { $("install-ios").hidden = false; $("install-other").hidden = true; }
-
 let deferredPrompt = null;
 window.addEventListener("beforeinstallprompt", (e) => {
   e.preventDefault(); deferredPrompt = e;
@@ -522,12 +331,15 @@ $("btn-install").addEventListener("click", async () => {
   deferredPrompt = null; $("btn-install").hidden = true;
 });
 window.addEventListener("appinstalled", () => { $("install-panel").hidden = true; toast("Tessera aggiunta alla Home!"); });
-
-if ("serviceWorker" in navigator && location.protocol.startsWith("http")) {
+if ("serviceWorker" in navigator && location.protocol === "https:") {
   window.addEventListener("load", () => navigator.serviceWorker.register("sw.js").catch(() => {}));
 }
 
-show();
+/* ---------- Avvio ---------- */
+renderStatico();
+if (!token) mostra("signup");
+else if (card) { mostra("card"); renderCard(); sync(); }
+else { mostra("loading"); sync(); }
 </script>
 </body>
 </html>

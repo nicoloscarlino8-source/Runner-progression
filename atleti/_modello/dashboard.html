@@ -306,7 +306,7 @@ function panoramica() {
     return viste;
   }
   viste.push(el("section", { class: "riassunto", "aria-label": "Riepilogo squadra" },
-    el("div", { class: "tile" }, el("span", { text: "Atleti" }), el("b", { text: A.length }), el("small", { text: `${A.filter(a => a.fonte === "Strava").length} collegati a Strava` })),
+    el("div", { class: "tile" }, el("span", { text: "Atleti" }), el("b", { text: A.length }), el("small", { text: `${A.filter(a => a.fonte !== "Garmin / manuale").length} con sync automatico` })),
     el("div", { class: "tile" }, el("span", { text: "Km squadra, questa settimana" }), el("b", { text: fmt1(kmSquadra) }), el("small", { text: `${fmt0(dplusSquadra)} m D+` })),
     el("div", { class: "tile" }, el("span", { text: "Carico da controllare" }), el("b", { text: daGuardare }), el("small", { text: "ACWR sopra 1,3 o sotto 0,8" })),
     el("div", { class: "tile" }, el("span", { text: "Fermi da oltre 7 giorni" }), el("b", { text: fermi }), el("small", { text: "nessuna attività registrata" }))));

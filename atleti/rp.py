@@ -11,6 +11,8 @@ Solo libreria standard di Python 3.9+: niente da installare.
 Comandi principali (da lanciare dalla cartella del repository):
 
     python3 atleti/rp.py nuovo-atleta "Mario Rossi"
+    python3 atleti/rp.py intervals-chiave              # una volta sola
+    python3 atleti/rp.py intervals-collega mario-rossi i123456
     python3 atleti/rp.py strava-link mario-rossi
     python3 atleti/rp.py strava-codice mario-rossi <codice>
     python3 atleti/rp.py sync                 # tutti gli atleti collegati
@@ -23,7 +25,9 @@ Vedi atleti/README.md per la guida completa.
 from __future__ import annotations
 
 import argparse
+import base64
 import csv
+import getpass
 import json
 import re
 import sys
@@ -45,6 +49,7 @@ COLONNE = [
     "dislivello_m", "fc_media", "fc_max", "passo_min_km", "cadenza", "sforzo",
 ]
 
+INTERVALS_API = "https://intervals.icu/api/v1"
 STRAVA_AUTH = "https://www.strava.com/oauth/authorize"
 STRAVA_TOKEN = "https://www.strava.com/oauth/token"
 STRAVA_API = "https://www.strava.com/api/v3"
@@ -242,24 +247,53 @@ def leggi_config() -> dict:
     return cfg
 
 
+def config_grezza() -> dict:
+    return json.loads(CONFIG.read_text(encoding="utf-8")) if CONFIG.exists() else {}
+
+
 def file_token(s: str) -> Path:
     return SEGRETI / f"strava_{s}.json"
 
 
-def http_json(url: str, dati: dict | None = None, token: str | None = None):
+def file_intervals(s: str) -> Path:
+    return SEGRETI / f"intervals_{s}.json"
+
+
+def fonte_dati(s: str) -> str:
+    if file_intervals(s).exists():
+        return "intervals.icu"
+    if file_token(s).exists():
+        return "Strava"
+    return "Garmin / manuale"
+
+
+def http_json(url: str, dati: dict | None = None, token: str | None = None, chiave_intervals: str | None = None):
     corpo = urllib.parse.urlencode(dati).encode() if dati is not None else None
     req = urllib.request.Request(url, data=corpo)
     req.add_header("User-Agent", "runner-progression-archivio/1.0")
+    req.add_header("Accept", "application/json")
     if token:
         req.add_header("Authorization", f"Bearer {token}")
+    if chiave_intervals:
+        cred = base64.b64encode(f"API_KEY:{chiave_intervals}".encode()).decode()
+        req.add_header("Authorization", f"Basic {cred}")
     try:
         with urllib.request.urlopen(req, timeout=60) as r:
             return json.loads(r.read().decode())
     except urllib.error.HTTPError as e:
         dettaglio = e.read().decode(errors="replace")[:500]
+        servizio = "intervals.icu" if chiave_intervals else "Strava"
         if e.code == 429:
-            sys.exit("Limite di richieste Strava raggiunto (100 ogni 15 minuti). Riprova tra un quarto d'ora.")
-        sys.exit(f"Errore Strava {e.code}: {dettaglio}")
+            sys.exit(f"Troppe richieste a {servizio}: riprova tra un quarto d'ora.")
+        if chiave_intervals and e.code in (401, 403):
+            sys.exit("intervals.icu rifiuta l'accesso. Controlla la chiave API (rilancia "
+                     "'intervals-chiave') e che l'atleta abbia accettato te come coach.")
+        if not chiave_intervals and e.code == 403 and "Inactive" in dettaglio:
+            sys.exit("Strava: la tua app API risulta inattiva (serve un abbonamento Strava "
+                     "attivo sul tuo account).")
+        sys.exit(f"Errore {servizio} {e.code}: {dettaglio}")
+    except urllib.error.URLError as e:
+        sys.exit(f"Impossibile collegarsi a {url.split('/')[2]}: {e.reason}. Controlla la connessione.")
 
 
 def cmd_strava_link(args):
@@ -347,37 +381,128 @@ def da_strava(a: dict) -> dict:
     }
 
 
+def data_inizio(cartella: Path, fonte: str, da: str | None) -> datetime:
+    if da:
+        return datetime.strptime(da, "%Y-%m-%d")
+    gia = [r["data"] for r in leggi_attivita(cartella) if r["fonte"] == fonte]
+    if gia:
+        # un giorno di margine: i doppioni li scarta unisci()
+        return datetime.strptime(max(gia), "%Y-%m-%d %H:%M") - timedelta(days=1)
+    return datetime.now() - timedelta(days=365)
+
+
+def scarica_strava(s: str, cartella: Path, da: str | None) -> list[dict]:
+    token = token_valido(s, leggi_config())
+    dopo = int(data_inizio(cartella, "strava", da).timestamp())
+    nuove, pagina = [], 1
+    while True:
+        url = f"{STRAVA_API}/athlete/activities?" + urllib.parse.urlencode(
+            {"after": dopo, "per_page": 200, "page": pagina})
+        blocco = http_json(url, token=token)
+        if not blocco:
+            return nuove
+        nuove += [da_strava(a) for a in blocco]
+        pagina += 1
+
+
 def cmd_sync(args):
-    cfg = leggi_config()
     atleti = [cartella_atleta(args.atleta).name] if args.atleta else tutti_gli_atleti()
-    collegati = [s for s in atleti if file_token(s).exists()]
+    collegati = [s for s in atleti if file_intervals(s).exists() or file_token(s).exists()]
     if not collegati:
-        sys.exit("Nessun atleta collegato a Strava. Usa prima: python3 atleti/rp.py strava-link <atleta>")
+        sys.exit("Nessun atleta collegato. Usa prima: python3 atleti/rp.py intervals-collega <atleta> <id>")
     for s in collegati:
         cartella = BASE / s
-        token = token_valido(s, cfg)
-        strava = [r for r in leggi_attivita(cartella) if r["fonte"] == "strava"]
-        if args.da:
-            inizio = datetime.strptime(args.da, "%Y-%m-%d")
-        elif strava:
-            # un giorno di margine: start_date_local non è in UTC, i doppioni li scarta unisci()
-            inizio = datetime.strptime(max(r["data"] for r in strava), "%Y-%m-%d %H:%M") - timedelta(days=1)
-        else:
-            inizio = datetime.now() - timedelta(days=365)
-        dopo = int(inizio.timestamp())
-        nuove, pagina = [], 1
-        while True:
-            url = f"{STRAVA_API}/athlete/activities?" + urllib.parse.urlencode(
-                {"after": dopo, "per_page": 200, "page": pagina})
-            blocco = http_json(url, token=token)
-            if not blocco:
-                break
-            nuove += [da_strava(a) for a in blocco]
-            pagina += 1
-        agg, upd = unisci(cartella, nuove)
-        print(f"{s}: {agg} attività nuove, {upd} aggiornate (dal {inizio:%d/%m/%Y})")
+        fonti = []
+        if file_intervals(s).exists():
+            fonti.append(("intervals.icu", scarica_intervals))
+        if file_token(s).exists():
+            fonti.append(("Strava", scarica_strava))
+        for nome_fonte, scarica in fonti:
+            try:
+                nuove = scarica(s, cartella, args.da)
+            except SystemExit as e:
+                print(f"{s} · {nome_fonte}: non scaricato. {e}")
+                continue
+            agg, upd = unisci(cartella, nuove)
+            print(f"{s} · {nome_fonte}: {agg} attività nuove, {upd} aggiornate")
     if not args.senza_report:
         cmd_report(argparse.Namespace(atleta=None))
+
+
+# --------------------------------------------------------------------------
+# intervals.icu (gratuito, si collega direttamente a Garmin, Coros, Polar...)
+# --------------------------------------------------------------------------
+
+def chiave_intervals() -> str:
+    k = config_grezza().get("intervals_api_key")
+    if not k:
+        sys.exit("Manca la chiave API di intervals.icu. Salvala con: python3 atleti/rp.py intervals-chiave")
+    return k
+
+
+def cmd_intervals_chiave(args):
+    print("La chiave API è in intervals.icu → Settings → in fondo alla pagina, sezione 'Developer Settings'.")
+    k = getpass.getpass("Chiave API (incolla e premi Invio, non si vede mentre scrivi): ").strip()
+    if not k:
+        sys.exit("Nessuna chiave inserita.")
+    io = http_json(f"{INTERVALS_API}/athlete/0", chiave_intervals=k)
+    SEGRETI.mkdir(exist_ok=True)
+    cfg = config_grezza()
+    cfg["intervals_api_key"] = k
+    CONFIG.write_text(json.dumps(cfg, indent=2), encoding="utf-8")
+    print(f"Chiave salvata! Account intervals.icu: {io.get('name', '')} (id {io.get('id', '')})")
+
+
+def cmd_intervals_collega(args):
+    s = cartella_atleta(args.atleta).name
+    ident = args.id.strip()
+    if ident.isdigit() and ident != "0":
+        ident = "i" + ident
+    info = http_json(f"{INTERVALS_API}/athlete/{ident}", chiave_intervals=chiave_intervals())
+    SEGRETI.mkdir(exist_ok=True)
+    file_intervals(s).write_text(json.dumps({"athlete_id": info.get("id", ident)}, indent=2), encoding="utf-8")
+    print(f"Collegato! Atleta intervals.icu: {info.get('name', '')} (id {info.get('id', ident)})")
+    print(f"Ora scarica le attività con: python3 atleti/rp.py sync {s}")
+
+
+def da_intervals(a: dict) -> dict | None:
+    km = (a.get("distance") or 0) / 1000
+    minuti = (a.get("moving_time") or a.get("elapsed_time") or 0) / 60
+    if not km and not minuti:
+        return None  # es. attività arrivate solo da Strava: intervals non le espone via API
+    sport = a.get("type") or ""
+    cad = a.get("average_cadence")
+    if cad and e_corsa(sport) and cad < 120:
+        cad = cad * 2  # alcune fonti danno i passi di una gamba sola
+    return {
+        "id": f"intervals-{a['id']}",
+        "fonte": "intervals",
+        "data": (a.get("start_date_local") or "")[:16].replace("T", " "),
+        "sport": sport,
+        "titolo": a.get("name") or "",
+        "distanza_km": fmt(round(km, 2), 2),
+        "durata_min": fmt(round(minuti, 1)),
+        "dislivello_m": fmt(a.get("total_elevation_gain"), 0),
+        "fc_media": fmt(a.get("average_heartrate"), 0),
+        "fc_max": fmt(a.get("max_heartrate"), 0),
+        "passo_min_km": passo(km, minuti) if e_corsa(sport) else "",
+        "cadenza": fmt(cad, 0),
+        "sforzo": fmt(a.get("icu_training_load"), 0),
+    }
+
+
+def scarica_intervals(s: str, cartella: Path, da: str | None) -> list[dict]:
+    ident = json.loads(file_intervals(s).read_text(encoding="utf-8"))["athlete_id"]
+    inizio = data_inizio(cartella, "intervals", da)
+    url = f"{INTERVALS_API}/athlete/{ident}/activities?" + urllib.parse.urlencode(
+        {"oldest": inizio.strftime("%Y-%m-%d"), "newest": (date.today() + timedelta(days=1)).isoformat()})
+    grezze = http_json(url, chiave_intervals=chiave_intervals()) or []
+    nuove = [x for x in (da_intervals(a) for a in grezze) if x]
+    saltate = len(grezze) - len(nuove)
+    if saltate:
+        print(f"{s}: {saltate} attività senza dati (probabilmente arrivate solo da Strava: "
+              "l'atleta deve collegare Garmin direttamente a intervals.icu)")
+    return nuove
 
 
 # --------------------------------------------------------------------------
@@ -657,7 +782,7 @@ def dati_pagina(s: str, cartella: Path, st: dict, oggi: date) -> dict:
               for a in sorted(st["att"], key=lambda a: a["_dt"], reverse=True)[:10]]
     return {
         "slug": s, "nome": nome_atleta(cartella),
-        "fonte": "Strava" if file_token(s).exists() else "Garmin / manuale",
+        "fonte": fonte_dati(s),
         "ultima": st["ultima"].strftime("%Y-%m-%d") if st["ultima"] else None,
         "totale_attivita": len(st["att"]),
         "acwr": round(st["acwr"], 2) if st["acwr"] is not None else None,
@@ -692,7 +817,7 @@ def cmd_report(args):
         sett = list(st["settimane"].values())
         km_4 = sum(x["km"] for x in sett[:4]) / 4
         ultima = f"{st['ultima']:%d/%m/%Y}" if st["ultima"] else "—"
-        fonte = "Strava" if file_token(s).exists() else "manuale"
+        fonte = fonte_dati(s)
         righe_dash.append(
             f"| [{nome_atleta(cartella)}]({s}/report.md) | {ultima} | {sett[0]['km']:.1f} | "
             f"{sett[1]['km']:.1f} | {km_4:.1f} | {sett[0]['dplus']:.0f} | "
@@ -733,7 +858,15 @@ def main():
     a.add_argument("codice", help="il codice o l'intero indirizzo della pagina localhost")
     a.set_defaults(f=cmd_strava_codice)
 
-    a = sub.add_parser("sync", help="scarica le attività nuove da Strava")
+    a = sub.add_parser("intervals-chiave", help="salva la tua chiave API di intervals.icu")
+    a.set_defaults(f=cmd_intervals_chiave)
+
+    a = sub.add_parser("intervals-collega", help="collega un atleta al suo account intervals.icu")
+    a.add_argument("atleta")
+    a.add_argument("id", help="id intervals.icu dell'atleta, es. i123456")
+    a.set_defaults(f=cmd_intervals_collega)
+
+    a = sub.add_parser("sync", help="scarica le attività nuove da intervals.icu e Strava")
     a.add_argument("atleta", nargs="?")
     a.add_argument("--da", help="scarica dal giorno indicato (AAAA-MM-GG)")
     a.add_argument("--senza-report", action="store_true")

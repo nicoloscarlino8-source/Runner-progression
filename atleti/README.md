@@ -21,20 +21,30 @@ atleti/
     └── report.md         ← progressi (generato)
 ```
 
-## Come arrivano i dati Garmin
+## Come arrivano i dati: intervals.icu (consigliato, gratuito)
 
-Garmin non offre un'API aperta ai singoli coach: il programma sviluppatori di Garmin
-Connect è riservato alle aziende approvate. La strada semplice è passare da Strava:
+Garmin non offre un'API aperta ai singoli coach, e da luglio 2026 l'API di Strava funziona
+solo se il proprietario dell'app ha un abbonamento Strava. La strada gratuita è
+**intervals.icu**:
 
-1. **L'atleta collega Garmin a Strava** (app Garmin Connect → Altro → Impostazioni →
-   App collegate → Strava). Da quel momento ogni allenamento finisce anche su Strava.
-2. **Tu scarichi tutto da Strava** con `rp.py sync`.
+1. **L'atleta crea un account su intervals.icu** e in *Settings* collega **Garmin Connect**
+   (o Coros, Polar, Suunto…). Le attività arrivate solo da Strava non sono leggibili via
+   API: serve il collegamento diretto con l'orologio.
+2. **L'atleta ti aggiunge come coach** su intervals.icu (o accetta la tua richiesta).
+3. **Tu salvi una volta la tua chiave API** e colleghi ogni atleta con il suo id:
+   ```bash
+   python3 atleti/rp.py intervals-chiave
+   python3 atleti/rp.py intervals-collega mario-rossi i123456
+   ```
+   La chiave è in intervals.icu → *Settings* → *Developer Settings*. L'id dell'atleta
+   (`i` seguito da numeri) si vede nell'indirizzo della sua pagina su intervals.icu.
+4. **Ogni settimana** lanci `python3 atleti/rp.py sync`.
 
-Chi non usa Strava può mandarti l'**export CSV di Garmin Connect** (vedi più sotto).
-Se la stessa uscita arriva sia da Garmin che da Strava, lo script la riconosce
+In alternativa ci sono Strava (sezione sotto, serve l'abbonamento) e l'**export CSV di
+Garmin Connect**. Se la stessa uscita arriva da più fonti, lo script la riconosce
 (stessa partenza ±2 minuti e distanza simile) e la tiene una volta sola.
 
-## Configurazione iniziale (una volta sola)
+## Strava (richiede un abbonamento Strava)
 
 1. Vai su <https://www.strava.com/settings/api> e crea un'app:
    - *Application Name*: Runner Progression Coach

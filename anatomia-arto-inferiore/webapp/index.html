@@ -1,0 +1,1992 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}[hidden]{display:none!important}img{max-width:100%}</style>
+</head>
+<body>
+<title>Atlante Muscoli Arto Inferiore</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@75..100,500..800&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500&display=swap">
+<style>
+/* Layout: barra sticky con le sezioni, contenuto a 1 colonna su telefono e griglia su desktop;
+   il dettaglio del muscolo si apre in un pannello laterale (a tutto schermo su telefono).
+   Colore con significato: verde-azzurro = ORIGINE, carminio = INSERZIONE, arancio = interfaccia. */
+:root{
+  --bg:#EEF2F2; --surface:#FFFFFF; --surface-2:#F6F8F8; --ink:#13222A; --muted:#566871; --line:#D3DDE0;
+  --accent:#C8460F; --accent-ink:#FFFFFF;
+  --ori:#0B7285; --ori-bg:#E3F3F6; --ins:#B5173E; --ins-bg:#FBE7EC;
+  --warn:#9A4A00; --warn-bg:#FFF1DE; --danger:#B42318; --danger-bg:#FDE8E6; --ok:#17803D; --ok-bg:#E3F5E8;
+  --bone:#E7E0D2; --reg:#F3C9BC; --reg-h:#EBA08B; --reg-sel:#C8460F; --reg-line:#FFFFFF;
+  --c0:#C8460F; --c1:#0B7285; --c2:#6D3FC9; --c3:#17803D; --c4:#A76300; --c5:#B5173E; --c6:#1E55C8; --c7:#5B6B75;
+  --f-display:"Archivo","Arial Narrow",system-ui,sans-serif;
+  --f-body:"Inter",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  --f-mono:"JetBrains Mono",ui-monospace,"SFMono-Regular",Menlo,monospace;
+  --r:10px;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0C1418; --surface:#142027; --surface-2:#1A2830; --ink:#E4EDF0; --muted:#97AAB3; --line:#2A3B44;
+  --accent:#FF7B47; --accent-ink:#1A0B03;
+  --ori:#4CC6DB; --ori-bg:#0F2F36; --ins:#FF6B8E; --ins-bg:#3A1622;
+  --warn:#FFB866; --warn-bg:#3A2710; --danger:#FF8A80; --danger-bg:#3D1715; --ok:#6BD58E; --ok-bg:#12321E;
+  --bone:#3B3A33; --reg:#5B3127; --reg-h:#83412F; --reg-sel:#FF7B47; --reg-line:#142027;
+  --c0:#FF7B47; --c1:#4CC6DB; --c2:#A98BFF; --c3:#6BD58E; --c4:#F3B54A; --c5:#FF6B8E; --c6:#7FA6FF; --c7:#A7B6BF;
+  color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0C1418; --surface:#142027; --surface-2:#1A2830; --ink:#E4EDF0; --muted:#97AAB3; --line:#2A3B44;
+  --accent:#FF7B47; --accent-ink:#1A0B03;
+  --ori:#4CC6DB; --ori-bg:#0F2F36; --ins:#FF6B8E; --ins-bg:#3A1622;
+  --warn:#FFB866; --warn-bg:#3A2710; --danger:#FF8A80; --danger-bg:#3D1715; --ok:#6BD58E; --ok-bg:#12321E;
+  --bone:#3B3A33; --reg:#5B3127; --reg-h:#83412F; --reg-sel:#FF7B47; --reg-line:#142027;
+  --c0:#FF7B47; --c1:#4CC6DB; --c2:#A98BFF; --c3:#6BD58E; --c4:#F3B54A; --c5:#FF6B8E; --c6:#7FA6FF; --c7:#A7B6BF;
+  color-scheme:dark}
+
+*{box-sizing:border-box}
+html,body{background:var(--bg);color:var(--ink)}
+body{font-family:var(--f-body);font-size:15px;line-height:1.55;margin:0}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:30;background:var(--surface)}
+h1,h2,h3,h4{font-family:var(--f-display);font-stretch:85%;line-height:1.15;text-wrap:balance;margin:0}
+button,input,select{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--accent);outline-offset:2px;border-radius:4px}
+.wrap{max-width:1120px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+
+/* --- header --- */
+header.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:var(--surface);border-bottom:1px solid var(--line)}
+.brand{display:flex;align-items:center;justify-content:space-between;gap:12px;padding-block:10px 4px}
+.brand .t{display:flex;flex-direction:column;min-width:0}
+.brand .eyebrow{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--accent);font-weight:700}
+.brand h1{font-size:clamp(19px,4.4vw,26px);font-weight:800}
+.prog{font-family:var(--f-mono);font-size:12px;color:var(--muted);white-space:nowrap;text-align:right}
+.prog b{color:var(--ok);font-weight:500}
+.bar{height:4px;background:var(--line);border-radius:4px;overflow:hidden;width:110px;margin-top:4px;margin-left:auto}
+.bar i{display:block;height:100%;background:var(--ok);width:0}
+nav.tabs{display:flex;gap:2px;overflow-x:auto;scrollbar-width:none;padding-block:4px 0}
+nav.tabs::-webkit-scrollbar{display:none}
+nav.tabs a{flex:none;text-decoration:none;color:var(--muted);font-weight:600;font-size:14px;padding:8px 11px 10px;border-bottom:3px solid transparent}
+nav.tabs a:hover{color:var(--ink)}
+nav.tabs a[aria-current="page"]{color:var(--ink);border-bottom-color:var(--accent)}
+
+main{padding-block:20px 60px}
+section.view{display:flex;flex-direction:column;gap:18px}
+.intro{max-width:70ch;color:var(--muted)}
+.intro strong{color:var(--ink)}
+h2.sec{font-size:clamp(24px,5vw,34px);font-weight:800}
+h3.sub{font-size:20px;font-weight:700}
+
+/* --- chips / controls --- */
+.controls{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.search{flex:1 1 260px;min-width:0;position:relative}
+.search input{width:100%;padding:11px 14px 11px 38px;border:1px solid var(--line);border-radius:999px;background:var(--surface)}
+.search svg{position:absolute;left:13px;top:50%;transform:translateY(-50%);width:16px;height:16px;stroke:var(--muted);fill:none;stroke-width:2}
+select{padding:10px 12px;border:1px solid var(--line);border-radius:999px;background:var(--surface)}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:6px 12px;font-size:13px;font-weight:600;cursor:pointer;color:var(--muted)}
+.chip:hover{color:var(--ink);border-color:var(--muted)}
+.chip[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.btn{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:9px 16px;font-weight:600;cursor:pointer;text-decoration:none;color:var(--ink)}
+.btn:hover{border-color:var(--muted)}
+.btn.pri{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.btn.okb[aria-pressed="true"]{background:var(--ok-bg);border-color:var(--ok);color:var(--ok)}
+.count{font-family:var(--f-mono);font-size:12px;color:var(--muted)}
+
+/* --- muscle cards --- */
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:12px}
+.regione-h{grid-column:1/-1;display:flex;align-items:baseline;gap:10px;margin-top:10px;padding-bottom:4px;border-bottom:1px solid var(--line)}
+.regione-h h3{font-size:18px;font-weight:700}
+.mcard{text-align:left;background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:14px 14px 12px;cursor:pointer;display:flex;flex-direction:column;gap:8px;min-width:0}
+.mcard:hover{border-color:var(--muted)}
+.mcard .h{display:flex;justify-content:space-between;gap:8px;align-items:flex-start}
+.mcard h4{font-size:18px;font-weight:700}
+.mcard .lat{font-size:12px;color:var(--muted);font-style:italic}
+.oi{display:grid;grid-template-columns:auto 1fr;gap:4px 8px;font-size:13.5px;line-height:1.4}
+.tag{font-family:var(--f-mono);font-size:10.5px;font-weight:500;letter-spacing:.06em;padding:2px 6px;border-radius:4px;align-self:start;margin-top:1px}
+.tag.o{background:var(--ori-bg);color:var(--ori)}
+.tag.i{background:var(--ins-bg);color:var(--ins)}
+.tag.n{background:var(--surface-2);color:var(--muted);border:1px solid var(--line)}
+.done{flex:none;width:22px;height:22px;border-radius:50%;border:2px solid var(--line);display:grid;place-items:center}
+.done.y{background:var(--ok);border-color:var(--ok)}
+.done.y::after{content:"";width:9px;height:5px;border-left:2px solid var(--bg);border-bottom:2px solid var(--bg);transform:rotate(-45deg) translate(1px,-1px)}
+.done.r{border-color:var(--warn)}
+.empty{padding:30px;text-align:center;color:var(--muted);background:var(--surface);border:1px dashed var(--line);border-radius:var(--r)}
+
+/* --- detail panel --- */
+.scrim{position:fixed;inset:0;background:rgba(5,12,16,.45);z-index:40}
+.panel{position:fixed;z-index:41;top:0;right:0;bottom:0;width:min(640px,100%);background:var(--bg);overflow-y:auto;box-shadow:-12px 0 40px rgba(0,0,0,.18);
+  padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);padding-right:env(safe-area-inset-right,0px)}
+.panel-top{position:sticky;top:0;z-index:2;background:var(--surface);border-bottom:1px solid var(--line);display:flex;align-items:center;gap:8px;padding:10px 16px}
+.panel-top .sp{flex:1}
+.icon-btn{width:38px;height:38px;border-radius:50%;border:1px solid var(--line);background:var(--surface);display:grid;place-items:center;cursor:pointer}
+.icon-btn svg{width:18px;height:18px;stroke:var(--ink);fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.panel-body{padding:18px 16px 40px;display:flex;flex-direction:column;gap:14px}
+.d-head .reg-l{font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--accent);font-weight:700}
+.d-head h2{font-size:clamp(28px,7vw,38px);font-weight:800;margin-top:2px}
+.d-head .lat{color:var(--muted);font-style:italic}
+.d-head .tipo{font-size:13px;color:var(--muted);margin-top:4px}
+.blk{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:14px}
+.blk h4{font-family:var(--f-body);font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);font-weight:700;margin-bottom:6px}
+.blk p{margin:0}
+.blk ul{margin:0;padding-left:18px}
+.blk.o{border-left:5px solid var(--ori)} .blk.o h4{color:var(--ori)}
+.blk.i{border-left:5px solid var(--ins)} .blk.i h4{color:var(--ins)}
+.blk .short{font-weight:700;margin-bottom:4px}
+.blk.warn{background:var(--warn-bg);border-color:transparent} .blk.warn h4{color:var(--warn)}
+.blk.bike h4{color:var(--accent)}
+.mono{font-family:var(--f-mono);font-size:13px}
+.pnav{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap}
+
+/* --- map --- */
+.map-wrap{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr) minmax(0,1.4fr);gap:16px;align-items:start}
+@media (max-width:820px){.map-wrap{grid-template-columns:1fr 1fr}.map-side{grid-column:1/-1}}
+.map-fig{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:10px;text-align:center}
+.map-fig figcaption{font-weight:700;font-family:var(--f-display);font-stretch:85%;font-size:16px;margin-bottom:6px}
+svg.mappa{width:100%;max-width:240px;height:auto;display:block;margin:0 auto}
+svg.mappa .osso{fill:var(--bone)}
+svg.mappa .reg{fill:var(--reg);stroke:var(--reg-line);stroke-width:2.5;stroke-linejoin:round;cursor:pointer;transition:fill .15s}
+svg.mappa .reg.prof{fill:var(--reg-h);stroke-dasharray:4 3;stroke:var(--ink);stroke-width:1.2;fill-opacity:.55}
+svg.mappa .reg:hover,svg.mappa .reg:focus{fill:var(--reg-h);outline:none}
+svg.mappa .reg.sel{fill:var(--reg-sel)}
+svg.mappa .rischio{fill:var(--danger-bg);stroke:var(--danger);stroke-width:1.5;stroke-dasharray:3 2;cursor:pointer}
+svg.mappa .lbl{font:600 11px var(--f-mono);fill:var(--muted)}
+svg.mappa .lbl.dim{font-size:9px;opacity:.8}
+.map-note{font-size:12px;color:var(--muted)}
+
+/* --- pedal --- */
+.pedal{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:20px;align-items:start}
+@media (max-width:820px){.pedal{grid-template-columns:1fr}}
+.wheel-box{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:12px;display:flex;flex-direction:column;gap:10px}
+svg.ruota{width:100%;max-width:440px;margin:0 auto;display:block;touch-action:none;cursor:grab}
+svg.ruota .traccia{fill:none;stroke:var(--line);stroke-width:9}
+svg.ruota .arco{fill:none;stroke-width:9;stroke-linecap:round;opacity:.2;transition:opacity .12s}
+svg.ruota .arco.on{opacity:1}
+svg.ruota .c0{stroke:var(--c0)} svg.ruota .c1{stroke:var(--c1)} svg.ruota .c2{stroke:var(--c2)} svg.ruota .c3{stroke:var(--c3)}
+svg.ruota .c4{stroke:var(--c4)} svg.ruota .c5{stroke:var(--c5)} svg.ruota .c6{stroke:var(--c6)} svg.ruota .c7{stroke:var(--c7)}
+svg.ruota .fase-spinta{fill:none;stroke:var(--accent);stroke-width:3;opacity:.5}
+svg.ruota .fase-risalita{fill:none;stroke:var(--ori);stroke-width:3;opacity:.5;stroke-dasharray:6 5}
+svg.ruota .tick{stroke:var(--muted);stroke-width:1;stroke-dasharray:2 4}
+svg.ruota .wl{font:500 12px var(--f-mono);fill:var(--muted)}
+svg.ruota .wl.fase{font:700 13px var(--f-body);letter-spacing:.12em;fill:var(--ink)}
+svg.ruota .lancetta{stroke:var(--ink);stroke-width:2.5}
+svg.ruota .perno{fill:var(--ink)} svg.ruota .pedale{fill:var(--accent);stroke:var(--surface);stroke-width:3}
+.angle-row{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.angle-row input[type=range]{flex:1 1 180px;accent-color:var(--accent)}
+.angle-val{font-family:var(--f-mono);font-size:26px;min-width:4.2ch;text-align:right}
+.phase-now{font-weight:700}
+.mlist{display:flex;flex-direction:column;gap:6px}
+.mrow{display:grid;grid-template-columns:14px minmax(0,1fr) auto;gap:10px;align-items:center;padding:8px 10px;border-radius:8px;background:var(--surface);border:1px solid var(--line);opacity:.5;cursor:pointer;text-align:left}
+.mrow.on{opacity:1;border-color:var(--ink)}
+.mrow .sw{width:14px;height:14px;border-radius:3px}
+.mrow .rg{font-family:var(--f-mono);font-size:12px;color:var(--muted)}
+
+/* --- generic info cards --- */
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:12px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:14px;display:flex;flex-direction:column;gap:8px;min-width:0}
+.card h4{font-size:17px;font-weight:700}
+.card p{margin:0}
+.kv{display:grid;grid-template-columns:auto 1fr;gap:4px 10px;font-size:14px}
+.kv dt{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:700;padding-top:2px}
+.kv dd{margin:0}
+.card.danger{border-left:5px solid var(--danger)}
+.card.warnc{border-left:5px solid var(--warn)}
+.card.zone{border-left:5px solid var(--danger)}
+.lnk{background:none;border:0;padding:0;color:var(--accent);font-weight:600;cursor:pointer;text-decoration:underline;text-underline-offset:2px}
+.mchips{display:flex;flex-wrap:wrap;gap:6px}
+.mchips button{border:1px solid var(--line);background:var(--surface-2);border-radius:999px;font-size:12.5px;padding:3px 10px;cursor:pointer}
+.mchips button:hover{border-color:var(--accent)}
+
+/* protocols */
+.ptabs{display:flex;gap:6px;flex-wrap:wrap}
+.proto{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.3fr);gap:16px}
+@media (max-width:820px){.proto{grid-template-columns:1fr}}
+.facts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.fact{background:var(--surface-2);border-radius:8px;padding:10px}
+.fact small{display:block;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:700}
+ol.seq{margin:0;padding-left:0;list-style:none;counter-reset:s;display:flex;flex-direction:column;gap:8px}
+ol.seq li{counter-increment:s;display:grid;grid-template-columns:28px 1fr;gap:10px;align-items:start}
+ol.seq li::before{content:counter(s);font-family:var(--f-mono);font-size:12px;width:26px;height:26px;border-radius:50%;background:var(--ink);color:var(--bg);display:grid;place-items:center}
+.note{font-size:13.5px;color:var(--muted);border-top:1px solid var(--line);padding-top:10px}
+
+/* table */
+.tbl-wrap{overflow-x:auto;background:var(--surface);border:1px solid var(--line);border-radius:var(--r)}
+table{border-collapse:collapse;width:100%;min-width:860px;font-size:13.5px}
+th,td{text-align:left;vertical-align:top;padding:9px 10px;border-bottom:1px solid var(--line)}
+thead th{position:sticky;top:0;background:var(--surface-2);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+td.mn{font-weight:700;white-space:nowrap}
+td.mn button{all:unset;cursor:pointer;color:var(--ink);text-decoration:underline;text-decoration-color:var(--line);text-underline-offset:3px}
+tr.rg td{background:var(--surface-2);font-family:var(--f-display);font-stretch:85%;font-weight:700;font-size:15px;color:var(--accent)}
+td .o{color:var(--ori)} td .i{color:var(--ins)}
+
+/* quiz */
+.qbox{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:18px;display:flex;flex-direction:column;gap:14px;max-width:760px}
+.qmeta{display:flex;justify-content:space-between;font-family:var(--f-mono);font-size:12px;color:var(--muted)}
+.qtext{font-size:19px;font-weight:600;line-height:1.35}
+.qtext em{font-style:normal;color:var(--accent)}
+.qopts{display:flex;flex-direction:column;gap:8px}
+.qopt{text-align:left;border:1.5px solid var(--line);background:var(--surface-2);border-radius:10px;padding:12px 14px;cursor:pointer;font-size:14.5px}
+.qopt:hover:not(:disabled){border-color:var(--muted)}
+.qopt.ok{border-color:var(--ok);background:var(--ok-bg)}
+.qopt.no{border-color:var(--danger);background:var(--danger-bg)}
+.qopt:disabled{cursor:default}
+.qfb{font-size:14px;padding:10px 12px;border-radius:8px}
+.qfb.ok{background:var(--ok-bg);color:var(--ok)} .qfb.no{background:var(--danger-bg);color:var(--danger)}
+.qfb .full{color:var(--ink);display:block;margin-top:4px}
+.flash{perspective:1200px;max-width:640px;width:100%}
+.flash-in{position:relative;min-height:320px;transition:transform .45s;transform-style:preserve-3d;cursor:pointer}
+.flash.flip .flash-in{transform:rotateY(180deg)}
+.face{position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:20px;display:flex;flex-direction:column;gap:10px;overflow:auto}
+.face.front{justify-content:center;align-items:center;text-align:center}
+.face.front h3{font-size:clamp(28px,7vw,40px);font-weight:800}
+.face.back{transform:rotateY(180deg)}
+.hint{font-size:12px;color:var(--muted)}
+@media (prefers-reduced-motion:reduce){.flash-in{transition:none}*{scroll-behavior:auto}}
+.stat-row{display:flex;flex-wrap:wrap;gap:10px}
+.stat{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:12px 16px;min-width:140px}
+.stat b{display:block;font-family:var(--f-mono);font-size:24px;font-weight:500}
+.stat span{font-size:12px;color:var(--muted)}
+footer.ft{border-top:1px solid var(--line);padding-block:18px 30px;color:var(--muted);font-size:12.5px}
+</style>
+
+<header class="top">
+  <div class="wrap">
+    <div class="brand">
+      <div class="t">
+        <span class="eyebrow">Runner Progression · Massaggio sportivo</span>
+        <h1>Atlante muscoli dell'arto inferiore</h1>
+      </div>
+      <div>
+        <div class="prog" id="prog">Studiati <b>0</b>/0</div>
+        <div class="bar"><i id="progbar"></i></div>
+      </div>
+    </div>
+    <nav class="tabs" id="tabs" aria-label="Sezioni">
+      <a href="#atlante">Atlante</a>
+      <a href="#mappa">Mappa</a>
+      <a href="#pedalata">Pedalata</a>
+      <a href="#massaggio">Protocolli</a>
+      <a href="#sicurezza">Sicurezza</a>
+      <a href="#ciclista">Problemi del ciclista</a>
+      <a href="#tendini">Tendini</a>
+      <a href="#repere">Punti di repere</a>
+      <a href="#ripasso">Ripasso</a>
+      <a href="#tabella">Tabella</a>
+    </nav>
+  </div>
+</header>
+
+<main class="wrap">
+  <!-- ATLANTE -->
+  <section class="view" id="v-atlante">
+    <p class="intro">Ogni muscolo con <strong style="color:var(--ori)">origine</strong>, <strong style="color:var(--ins)">inserzione</strong>, innervazione, azione, ruolo nella pedalata, palpazione e indicazioni per il massaggio. Tocca una scheda per aprirla. Puoi cercare anche un punto osseo (es. <em>trocantere</em>, <em>fibula</em>) per vedere tutti i muscoli che ci si attaccano.</p>
+    <div class="controls">
+      <label class="search"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg>
+        <input id="q" type="search" placeholder="Cerca muscolo, osso, azione…" autocomplete="off" aria-label="Cerca"></label>
+      <select id="fstato" aria-label="Filtro di studio">
+        <option value="tutti">Tutti</option><option value="dafare">Non ancora studiati</option><option value="ripassare">Da ripassare</option><option value="studiati">Studiati</option>
+      </select>
+    </div>
+    <div class="chips" id="regchips"></div>
+    <div class="count" id="acount"></div>
+    <div class="grid" id="agrid"></div>
+  </section>
+
+  <!-- MAPPA -->
+  <section class="view" id="v-mappa" hidden>
+    <h2 class="sec">Mappa delle regioni</h2>
+    <p class="intro">Tocca una zona per vedere i muscoli che contiene. Lo schema rappresenta l'arto inferiore destro e non è in scala: serve a orientarsi. La zona tratteggiata rossa dietro il ginocchio è il cavo popliteo, dove si fa solo sfioramento.</p>
+    <div class="map-wrap">
+      <figure class="map-fig" style="margin:0"><figcaption>Vista anteriore</figcaption><div id="map-ant"></div></figure>
+      <figure class="map-fig" style="margin:0"><figcaption>Vista posteriore</figcaption><div id="map-post"></div></figure>
+      <div class="map-side" id="map-side"></div>
+    </div>
+  </section>
+
+  <!-- PEDALATA -->
+  <section class="view" id="v-pedalata" hidden>
+    <h2 class="sec">Chi lavora durante la pedalata</h2>
+    <p class="intro">Trascina il pedale sulla ruota o usa il cursore. 0° è il punto morto superiore (PMS, pedivella in alto), 180° il punto morto inferiore (PMI). La bici è vista dal lato destro e il ciclista va verso destra. Gli intervalli derivano da studi elettromiografici e sono <strong>indicativi</strong>: cambiano con potenza, cadenza, posizione e atleta.</p>
+    <div class="pedal">
+      <div class="wheel-box">
+        <div id="wheel"></div>
+        <div class="angle-row">
+          <button class="btn pri" id="play" type="button">Avvia</button>
+          <input id="ang" type="range" min="0" max="359" value="90" aria-label="Angolo della pedivella">
+          <span class="angle-val" id="angv">90°</span>
+        </div>
+        <div class="phase-now" id="phase"></div>
+      </div>
+      <div class="mlist" id="mlist"></div>
+    </div>
+    <div class="cards">
+      <div class="card"><h4>Fase di spinta (0°–180°)</h4><p>Lavorano soprattutto grande gluteo e quadricipite (vasti), poi soleo e gastrocnemio che trasmettono la forza al pedale. È qui che si produce la maggior parte della potenza.</p></div>
+      <div class="card"><h4>Punto morto inferiore (≈150°–230°)</h4><p>Femorali e gastrocnemio «tirano» il pedale indietro e lo accompagnano oltre il fondo della pedalata.</p></div>
+      <div class="card"><h4>Risalita (180°–360°)</h4><p>Ileopsoas, retto femorale e tibiale anteriore riportano su la gamba e la punta del piede. Nella pedalata normale la gamba in risalita alleggerisce il pedale più che tirarlo.</p></div>
+    </div>
+  </section>
+
+  <!-- MASSAGGIO -->
+  <section class="view" id="v-massaggio" hidden>
+    <h2 class="sec">Protocolli di massaggio</h2>
+    <p class="intro">Tempi, ritmo, pressione e sequenza per ogni momento della stagione. Il massaggio drenante va sempre in direzione centripeta: dal piede verso l'inguine.</p>
+    <div class="ptabs" id="ptabs"></div>
+    <div id="pbody"></div>
+    <h3 class="sub">Tecniche</h3>
+    <div class="cards" id="tecniche"></div>
+  </section>
+
+  <!-- SICUREZZA -->
+  <section class="view" id="v-sicurezza" hidden>
+    <h2 class="sec">Sicurezza</h2>
+    <p class="intro">Le zone dove passano vasi e nervi superficiali, e i casi in cui il massaggio non si fa. Nel dubbio, non massaggiare e chiedi al medico della squadra.</p>
+    <h3 class="sub">Zone a rischio</h3>
+    <div class="cards" id="zone"></div>
+    <h3 class="sub">Non massaggiare: invia al medico</h3>
+    <div class="cards" id="ci-ass"></div>
+    <h3 class="sub">Adatta il trattamento o segnala</h3>
+    <div class="cards" id="ci-rel"></div>
+  </section>
+
+  <!-- CICLISTA -->
+  <section class="view" id="v-ciclista" hidden>
+    <h2 class="sec">Problemi frequenti del ciclista</h2>
+    <p class="intro">Segni, muscoli da controllare, cause legate alla bici e quando inviare a medico, fisioterapista o biomeccanico. Il massaggiatore non fa diagnosi: osserva, tratta i tessuti e riferisce.</p>
+    <div class="cards" id="probl"></div>
+  </section>
+
+  <!-- TENDINI -->
+  <section class="view" id="v-tendini" hidden>
+    <h2 class="sec">Tendini e fasce</h2>
+    <p class="intro">Da dove partono e dove arrivano i tendini e le strutture fibrose più importanti per il ciclista.</p>
+    <div class="cards" id="tend"></div>
+  </section>
+
+  <!-- REPERE -->
+  <section class="view" id="v-repere" hidden>
+    <h2 class="sec">Punti di repere ossei</h2>
+    <p class="intro">I punti ossei che usi per trovare origini e inserzioni con le mani.</p>
+    <div class="cards" id="rep"></div>
+  </section>
+
+  <!-- RIPASSO -->
+  <section class="view" id="v-ripasso" hidden>
+    <h2 class="sec">Ripasso</h2>
+    <div class="stat-row" id="stats"></div>
+    <div class="ptabs" id="rtabs">
+      <button class="chip" data-r="quiz" aria-pressed="true" type="button">Quiz</button>
+      <button class="chip" data-r="flash" aria-pressed="false" type="button">Flashcard</button>
+    </div>
+    <div class="controls">
+      <select id="rreg" aria-label="Regione"></select>
+      <select id="rtipo" aria-label="Tipo di domanda">
+        <option value="misto">Domande miste</option>
+        <option value="origine">Qual è l'origine?</option>
+        <option value="inserzione">Qual è l'inserzione?</option>
+        <option value="nervo">Qual è il nervo?</option>
+        <option value="chi-o">Di chi è questa origine?</option>
+        <option value="chi-i">Di chi è questa inserzione?</option>
+      </select>
+      <select id="fdeck" aria-label="Mazzo flashcard" hidden>
+        <option value="tutti">Tutte le carte</option><option value="ripassare">Solo da ripassare</option><option value="dafare">Solo non studiate</option>
+      </select>
+      <button class="btn pri" id="rstart" type="button">Nuovo quiz</button>
+    </div>
+    <div id="rbody"></div>
+  </section>
+
+  <!-- TABELLA -->
+  <section class="view" id="v-tabella" hidden>
+    <h2 class="sec">Tabella riassuntiva</h2>
+    <p class="intro">Tutti i muscoli in una tabella, per un ripasso veloce. Su telefono scorri la tabella di lato.</p>
+    <div class="tbl-wrap"><table id="tbl"></table></div>
+  </section>
+</main>
+
+<footer class="ft"><div class="wrap">Runner Progression · Materiale di studio per massaggiatori sportivi. Le descrizioni seguono i principali testi di anatomia; la variabilità individuale esiste. Il massaggio non sostituisce la valutazione medica.</div></footer>
+
+<div class="scrim" id="scrim" hidden></div>
+<aside class="panel" id="panel" hidden aria-modal="true" role="dialog" aria-labelledby="d-title">
+  <div class="panel-top">
+    <button class="icon-btn" id="pclose" type="button" aria-label="Chiudi"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+    <span class="sp"></span>
+    <button class="icon-btn" id="pprev" type="button" aria-label="Muscolo precedente"><svg viewBox="0 0 24 24"><path d="M15 6l-6 6 6 6"/></svg></button>
+    <button class="icon-btn" id="pnext" type="button" aria-label="Muscolo successivo"><svg viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg></button>
+  </div>
+  <div class="panel-body" id="pbody-m"></div>
+</aside>
+
+<script>
+/* =====================================================================
+   ANATOMIA DELL'ARTO INFERIORE PER IL MASSAGGIO SPORTIVO NEL CICLISMO
+   Runner Progression — fonte unica di dati per web app e PDF.
+   Nomenclatura italiana (con nome latino). Innervazione: radici
+   principali secondo i testi di riferimento (Gray's, Moore, Netter);
+   la variabilità individuale esiste ed è normale.
+   oK / iK = chiavi dei punti ossei usate dal quiz per non proporre
+   risposte "sbagliate" che in realtà condividono lo stesso attacco.
+   ===================================================================== */
+
+const REGIONI = [
+  { id: "glutea", nome: "Regione glutea e rotatori dell'anca", breve: "Glutei e rotatori", vista: "post" },
+  { id: "flessori-anca", nome: "Flessori profondi dell'anca (ileopsoas)", breve: "Ileopsoas", vista: "ant" },
+  { id: "coscia-ant", nome: "Coscia — loggia anteriore", breve: "Coscia anteriore", vista: "ant" },
+  { id: "coscia-med", nome: "Coscia — loggia mediale (adduttori)", breve: "Adduttori", vista: "ant" },
+  { id: "coscia-post", nome: "Coscia — loggia posteriore (ischiocrurali)", breve: "Femorali", vista: "post" },
+  { id: "gamba-ant", nome: "Gamba — loggia anteriore", breve: "Gamba anteriore", vista: "ant" },
+  { id: "gamba-lat", nome: "Gamba — loggia laterale (peronei)", breve: "Peronei", vista: "ant" },
+  { id: "gamba-post-sup", nome: "Gamba — loggia posteriore superficiale (tricipite surale)", breve: "Polpaccio", vista: "post" },
+  { id: "gamba-post-prof", nome: "Gamba — loggia posteriore profonda", breve: "Polpaccio profondo", vista: "post" },
+  { id: "piede-dors", nome: "Piede — dorso", breve: "Dorso del piede", vista: "ant" },
+  { id: "piede-plant", nome: "Piede — pianta (4 strati)", breve: "Pianta del piede", vista: "post" }
+];
+
+const NERVI = {
+  "gluteo-sup": "N. gluteo superiore",
+  "gluteo-inf": "N. gluteo inferiore",
+  "piriforme": "N. del piriforme (plesso sacrale)",
+  "otturatore-int": "N. per l'otturatore interno",
+  "quadrato-fem": "N. per il quadrato del femore",
+  "lombari": "Rami anteriori dei nervi lombari (plesso lombare)",
+  "femorale": "N. femorale",
+  "otturatorio": "N. otturatorio",
+  "tibiale": "N. tibiale (componente del n. sciatico)",
+  "peroneo-comune": "N. peroneo (fibulare) comune",
+  "peroneo-prof": "N. peroneo (fibulare) profondo",
+  "peroneo-sup": "N. peroneo (fibulare) superficiale",
+  "plantare-med": "N. plantare mediale",
+  "plantare-lat": "N. plantare laterale"
+};
+
+const MUSCOLI = [
+  /* ---------------------------------------------------------------- GLUTEA */
+  {
+    id: "grande-gluteo", nome: "Grande gluteo", lat: "M. gluteus maximus", regione: "glutea", tipo: "monoarticolare",
+    o: "Ileo dietro la linea glutea posteriore, sacro, coccige, legamento sacrotuberoso",
+    origine: "Faccia glutea dell'ileo posteriormente alla linea glutea posteriore e parte posteriore della cresta iliaca; faccia dorsale della parte inferiore del sacro e margine laterale del coccige; aponeurosi del muscolo erettore della colonna; legamento sacrotuberoso; fascia glutea.",
+    oK: ["ileo-esterno", "sacro", "coccige", "sacrotub", "cresta"],
+    i: "Tratto ileotibiale (fibre superficiali) e tuberosità glutea del femore (fibre profonde)",
+    inserzione: "La maggior parte delle fibre (superficiali e superiori, circa 3/4) si inserisce nel tratto ileotibiale della fascia lata; le fibre profonde della parte inferiore si inseriscono sulla tuberosità glutea del femore.",
+    iK: ["til", "tub-glutea"],
+    nK: ["gluteo-inf"], radici: "L5–S2",
+    azione: ["Estensione dell'anca (soprattutto da anca flessa: salire scale, spinta in salita)", "Extrarotazione dell'anca", "Fibre superiori: abduzione; fibre inferiori: adduzione", "Tramite il tratto ileotibiale stabilizza il ginocchio esteso"],
+    ciclismo: "Motore principale della fase di spinta (circa da 340° a 130° della pedivella). Il lavoro aumenta in salita, in piedi sui pedali e con rapporti duri. Un gluteo poco attivo sposta il carico su quadricipite e schiena.",
+    palpazione: "Atleta prono: chiedi di estendere l'anca a ginocchio flesso (alzare il tallone verso il soffitto). Il ventre si contrae tra cresta iliaca, margine laterale del sacro e piega glutea. Il margine inferiore NON coincide con la piega glutea.",
+    massaggio: "Prono, cuscino sotto le caviglie. Sfioramento ampio, impastamento a due mani, pressioni con il palmo o il pugno morbido lungo le fibre (dal sacro verso il grande trocantere). Frizioni lungo il margine sacrale e sotto la cresta iliaca. Nel recupero: pressioni sostenute sui punti tesi.",
+    attenzione: "Il nervo sciatico esce dal grande forame ischiatico sotto il piriforme, circa a metà fra tuberosità ischiatica e grande trocantere: lì niente pressioni profonde e prolungate con gomito o nocche. Verifica che la cute non sia irritata dalla sella (follicoliti, foruncoli)."
+  },
+  {
+    id: "medio-gluteo", nome: "Medio gluteo", lat: "M. gluteus medius", regione: "glutea", tipo: "monoarticolare",
+    o: "Faccia esterna dell'ileo tra linea glutea anteriore e posteriore",
+    origine: "Faccia esterna (glutea) dell'ala iliaca compresa tra la linea glutea anteriore e la linea glutea posteriore, sotto la cresta iliaca; fascia glutea che lo ricopre anteriormente.",
+    oK: ["ileo-esterno"],
+    i: "Faccia laterale del grande trocantere",
+    inserzione: "Faccia laterale del grande trocantere del femore (cresta obliqua che la attraversa in senso postero-superiore → antero-inferiore).",
+    iK: ["gr-trocantere"],
+    nK: ["gluteo-sup"], radici: "L4–S1",
+    azione: ["Abduzione dell'anca", "Fibre anteriori: intrarotazione e flessione", "Fibre posteriori: extrarotazione ed estensione", "Stabilizza il bacino sul piano frontale (impedisce la caduta del bacino dal lato opposto)"],
+    ciclismo: "Tiene il bacino stabile in sella e controlla la traiettoria del ginocchio durante la spinta. Se è debole il ginocchio tende a cadere verso l'interno (valgo dinamico): carico anomalo su rotula e bandelletta ileotibiale.",
+    palpazione: "Decubito laterale, anca leggermente estesa: chiedi un'abduzione contro resistenza. Si sente subito sotto la cresta iliaca, tra la cresta e il grande trocantere, davanti al grande gluteo.",
+    massaggio: "Decubito laterale (cuscino tra le ginocchia) o prono. Impastamento, pressioni digitali e frizioni trasversali dal margine della cresta verso il trocantere. Spesso è dolente nei ciclisti: aumenta la pressione in modo graduale.",
+    attenzione: "Sopra il grande trocantere c'è la borsa trocanterica: niente frizioni profonde direttamente sull'osso se l'area è dolente o calda."
+  },
+  {
+    id: "piccolo-gluteo", nome: "Piccolo gluteo", lat: "M. gluteus minimus", regione: "glutea", tipo: "monoarticolare",
+    o: "Faccia esterna dell'ileo tra linea glutea anteriore e inferiore",
+    origine: "Faccia esterna dell'ala iliaca compresa tra la linea glutea anteriore e la linea glutea inferiore; margine della grande incisura ischiatica.",
+    oK: ["ileo-esterno"],
+    i: "Faccia anteriore del grande trocantere",
+    inserzione: "Faccetta anteriore (antero-laterale) del grande trocantere del femore; alcune fibre alla capsula articolare dell'anca.",
+    iK: ["gr-trocantere"],
+    nK: ["gluteo-sup"], radici: "L4–S1",
+    azione: ["Abduzione dell'anca", "Intrarotazione dell'anca (fibre anteriori)", "Stabilizza il bacino e tiene centrata la testa del femore"],
+    ciclismo: "Lavora insieme al medio gluteo per stabilizzare bacino e anca a ogni pedalata. I suoi punti trigger possono dare dolore riferito sul lato della coscia e della gamba, simile a una sciatalgia.",
+    palpazione: "È profondo, sotto il medio gluteo: non si isola con certezza. Lo raggiungi indirettamente in decubito laterale, nella zona antero-superiore al grande trocantere, chiedendo una leggera intrarotazione.",
+    massaggio: "Pressioni profonde, lente, attraverso il medio gluteo, solo nelle sedute di recupero (non pre-gara). Decubito laterale.",
+    attenzione: ""
+  },
+  {
+    id: "tensore-fascia-lata", nome: "Tensore della fascia lata", lat: "M. tensor fasciae latae", regione: "glutea", tipo: "biarticolare (tramite il tratto ileotibiale)",
+    o: "SIAS e parte anteriore del labbro esterno della cresta iliaca",
+    origine: "Spina iliaca antero-superiore (SIAS) e parte anteriore del labbro esterno della cresta iliaca; faccia profonda della fascia lata.",
+    oK: ["sias", "cresta"],
+    i: "Tratto ileotibiale → tubercolo di Gerdy (condilo laterale della tibia)",
+    inserzione: "Si inserisce nel tratto ileotibiale, tra i due foglietti della fascia lata, nel terzo superiore della coscia; attraverso il tratto agisce fino al tubercolo di Gerdy (tubercolo antero-laterale del condilo laterale della tibia).",
+    iK: ["til"],
+    nK: ["gluteo-sup"], radici: "L4–S1",
+    azione: ["Flessione, abduzione e intrarotazione dell'anca", "Mette in tensione la fascia lata e il tratto ileotibiale", "Stabilizza il ginocchio esteso"],
+    ciclismo: "Con la posizione a busto flesso lavora sempre accorciato e diventa spesso ipertonico. È uno dei muscoli da controllare in caso di dolore laterale al ginocchio (sindrome della bandelletta ileotibiale).",
+    palpazione: "Supino: appena sotto e lateralmente alla SIAS. Chiedi flessione + intrarotazione dell'anca: senti un ventre ovale, piccolo, che si contrae subito.",
+    massaggio: "Supino o in decubito laterale. Impastamento, pressioni sostenute sul ventre, frizioni trasversali. Lavora anche la zona di passaggio verso il tratto ileotibiale con sfioramento profondo in direzione prossimale.",
+    attenzione: "Medialmente alla SIAS passa il nervo cutaneo femorale laterale (sotto il legamento inguinale): una pressione insistente lì può dare formicolio sulla coscia laterale."
+  },
+  {
+    id: "piriforme", nome: "Piriforme", lat: "M. piriformis", regione: "glutea", tipo: "monoarticolare",
+    o: "Faccia anteriore (pelvica) del sacro, tra i forami sacrali S2–S4",
+    origine: "Faccia anteriore (pelvica) del sacro, ai lati del 2°–4° forame sacrale anteriore; margine superiore della grande incisura ischiatica; parte del legamento sacrotuberoso.",
+    oK: ["sacro-ant", "sacrotub"],
+    i: "Margine superiore del grande trocantere",
+    inserzione: "Margine superiore (apice) del grande trocantere del femore, con un tendine rotondo che esce dal bacino attraverso il grande forame ischiatico.",
+    iK: ["gr-trocantere-apice"],
+    nK: ["piriforme"], radici: "S1–S2",
+    azione: ["Extrarotazione dell'anca estesa", "Abduzione dell'anca flessa", "Con l'anca molto flessa (oltre circa 60–90°) la sua azione di rotazione si inverte verso l'intrarotazione", "Stabilizza la testa del femore nell'acetabolo"],
+    ciclismo: "In sella l'anca resta sempre flessa e il piriforme lavora come stabilizzatore per ore. Può dare dolore gluteo profondo e, raramente, irritare il nervo sciatico (\"sindrome del piriforme\").",
+    palpazione: "Prono. Traccia una linea dal margine supero-laterale del sacro (livello S2, poco sotto la SIPS) all'apice del grande trocantere: il piriforme si trova lungo questa linea, sotto il grande gluteo. Con il ginocchio flesso a 90° fai ruotare l'anca per sentirlo tendersi.",
+    massaggio: "Prono. Pressioni lente con pollice o pugno morbido sulla linea sacro–trocantere, attraverso il grande gluteo rilassato; frizioni trasversali vicino al trocantere. Nel recupero puoi associare una rotazione passiva dell'anca.",
+    attenzione: "Il nervo sciatico esce sotto il piriforme (in una minoranza di persone lo attraversa o passa sopra). Se durante la pressione l'atleta sente scossa, formicolio o dolore che scende lungo la gamba, togli subito pressione e spostati."
+  },
+  {
+    id: "otturatore-interno", nome: "Otturatore interno", lat: "M. obturator internus", regione: "glutea", tipo: "monoarticolare",
+    o: "Faccia interna della membrana otturatoria e dei margini del forame otturato",
+    origine: "Faccia interna (pelvica) della membrana otturatoria e delle ossa che delimitano il forame otturato (pube e ischio). Il tendine esce dal bacino attraverso il piccolo forame ischiatico, piegando ad angolo sull'ischio.",
+    oK: ["membr-otturatoria-int"],
+    i: "Faccia mediale del grande trocantere (con i due gemelli)",
+    inserzione: "Faccia mediale del grande trocantere, sopra la fossa trocanterica, insieme ai tendini dei muscoli gemelli superiore e inferiore.",
+    iK: ["gr-trocantere-mediale"],
+    nK: ["otturatore-int"], radici: "L5–S2",
+    azione: ["Extrarotazione dell'anca estesa", "Abduzione dell'anca flessa", "Stabilizza la testa del femore nell'acetabolo"],
+    ciclismo: "Fa parte del gruppo dei rotatori profondi che tengono stabile l'anca durante la pedalata. Lavora in modo continuo e a basso carico.",
+    palpazione: "Non palpabile in modo isolato. Il suo tendine (con i gemelli) si raggiunge in profondità tra la tuberosità ischiatica e il grande trocantere, sotto il piriforme.",
+    massaggio: "Lavoro indiretto attraverso il grande gluteo nella zona tra tuberosità ischiatica e trocantere, con pressioni lente. Solo nelle sedute di recupero.",
+    attenzione: "La zona è vicina al decorso del nervo sciatico: pressioni graduali e attenzione alle sensazioni riferite."
+  },
+  {
+    id: "gemello-superiore", nome: "Gemello superiore", lat: "M. gemellus superior", regione: "glutea", tipo: "monoarticolare",
+    o: "Faccia esterna della spina ischiatica",
+    origine: "Faccia esterna (glutea) della spina ischiatica.",
+    oK: ["spina-isch"],
+    i: "Tendine dell'otturatore interno → faccia mediale del grande trocantere",
+    inserzione: "Si fonde con il margine superiore del tendine dell'otturatore interno e si inserisce con esso sulla faccia mediale del grande trocantere.",
+    iK: ["gr-trocantere-mediale"],
+    nK: ["otturatore-int"], radici: "L5–S2",
+    azione: ["Extrarotazione dell'anca estesa", "Abduzione dell'anca flessa", "Stabilizza la testa del femore"],
+    ciclismo: "Rotatore profondo e stabilizzatore dell'anca.",
+    palpazione: "Non palpabile in modo isolato (profondo, sotto il grande gluteo, appena sotto il piriforme).",
+    massaggio: "Lavoro indiretto insieme agli altri rotatori profondi.",
+    attenzione: "Vicinanza al nervo sciatico."
+  },
+  {
+    id: "gemello-inferiore", nome: "Gemello inferiore", lat: "M. gemellus inferior", regione: "glutea", tipo: "monoarticolare",
+    o: "Parte superiore della tuberosità ischiatica",
+    origine: "Parte superiore della tuberosità ischiatica.",
+    oK: ["tub-isch"],
+    i: "Tendine dell'otturatore interno → faccia mediale del grande trocantere",
+    inserzione: "Si fonde con il margine inferiore del tendine dell'otturatore interno e si inserisce con esso sulla faccia mediale del grande trocantere.",
+    iK: ["gr-trocantere-mediale"],
+    nK: ["quadrato-fem"], radici: "L4–S1",
+    azione: ["Extrarotazione dell'anca estesa", "Abduzione dell'anca flessa", "Stabilizza la testa del femore"],
+    ciclismo: "Rotatore profondo e stabilizzatore dell'anca.",
+    palpazione: "Non palpabile in modo isolato.",
+    massaggio: "Lavoro indiretto insieme agli altri rotatori profondi.",
+    attenzione: "Vicinanza al nervo sciatico."
+  },
+  {
+    id: "quadrato-femore", nome: "Quadrato del femore", lat: "M. quadratus femoris", regione: "glutea", tipo: "monoarticolare",
+    o: "Margine laterale della tuberosità ischiatica",
+    origine: "Margine laterale della tuberosità ischiatica.",
+    oK: ["tub-isch"],
+    i: "Tubercolo quadrato della cresta intertrocanterica",
+    inserzione: "Tubercolo quadrato sulla cresta intertrocanterica del femore e area immediatamente sottostante.",
+    iK: ["cresta-intertroc"],
+    nK: ["quadrato-fem"], radici: "L4–S1",
+    azione: ["Extrarotazione dell'anca", "Stabilizza la testa del femore nell'acetabolo"],
+    ciclismo: "Il più basso dei rotatori profondi: stabilizza l'anca in sella.",
+    palpazione: "Profondo: si raggiunge tra tuberosità ischiatica e grande trocantere, sotto il margine inferiore del grande gluteo, a livello del piccolo trocantere.",
+    massaggio: "Pressioni lente e graduali, atleta prono, nelle sedute di recupero.",
+    attenzione: "Il nervo sciatico scende proprio sopra (posteriormente a) questo muscolo."
+  },
+  {
+    id: "otturatore-esterno", nome: "Otturatore esterno", lat: "M. obturator externus", regione: "glutea", tipo: "monoarticolare",
+    o: "Faccia esterna della membrana otturatoria e dei margini del forame otturato",
+    origine: "Faccia esterna della membrana otturatoria e margini ossei del forame otturato (rami del pube e dell'ischio).",
+    oK: ["membr-otturatoria-est"],
+    i: "Fossa trocanterica del femore",
+    inserzione: "Fossa trocanterica del femore (faccia mediale del grande trocantere, alla base), con un tendine che passa sotto il collo del femore.",
+    iK: ["fossa-troc"],
+    nK: ["otturatorio"], radici: "L3–L4",
+    azione: ["Extrarotazione dell'anca", "Stabilizza la testa del femore nell'acetabolo"],
+    ciclismo: "Stabilizzatore profondo dell'anca. È l'unico rotatore esterno innervato dal n. otturatorio.",
+    palpazione: "Non palpabile: è il più profondo del gruppo, coperto dagli adduttori anteriormente e dal quadrato del femore posteriormente.",
+    massaggio: "Nessun lavoro diretto: si tratta con mobilizzazioni e lavoro sui muscoli vicini.",
+    attenzione: ""
+  },
+
+  /* -------------------------------------------------------- ILEOPSOAS */
+  {
+    id: "grande-psoas", nome: "Grande psoas", lat: "M. psoas major", regione: "flessori-anca", tipo: "poliarticolare (colonna lombare + anca)",
+    o: "Corpi vertebrali e dischi T12–L5, processi trasversi lombari",
+    origine: "Facce laterali dei corpi vertebrali da T12 a L5 e dei dischi intervertebrali interposti; processi trasversi di tutte le vertebre lombari (L1–L5).",
+    oK: ["vertebre-lomb"],
+    i: "Piccolo trocantere del femore (tendine comune con l'iliaco)",
+    inserzione: "Piccolo trocantere del femore, con un tendine comune all'iliaco (tendine dell'ileopsoas) che passa sotto il legamento inguinale e davanti all'articolazione dell'anca.",
+    iK: ["pic-trocantere"],
+    nK: ["lombari"], radici: "L1–L3",
+    azione: ["Flessione dell'anca (principale flessore)", "Con il femore fisso: flessione del tronco sul bacino", "Flessione laterale della colonna lombare (contrazione monolaterale)", "Contribuisce a stabilizzare la colonna lombare"],
+    ciclismo: "Riporta in alto la gamba nella fase di risalita (circa 200°–350°). Passa ore in posizione accorciata: un psoas rigido può tirare la lombare in avanti e contribuire al mal di schiena del ciclista.",
+    palpazione: "Supino, ginocchia flesse. Il ventre si raggiunge solo in profondità dall'addome, lateralmente al margine del muscolo retto, scendendo lentamente con l'espirazione e chiedendo una leggera flessione dell'anca. Il tendine si sente sotto il legamento inguinale, lateralmente all'arteria femorale.",
+    massaggio: "Il lavoro diretto addominale richiede formazione specifica e consenso dell'atleta. In alternativa: lavoro sull'iliaco dalla cresta iliaca, stretching (affondo con bacino in retroversione) e mobilizzazioni. Mai pre-gara in profondità.",
+    attenzione: "Approccio addominale: aorta addominale e arterie iliache (se senti una pulsazione, spostati), intestino, reni. Controindicato con dolore addominale, ernie, problemi intestinali o vascolari. A livello inguinale c'è il triangolo femorale: niente pressioni profonde."
+  },
+  {
+    id: "piccolo-psoas", nome: "Piccolo psoas (incostante)", lat: "M. psoas minor", regione: "flessori-anca", tipo: "poliarticolare",
+    o: "Facce laterali dei corpi T12–L1 e disco interposto",
+    origine: "Facce laterali dei corpi vertebrali di T12 e L1 e del disco intervertebrale interposto. Manca in circa il 40% delle persone.",
+    oK: ["vertebre-lomb"],
+    i: "Linea pettinea ed eminenza ileopubica",
+    inserzione: "Linea pettinea del pube ed eminenza ileopubica (ileopettinea), tramite l'arco ileopettineo.",
+    iK: ["eminenza-ileopubica"],
+    nK: ["lombari"], radici: "L1",
+    azione: ["Debole flessione del tronco sul bacino", "Mette in tensione la fascia iliaca"],
+    ciclismo: "Ruolo minore. Da conoscere perché può essere assente.",
+    palpazione: "Non palpabile in modo isolato.",
+    massaggio: "Nessun lavoro specifico.",
+    attenzione: ""
+  },
+  {
+    id: "iliaco", nome: "Iliaco", lat: "M. iliacus", regione: "flessori-anca", tipo: "monoarticolare",
+    o: "Fossa iliaca, labbro interno della cresta iliaca, ala del sacro",
+    origine: "Due terzi superiori della fossa iliaca; labbro interno della cresta iliaca; ala del sacro; legamenti sacroiliaci anteriori e ileolombare.",
+    oK: ["fossa-iliaca", "cresta"],
+    i: "Piccolo trocantere (tendine dello psoas) e femore subito sotto",
+    inserzione: "Tendine del grande psoas e piccolo trocantere; alcune fibre si inseriscono direttamente sul corpo del femore subito sotto il piccolo trocantere.",
+    iK: ["pic-trocantere"],
+    nK: ["femorale"], radici: "L2–L3",
+    azione: ["Flessione dell'anca (insieme al grande psoas forma l'ileopsoas)", "Antiverte il bacino con il femore fisso"],
+    ciclismo: "Flessore dell'anca nella fase di risalita, sempre in posizione accorciata in sella. Spesso teso e dolente.",
+    palpazione: "Supino, ginocchia flesse per rilassare l'addome. Appoggia i polpastrelli sul margine interno della cresta iliaca, subito medialmente alla SIAS, e scivola dentro la fossa iliaca seguendo l'osso. Chiedi di sollevare leggermente il piede: senti il muscolo tendersi.",
+    massaggio: "Pressioni lente con i polpastrelli, sempre a contatto con l'osso della fossa iliaca, in espirazione. Tieni il ritmo dell'atleta, interrompi se il fastidio è eccessivo. Ottimo nel recupero dopo tappe lunghe.",
+    attenzione: "Resta sull'osso: verso il centro dell'addome ci sono intestino e vasi iliaci. Evita il lavoro con colon irritato, dolore addominale o se l'atleta ha appena mangiato."
+  },
+
+  /* ---------------------------------------------------- COSCIA ANTERIORE */
+  {
+    id: "sartorio", nome: "Sartorio", lat: "M. sartorius", regione: "coscia-ant", tipo: "biarticolare",
+    o: "Spina iliaca antero-superiore (SIAS)",
+    origine: "Spina iliaca antero-superiore (SIAS) e parte superiore dell'incisura sottostante.",
+    oK: ["sias"],
+    i: "Faccia mediale della tibia, parte superiore (zampa d'oca)",
+    inserzione: "Parte superiore della faccia mediale della tibia, nella zampa d'oca superficiale, davanti ai tendini del gracile e del semitendinoso.",
+    iK: ["zampa-oca"],
+    nK: ["femorale"], radici: "L2–L3",
+    azione: ["Anca: flessione, abduzione ed extrarotazione (la posizione \"a gambe incrociate\")", "Ginocchio: flessione e, a ginocchio flesso, intrarotazione della tibia"],
+    ciclismo: "Muscolo lungo e sottile che partecipa alla flessione di anca e ginocchio nella risalita. Il suo tendine fa parte della zampa d'oca, sede di dolore mediale al ginocchio.",
+    palpazione: "Supino: metti il tallone sul ginocchio opposto (anca flessa, abdotta, extraruotata) e chiedi di sollevare leggermente la gamba. Il muscolo si vede come una banda obliqua che parte dalla SIAS e scende verso il lato interno del ginocchio.",
+    massaggio: "Supino. Sfioramento e impastamento leggero seguendo la banda dalla SIAS al ginocchio. Lavoro delicato: è sottile e superficiale.",
+    attenzione: "È il margine laterale del triangolo femorale. Nel terzo medio della coscia copre il canale degli adduttori (vasi femorali e nervo safeno): niente pressioni profonde sotto il muscolo."
+  },
+  {
+    id: "retto-femorale", nome: "Retto femorale", lat: "M. rectus femoris", regione: "coscia-ant", tipo: "biarticolare",
+    o: "Capo diretto: SIAI. Capo riflesso: sopra l'acetabolo",
+    origine: "Capo diretto: spina iliaca antero-inferiore (SIAI). Capo riflesso: solco sopracetabolare (sopra il margine dell'acetabolo) e capsula articolare dell'anca.",
+    oK: ["siai", "acetabolo"],
+    i: "Base della rotula → legamento rotuleo → tuberosità tibiale",
+    inserzione: "Base della rotula tramite il tendine quadricipitale; attraverso il legamento (tendine) rotuleo l'azione arriva alla tuberosità tibiale.",
+    iK: ["rotula", "tub-tibiale"],
+    nK: ["femorale"], radici: "L2–L4",
+    azione: ["Estensione del ginocchio", "Flessione dell'anca (unico capo del quadricipite che supera l'anca)"],
+    ciclismo: "Biarticolare: lavora soprattutto nel passaggio dal punto morto superiore (circa 200°–110°, attraverso lo 0°), cioè quando l'anca finisce di flettersi e il ginocchio comincia a estendersi. In bici resta corto all'anca: spesso è rigido.",
+    palpazione: "Supino o seduto: è il ventre centrale della coscia anteriore. Chiedi di sollevare la gamba tesa: si contrae al centro, a forma di V rovesciata sotto la SIAI.",
+    massaggio: "Supino, cuscino sotto le ginocchia. Sfioramento dal ginocchio verso l'inguine, impastamento a due mani, scuotimenti. Nel recupero: frizioni lungo il setto con i vasti e stretching in decubito prono o laterale.",
+    attenzione: "In alto, verso l'inguine, rimani lateralmente: medialmente c'è il triangolo femorale."
+  },
+  {
+    id: "vasto-laterale", nome: "Vasto laterale", lat: "M. vastus lateralis", regione: "coscia-ant", tipo: "monoarticolare",
+    o: "Linea intertrocanterica (alto), grande trocantere, tuberosità glutea, labbro laterale della linea aspra",
+    origine: "Parte superiore della linea intertrocanterica; margini anteriore e inferiore del grande trocantere; labbro laterale della tuberosità glutea; metà prossimale del labbro laterale della linea aspra; setto intermuscolare laterale.",
+    oK: ["linea-intertroc", "gr-trocantere", "tub-glutea", "linea-aspra"],
+    i: "Base e margine laterale della rotula, retinacolo laterale → tuberosità tibiale",
+    inserzione: "Base e margine laterale della rotula tramite il tendine quadricipitale; espansione nel retinacolo rotuleo laterale; attraverso il legamento rotuleo l'azione arriva alla tuberosità tibiale.",
+    iK: ["rotula", "tub-tibiale"],
+    nK: ["femorale"], radici: "L2–L4",
+    azione: ["Estensione del ginocchio", "Tramite il retinacolo laterale tira la rotula lateralmente"],
+    ciclismo: "Il muscolo più grande del quadricipite e uno dei più importanti nella spinta (circa 300°–130°). Nei ciclisti è spesso molto sviluppato e rigido: con un vasto mediale poco attivo può spostare la rotula lateralmente.",
+    palpazione: "Supino: ventre laterale della coscia, davanti e sotto il tratto ileotibiale. Si contrae estendendo il ginocchio.",
+    massaggio: "Supino o decubito laterale. Impastamento profondo, pressioni con palmo o avambraccio dal ginocchio verso il trocantere, frizioni lungo il margine con il tratto ileotibiale. È il muscolo dove lo \"scollamento\" della fascia dà più sollievo nel recupero.",
+    attenzione: "Il tratto ileotibiale è tessuto fibroso: non si \"allunga\" massaggiandolo. Lavora il muscolo sotto e accanto, senza pressioni dolorose sulla banda."
+  },
+  {
+    id: "vasto-mediale", nome: "Vasto mediale", lat: "M. vastus medialis", regione: "coscia-ant", tipo: "monoarticolare",
+    o: "Linea intertrocanterica (basso), linea spirale, labbro mediale della linea aspra, tendini degli adduttori",
+    origine: "Parte inferiore della linea intertrocanterica; linea spirale; labbro mediale della linea aspra; parte prossimale della linea sopracondiloidea mediale; tendini dell'adduttore lungo e del grande adduttore; setto intermuscolare mediale.",
+    oK: ["linea-intertroc", "linea-aspra", "sopracond-med"],
+    i: "Base e margine mediale della rotula, retinacolo mediale → tuberosità tibiale",
+    inserzione: "Base e margine mediale della rotula tramite il tendine quadricipitale; espansione nel retinacolo rotuleo mediale; attraverso il legamento rotuleo l'azione arriva alla tuberosità tibiale. Le fibre distali oblique (vasto mediale obliquo, VMO) arrivano quasi orizzontali sul margine mediale della rotula.",
+    iK: ["rotula", "tub-tibiale"],
+    nK: ["femorale"], radici: "L2–L4",
+    azione: ["Estensione del ginocchio", "Le fibre oblique (VMO) stabilizzano la rotula medialmente"],
+    ciclismo: "Spinge insieme al vasto laterale (circa 300°–130°). Il suo equilibrio con il vasto laterale conta per il corretto scorrimento della rotula: è un muscolo chiave nel dolore anteriore di ginocchio.",
+    palpazione: "Supino, ginocchio esteso: il ventre a \"goccia\" sopra e medialmente alla rotula. Si contrae spingendo il ginocchio contro il lettino.",
+    massaggio: "Supino. Impastamento e pressioni dalla rotula verso l'alto e medialmente, lungo il setto con gli adduttori. Lavoro più delicato del vasto laterale.",
+    attenzione: "Nel terzo medio, sotto il sartorio, c'è il canale degli adduttori: lavora il ventre, senza affondare sotto il sartorio."
+  },
+  {
+    id: "vasto-intermedio", nome: "Vasto intermedio", lat: "M. vastus intermedius", regione: "coscia-ant", tipo: "monoarticolare",
+    o: "Faccia anteriore e laterale dei 2/3 superiori del femore",
+    origine: "Facce anteriore e laterale dei due terzi superiori del corpo del femore; parte inferiore del setto intermuscolare laterale.",
+    oK: ["corpo-femore"],
+    i: "Base della rotula (strato profondo del tendine quadricipitale) → tuberosità tibiale",
+    inserzione: "Base della rotula, nello strato profondo del tendine quadricipitale; attraverso il legamento rotuleo l'azione arriva alla tuberosità tibiale.",
+    iK: ["rotula", "tub-tibiale"],
+    nK: ["femorale"], radici: "L2–L4",
+    azione: ["Estensione del ginocchio"],
+    ciclismo: "Spinge insieme agli altri vasti. Profondo, lavora a contatto con l'osso.",
+    palpazione: "Non palpabile in modo isolato: si trova sotto il retto femorale. Si raggiunge spostando il retto femorale lateralmente o medialmente.",
+    massaggio: "Pressioni profonde attraverso il retto femorale rilassato; impastamento \"a pinza\" sollevando il retto femorale.",
+    attenzione: ""
+  },
+  {
+    id: "articolare-ginocchio", nome: "Articolare del ginocchio", lat: "M. articularis genus", regione: "coscia-ant", tipo: "monoarticolare",
+    o: "Faccia anteriore della parte distale del femore",
+    origine: "Faccia anteriore della parte distale del corpo del femore, sotto il vasto intermedio (spesso unito ad esso).",
+    oK: ["femore-distale-ant"],
+    i: "Borsa sovrarotulea (capsula del ginocchio)",
+    inserzione: "Parte superiore della membrana sinoviale del ginocchio e borsa sovrarotulea.",
+    iK: ["borsa-sovrarot"],
+    nK: ["femorale"], radici: "L3–L4",
+    azione: ["Tira in alto la borsa sovrarotulea durante l'estensione, evitando che resti pizzicata"],
+    ciclismo: "Piccolo muscolo che lavora a ogni estensione del ginocchio.",
+    palpazione: "Non palpabile.",
+    massaggio: "Nessun lavoro specifico.",
+    attenzione: ""
+  },
+
+  /* ---------------------------------------------------- COSCIA MEDIALE */
+  {
+    id: "pettineo", nome: "Pettineo", lat: "M. pectineus", regione: "coscia-med", tipo: "monoarticolare",
+    o: "Linea pettinea del pube (ramo superiore)",
+    origine: "Linea pettinea (pecten) del pube e superficie del ramo superiore del pube davanti ad essa.",
+    oK: ["linea-pettinea-pube"],
+    i: "Linea pettinea del femore, sotto il piccolo trocantere",
+    inserzione: "Linea pettinea del femore, tra il piccolo trocantere e la linea aspra.",
+    iK: ["linea-pettinea-fem"],
+    nK: ["femorale"], nKx: ["otturatorio"], radici: "L2–L3",
+    nervoNota: "N. femorale; a volte riceve anche un ramo dal n. otturatorio (o dall'otturatorio accessorio).",
+    azione: ["Adduzione dell'anca", "Flessione dell'anca"],
+    ciclismo: "Collabora alla risalita della gamba e alla stabilità dell'anca.",
+    palpazione: "Supino: forma il pavimento del triangolo femorale, tra ileopsoas (lato) e adduttore lungo (medio). Difficile da isolare.",
+    massaggio: "Solo lavoro leggero o indiretto (stretching in abduzione): si trova nel triangolo femorale.",
+    attenzione: "Sopra il pettineo passano arteria e vena femorali: niente pressioni profonde."
+  },
+  {
+    id: "adduttore-lungo", nome: "Adduttore lungo", lat: "M. adductor longus", regione: "coscia-med", tipo: "monoarticolare",
+    o: "Corpo del pube, sotto la cresta pubica, lateralmente alla sinfisi",
+    origine: "Faccia anteriore del corpo del pube, sotto la cresta pubica e lateralmente alla sinfisi pubica, con un tendine robusto e arrotondato.",
+    oK: ["pube-corpo"],
+    i: "Terzo medio del labbro mediale della linea aspra",
+    inserzione: "Terzo medio del labbro mediale della linea aspra del femore.",
+    iK: ["linea-aspra"],
+    nK: ["otturatorio"], radici: "L2–L4",
+    azione: ["Adduzione dell'anca", "Partecipa alla flessione dell'anca e alla stabilità del bacino"],
+    ciclismo: "Stabilizza la coscia e collabora nel passaggio dei punti morti. Nei ciclisti che fanno anche fuoristrada o ciclocross è più sollecitato.",
+    palpazione: "Supino, anca abdotta: il tendine è la corda più evidente vicino al pube, nell'angolo tra coscia e inguine. Il ventre scende obliquo verso il centro della coscia.",
+    massaggio: "Supino, gamba leggermente abdotta ed extraruotata (piede contro il ginocchio opposto). Impastamento, pressioni lungo il ventre dalla coscia verso il pube. Avvisa l'atleta prima di lavorare vicino all'inguine.",
+    attenzione: "È il margine mediale del triangolo femorale. Zona intima: comunica sempre cosa fai, usa un telo e rimani a distanza dai genitali. Dolore all'inserzione pubica = valuta con medico (pubalgia)."
+  },
+  {
+    id: "adduttore-breve", nome: "Adduttore breve", lat: "M. adductor brevis", regione: "coscia-med", tipo: "monoarticolare",
+    o: "Corpo e ramo inferiore del pube",
+    origine: "Corpo e ramo inferiore del pube, sotto l'origine dell'adduttore lungo.",
+    oK: ["pube-corpo", "pube-ramo-inf"],
+    i: "Linea pettinea (parte distale) e terzo superiore della linea aspra",
+    inserzione: "Parte distale della linea pettinea e parte prossimale (terzo superiore) della linea aspra del femore.",
+    iK: ["linea-pettinea-fem", "linea-aspra"],
+    nK: ["otturatorio"], radici: "L2–L4",
+    azione: ["Adduzione dell'anca", "Partecipa alla flessione dell'anca"],
+    ciclismo: "Stabilizzatore della coscia.",
+    palpazione: "Profondo, sotto adduttore lungo e pettineo: non si isola con certezza.",
+    massaggio: "Lavoro attraverso l'adduttore lungo con pressioni lente.",
+    attenzione: "Vicinanza al triangolo femorale."
+  },
+  {
+    id: "grande-adduttore", nome: "Grande adduttore", lat: "M. adductor magnus", regione: "coscia-med", tipo: "monoarticolare",
+    o: "Ramo inferiore del pube, ramo dell'ischio, tuberosità ischiatica",
+    origine: "Parte adduttoria: ramo inferiore del pube e ramo dell'ischio. Parte ischiocrurale (\"femorale\"): tuberosità ischiatica (porzione infero-laterale).",
+    oK: ["pube-ramo-inf", "ischio-ramo", "tub-isch"],
+    i: "Tuberosità glutea, linea aspra, linea sopracondiloidea mediale; tubercolo dell'adduttore",
+    inserzione: "Parte adduttoria: tuberosità glutea, linea aspra e linea sopracondiloidea mediale. Parte ischiocrurale: tubercolo dell'adduttore del femore (sopra il condilo mediale). Tra le due parti si apre lo iato degli adduttori.",
+    iK: ["tub-glutea", "linea-aspra", "sopracond-med", "tub-adduttore"],
+    nK: ["otturatorio", "tibiale"], radici: "L2–L4",
+    nervoNota: "Parte adduttoria: n. otturatorio (ramo posteriore, L2–L4). Parte ischiocrurale: componente tibiale del n. sciatico (L4).",
+    azione: ["Adduzione dell'anca", "Parte adduttoria: flessione dell'anca", "Parte ischiocrurale: estensione dell'anca"],
+    ciclismo: "Grande e potente: la parte ischiocrurale aiuta il grande gluteo nell'estensione dell'anca durante la spinta. Spesso contratto nei ciclisti di gare a tappe.",
+    palpazione: "Supino con anca abdotta o prono: è la massa più posteriore del lato interno della coscia, tra gracile e semimembranoso. Il tendine distale si sente sopra il condilo mediale, sul tubercolo dell'adduttore.",
+    massaggio: "Prono o supino a gamba abdotta. Impastamento ampio, pressioni con palmo o avambraccio dal ginocchio verso l'ischio, scuotimenti.",
+    attenzione: "Lo iato degli adduttori (terzo inferiore, sopra il ginocchio) è il passaggio dei vasi femorali verso il cavo popliteo: niente pressioni profonde puntiformi lì."
+  },
+  {
+    id: "gracile", nome: "Gracile", lat: "M. gracilis", regione: "coscia-med", tipo: "biarticolare",
+    o: "Corpo e ramo inferiore del pube",
+    origine: "Margine inferiore del corpo del pube e ramo inferiore del pube.",
+    oK: ["pube-corpo", "pube-ramo-inf"],
+    i: "Faccia mediale della tibia, parte superiore (zampa d'oca)",
+    inserzione: "Parte superiore della faccia mediale della tibia, nella zampa d'oca, tra il sartorio (davanti) e il semitendinoso (dietro).",
+    iK: ["zampa-oca"],
+    nK: ["otturatorio"], radici: "L2–L3",
+    azione: ["Adduzione dell'anca", "Flessione del ginocchio", "Intrarotazione della tibia a ginocchio flesso"],
+    ciclismo: "Il più superficiale e mediale degli adduttori. Biarticolare: partecipa alla flessione del ginocchio nella risalita. Fa parte della zampa d'oca.",
+    palpazione: "Supino, anca abdotta: dietro il tendine dell'adduttore lungo, un tendine sottile che scende lungo il lato interno della coscia fino al ginocchio.",
+    massaggio: "Sfioramento e impastamento leggero lungo il lato interno della coscia. Pinzamento delicato del ventre sottile.",
+    attenzione: "Zona intima in alto: comunica e usa il telo."
+  },
+
+  /* ------------------------------------------------- COSCIA POSTERIORE */
+  {
+    id: "bicipite-femorale", nome: "Bicipite femorale", lat: "M. biceps femoris", regione: "coscia-post", tipo: "capo lungo biarticolare, capo breve monoarticolare",
+    o: "Capo lungo: tuberosità ischiatica. Capo breve: linea aspra e linea sopracondiloidea laterale",
+    origine: "Capo lungo: faccetta infero-mediale della parte superiore della tuberosità ischiatica, con un tendine comune al semitendinoso, e legamento sacrotuberoso. Capo breve: labbro laterale della linea aspra e due terzi prossimali della linea sopracondiloidea laterale del femore.",
+    oK: ["tub-isch", "sacrotub", "linea-aspra", "sopracond-lat"],
+    i: "Testa della fibula (faccia laterale)",
+    inserzione: "Faccia laterale della testa della fibula; il tendine è diviso in due dal legamento collaterale laterale del ginocchio. Alcune fibre raggiungono il condilo laterale della tibia.",
+    iK: ["testa-fibula"],
+    nK: ["tibiale", "peroneo-comune"], radici: "L5–S2",
+    nervoNota: "Capo lungo: componente tibiale del n. sciatico. Capo breve: componente peronea comune del n. sciatico (L5–S2).",
+    azione: ["Flessione del ginocchio", "Extrarotazione della tibia a ginocchio flesso", "Capo lungo: estensione dell'anca"],
+    ciclismo: "I femorali lavorano soprattutto da circa 10° a 230°: estendono l'anca nella seconda metà della spinta e \"tirano\" la pedivella oltre il punto morto inferiore. Una sella troppo alta li mette in tensione eccessiva (dolore dietro il ginocchio).",
+    palpazione: "Prono, ginocchio flesso contro resistenza: il tendine è la corda laterale del cavo popliteo e si segue fino alla testa della fibula. Il ventre occupa il lato posteriore-esterno della coscia.",
+    massaggio: "Prono, cuscino sotto le caviglie. Sfioramento dal ginocchio all'ischio, impastamento a due mani, pressioni lungo il ventre, scuotimenti. Nel recupero frizioni trasversali sul ventre (non sul tendine se dolente).",
+    attenzione: "Il nervo peroneo comune scorre lungo il margine mediale del tendine del bicipite e gira intorno al collo della fibula, subito sotto la testa: lì niente pressioni o frizioni (rischio di parestesie). Nel cavo popliteo solo sfioramento leggero."
+  },
+  {
+    id: "semitendinoso", nome: "Semitendinoso", lat: "M. semitendinosus", regione: "coscia-post", tipo: "biarticolare",
+    o: "Tuberosità ischiatica (tendine comune con il capo lungo del bicipite)",
+    origine: "Faccetta infero-mediale della parte superiore della tuberosità ischiatica, con un tendine comune al capo lungo del bicipite femorale.",
+    oK: ["tub-isch"],
+    i: "Faccia mediale della tibia, parte superiore (zampa d'oca)",
+    inserzione: "Parte superiore della faccia mediale della tibia, nella zampa d'oca, dietro (e sotto) al tendine del gracile.",
+    iK: ["zampa-oca"],
+    nK: ["tibiale"], radici: "L5–S2",
+    azione: ["Estensione dell'anca", "Flessione del ginocchio", "Intrarotazione della tibia a ginocchio flesso"],
+    ciclismo: "Femorale mediale: lavora con il bicipite nella seconda parte della spinta e nel passaggio del punto morto inferiore.",
+    palpazione: "Prono, ginocchio flesso contro resistenza: il tendine sottile e superficiale è la corda mediale più evidente del cavo popliteo.",
+    massaggio: "Come il bicipite femorale, sul lato mediale della coscia posteriore.",
+    attenzione: "Nel cavo popliteo solo sfioramento: arteria e vena poplitee, nervo tibiale."
+  },
+  {
+    id: "semimembranoso", nome: "Semimembranoso", lat: "M. semimembranosus", regione: "coscia-post", tipo: "biarticolare",
+    o: "Tuberosità ischiatica (faccetta supero-laterale)",
+    origine: "Faccetta supero-laterale della tuberosità ischiatica, con un tendine appiattito e membranoso (da qui il nome).",
+    oK: ["tub-isch"],
+    i: "Faccia posteriore del condilo mediale della tibia",
+    inserzione: "Parte posteriore del condilo mediale della tibia (solco orizzontale). Espansioni: legamento popliteo obliquo, fascia del muscolo popliteo, capsula e menisco mediale.",
+    iK: ["condilo-tib-med"],
+    nK: ["tibiale"], radici: "L5–S2",
+    azione: ["Estensione dell'anca", "Flessione del ginocchio", "Intrarotazione della tibia a ginocchio flesso", "Tira indietro il menisco mediale durante la flessione"],
+    ciclismo: "Femorale mediale profondo e voluminoso. Lavora con gli altri femorali nella spinta e nel passaggio del punto morto inferiore.",
+    palpazione: "Prono: ai lati del tendine del semitendinoso, più profondo e più largo, sopra il ginocchio sul lato mediale.",
+    massaggio: "Impastamento e pressioni sul lato mediale della coscia posteriore. Lavora la zona sopra il ginocchio con pollici, senza entrare nel cavo popliteo.",
+    attenzione: "Nel cavo popliteo solo sfioramento."
+  },
+
+  /* ---------------------------------------------------- GAMBA ANTERIORE */
+  {
+    id: "tibiale-anteriore", nome: "Tibiale anteriore", lat: "M. tibialis anterior", regione: "gamba-ant", tipo: "monoarticolare (caviglia e piede)",
+    o: "Condilo laterale e metà superiore della faccia laterale della tibia, membrana interossea",
+    origine: "Condilo laterale e metà (fino a due terzi) superiore della faccia laterale della tibia; membrana interossea; fascia crurale profonda.",
+    oK: ["condilo-tib-lat", "tibia-lat", "membr-interossea"],
+    i: "Cuneiforme mediale (faccia mediale e plantare) e base del 1° metatarso",
+    inserzione: "Faccia mediale e plantare del cuneiforme mediale e base del primo metatarso.",
+    iK: ["cuneiforme-med", "meta1-base"],
+    nK: ["peroneo-prof"], radici: "L4–L5",
+    azione: ["Flessione dorsale della caviglia", "Inversione (supinazione) del piede", "Sostiene l'arco longitudinale mediale"],
+    ciclismo: "Attivo soprattutto nella risalita e nel passaggio del punto morto superiore (circa 280°–90°): alza la punta del piede. Lavora molto con la pedalata \"rotonda\" e con tacchette troppo arretrate. Fastidi frequenti con scarpe troppo strette in punta o al collo del piede.",
+    palpazione: "Supino o seduto: subito lateralmente alla cresta tibiale. Chiedi di alzare la punta e girare il piede all'interno: il tendine diventa la corda più evidente sulla parte anteriore-mediale della caviglia.",
+    massaggio: "Supino. Sfioramento dalla caviglia al ginocchio, impastamento a pollici alternati, pressioni lungo il ventre accanto alla tibia. Evita di premere sull'osso (cresta tibiale).",
+    attenzione: "Dolore intenso e crescente in loggia anteriore durante lo sforzo, che passa solo a riposo, con formicolio sul dorso del piede: possibile sindrome compartimentale da sforzo → medico, non massaggio aggressivo."
+  },
+  {
+    id: "estensore-lungo-alluce", nome: "Estensore lungo dell'alluce", lat: "M. extensor hallucis longus", regione: "gamba-ant", tipo: "poliarticolare",
+    o: "Parte media della faccia anteriore della fibula, membrana interossea",
+    origine: "Parte media della faccia anteriore (mediale) della fibula e membrana interossea adiacente.",
+    oK: ["fibula-ant", "membr-interossea"],
+    i: "Base della falange distale dell'alluce (dorso)",
+    inserzione: "Faccia dorsale della base della falange distale dell'alluce.",
+    iK: ["falange-dist-1-dors"],
+    nK: ["peroneo-prof"], radici: "L5–S1",
+    azione: ["Estensione dell'alluce", "Flessione dorsale della caviglia"],
+    ciclismo: "Collabora con il tibiale anteriore nel sollevare la punta in risalita. Con scarpe strette il tendine può infiammarsi sul dorso del piede.",
+    palpazione: "Il ventre è coperto da tibiale anteriore ed estensore lungo delle dita. Il tendine si vede bene sul dorso del piede e della caviglia estendendo l'alluce, lateralmente al tendine del tibiale anteriore.",
+    massaggio: "Sfioramento e pressioni leggere sul ventre tra tibiale anteriore ed estensore lungo delle dita; frizioni leggere lungo il tendine sul dorso del piede.",
+    attenzione: "Lateralmente al suo tendine, sul dorso del piede, si sente il polso dell'arteria dorsale del piede (pedidia): pressione leggera."
+  },
+  {
+    id: "estensore-lungo-dita", nome: "Estensore lungo delle dita", lat: "M. extensor digitorum longus", regione: "gamba-ant", tipo: "poliarticolare",
+    o: "Condilo laterale della tibia, 3/4 superiori della faccia anteriore della fibula, membrana interossea",
+    origine: "Condilo laterale della tibia; tre quarti superiori della faccia anteriore (mediale) della fibula; parte superiore della membrana interossea; fascia crurale profonda.",
+    oK: ["condilo-tib-lat", "fibula-ant", "membr-interossea"],
+    i: "Falangi media e distale del 2°–5° dito (espansioni dorsali)",
+    inserzione: "Quattro tendini per il 2°–5° dito che formano le espansioni dorsali (cuffie degli estensori) e si inseriscono sulle basi delle falangi medie e distali.",
+    iK: ["falangi-2-5-dors"],
+    nK: ["peroneo-prof"], radici: "L5–S1",
+    azione: ["Estensione del 2°–5° dito", "Flessione dorsale della caviglia", "Collabora all'eversione"],
+    ciclismo: "Collabora alla risalita del piede. Contratture frequenti in chi \"artiglia\" le dita dentro la scarpa.",
+    palpazione: "Lateralmente al tibiale anteriore, tra questo e i peronei. I quattro tendini si vedono sul dorso del piede estendendo le dita.",
+    massaggio: "Supino. Pressioni a pollici lungo il ventre (lato esterno della loggia anteriore), sfioramento sul dorso del piede.",
+    attenzione: "Vicino al collo della fibula, in alto, passa il nervo peroneo comune: niente pressioni lì."
+  },
+  {
+    id: "terzo-peroneo", nome: "Terzo peroneo (fibulare terzo)", lat: "M. fibularis (peroneus) tertius", regione: "gamba-ant", tipo: "poliarticolare",
+    o: "Terzo inferiore della faccia anteriore della fibula, membrana interossea",
+    origine: "Terzo inferiore della faccia anteriore (mediale) della fibula e membrana interossea. Spesso è una parte separata dell'estensore lungo delle dita e in una piccola parte di persone manca.",
+    oK: ["fibula-ant-inf", "membr-interossea"],
+    i: "Dorso della base del 5° metatarso",
+    inserzione: "Faccia dorsale della base del quinto metatarso.",
+    iK: ["meta5-dors"],
+    nK: ["peroneo-prof"], radici: "L5–S1",
+    azione: ["Flessione dorsale della caviglia", "Eversione del piede"],
+    ciclismo: "Ruolo minore nella risalita del piede.",
+    palpazione: "Il tendine si sente sul dorso-laterale del piede, lateralmente all'ultimo tendine dell'estensore lungo delle dita, diretto alla base del 5° metatarso.",
+    massaggio: "Lavoro insieme all'estensore lungo delle dita.",
+    attenzione: ""
+  },
+
+  /* ---------------------------------------------------- GAMBA LATERALE */
+  {
+    id: "peroneo-lungo", nome: "Peroneo (fibulare) lungo", lat: "M. fibularis (peroneus) longus", regione: "gamba-lat", tipo: "poliarticolare",
+    o: "Testa e 2/3 superiori della faccia laterale della fibula",
+    origine: "Testa della fibula e due terzi superiori della faccia laterale della fibula; setti intermuscolari; alcune fibre dal condilo laterale della tibia.",
+    oK: ["testa-fibula", "fibula-lat"],
+    i: "Base del 1° metatarso e cuneiforme mediale (faccia plantare)",
+    inserzione: "Faccia plantare-laterale della base del primo metatarso e del cuneiforme mediale. Il tendine passa dietro il malleolo laterale (posteriore al peroneo breve), poi nel solco del cuboide e attraversa la pianta.",
+    iK: ["meta1-base", "cuneiforme-med"],
+    nK: ["peroneo-sup"], radici: "L5–S2",
+    azione: ["Eversione (pronazione) del piede", "Flessione plantare della caviglia (debole)", "Sostiene l'arco trasverso e longitudinale del piede", "Abbassa la testa del 1° metatarso (appoggio dell'avampiede)"],
+    ciclismo: "Stabilizza il piede sul pedale durante la spinta. Con solette, cunei o tacchette regolate male lavora in eccesso: tensione laterale della gamba.",
+    palpazione: "Supino o decubito laterale: lungo la fibula, dalla testa verso il basso. Chiedi di girare la pianta verso l'esterno: il tendine si sente dietro il malleolo laterale.",
+    massaggio: "Decubito laterale o supino con gamba intraruotata. Pressioni con pollici dall'alto verso il basso e ritorno di sfioramento verso il ginocchio, impastamento leggero.",
+    attenzione: "Sotto la testa della fibula, attorno al collo, passa il nervo peroneo comune: niente pressioni o frizioni nella parte più alta del muscolo."
+  },
+  {
+    id: "peroneo-breve", nome: "Peroneo (fibulare) breve", lat: "M. fibularis (peroneus) brevis", regione: "gamba-lat", tipo: "poliarticolare",
+    o: "2/3 inferiori della faccia laterale della fibula",
+    origine: "Due terzi inferiori della faccia laterale della fibula; setti intermuscolari.",
+    oK: ["fibula-lat"],
+    i: "Tuberosità della base del 5° metatarso",
+    inserzione: "Tuberosità (faccia dorsale-laterale) della base del quinto metatarso. Il tendine passa dietro il malleolo laterale, davanti (e più vicino all'osso) al peroneo lungo.",
+    iK: ["meta5-tub"],
+    nK: ["peroneo-sup"], radici: "L5–S2",
+    azione: ["Eversione del piede", "Flessione plantare della caviglia (debole)", "Protegge dalla distorsione in inversione"],
+    ciclismo: "Stabilizzatore laterale della caviglia. Importante dopo cadute o storte.",
+    palpazione: "Il ventre è sotto il peroneo lungo, nella metà inferiore della gamba laterale. Il tendine si segue dal malleolo laterale alla base del 5° metatarso (sporgenza sul bordo esterno del piede).",
+    massaggio: "Pressioni con pollici lungo il ventre, frizioni leggere lungo il tendine dietro il malleolo.",
+    attenzione: ""
+  },
+
+  /* -------------------------------------------------- POLPACCIO SUPERF. */
+  {
+    id: "gastrocnemio", nome: "Gastrocnemio", lat: "M. gastrocnemius", regione: "gamba-post-sup", tipo: "biarticolare",
+    o: "Capo mediale: sopra il condilo mediale del femore. Capo laterale: faccia laterale del condilo laterale",
+    origine: "Capo mediale: faccia poplitea del femore, sopra il condilo mediale. Capo laterale: faccia laterale del condilo laterale del femore. Entrambi anche dalla capsula del ginocchio.",
+    oK: ["condilo-fem-med", "condilo-fem-lat"],
+    i: "Faccia posteriore del calcagno (tendine d'Achille)",
+    inserzione: "Parte media della faccia posteriore del calcagno (tuberosità calcaneare), tramite il tendine calcaneare (d'Achille), comune al soleo.",
+    iK: ["calcagno-post"],
+    nK: ["tibiale"], radici: "S1–S2",
+    azione: ["Flessione plantare della caviglia", "Flessione del ginocchio", "Solleva il tallone nel cammino e nella corsa"],
+    ciclismo: "Trasmette la forza al pedale nella spinta e nel passaggio del punto morto inferiore (circa 30°–270°). Biarticolare: più è alta la sella, più lavora allungato. Con tacchette molto avanzate viene caricato di più.",
+    palpazione: "Prono, piedi fuori dal lettino: chiedi di spingere la punta in basso contro la tua mano. I due capi formano il rilievo del polpaccio; il mediale scende più in basso del laterale.",
+    massaggio: "Prono, cuscino sotto le caviglie (ginocchio leggermente flesso). Sfioramento dal tallone al ginocchio, impastamento a \"S\" e a due mani separando i due capi, scuotimenti, pressioni lungo la linea mediana. Pre-gara: scuotimenti e impastamento rapido. Post-gara: sfioramento lento centripeto con gamba sollevata.",
+    attenzione: "Tra i due capi, in alto, c'è il cavo popliteo (vasi poplitei, nervo tibiale): solo sfioramento. Polpaccio gonfio, caldo, arrossato e dolente senza un trauma chiaro (soprattutto dopo viaggi lunghi in auto o aereo tra le tappe) → sospetta trombosi venosa profonda: NON massaggiare e invia subito al medico."
+  },
+  {
+    id: "soleo", nome: "Soleo", lat: "M. soleus", regione: "gamba-post-sup", tipo: "monoarticolare",
+    o: "Testa e faccia posteriore della fibula (alto), linea del soleo e margine mediale della tibia",
+    origine: "Faccia posteriore della testa della fibula e quarto/terzo superiore della faccia posteriore della fibula; linea del soleo e terzo medio del margine mediale della tibia; arcata tendinea del soleo, tesa tra tibia e fibula.",
+    oK: ["testa-fibula", "fibula-post", "linea-soleo", "tibia-margine-med"],
+    i: "Faccia posteriore del calcagno (tendine d'Achille)",
+    inserzione: "Parte media della faccia posteriore del calcagno, tramite il tendine calcaneare comune al gastrocnemio.",
+    iK: ["calcagno-post"],
+    nK: ["tibiale"], radici: "S1–S2",
+    azione: ["Flessione plantare della caviglia (a qualsiasi angolo del ginocchio)", "Stabilizza la gamba sul piede in piedi", "Pompa muscolo-venosa: spinge il sangue venoso verso il cuore"],
+    ciclismo: "Molto attivo in spinta (circa 340°–180°) e dominante quando il ginocchio è flesso, come nella pedalata. Ricco di fibre lente: lavora per ore. È la \"pompa\" del ritorno venoso: un massaggio drenante qui aiuta molto dopo tappe lunghe.",
+    palpazione: "Prono con ginocchio flesso a 90° (così il gastrocnemio si rilassa): spingi la pianta verso il soffitto e chiedi di resistere. Il soleo sporge ai lati del gastrocnemio, soprattutto nella metà inferiore del polpaccio.",
+    massaggio: "Prono con ginocchio flesso a 90° o supino con ginocchio flesso e piede appoggiato. Impastamento profondo, pressioni ai lati del tendine d'Achille risalendo verso il ginocchio, sfioramento drenante.",
+    attenzione: "Stesse attenzioni del gastrocnemio per la trombosi venosa profonda. Le vene profonde del polpaccio corrono tra soleo e muscoli profondi."
+  },
+  {
+    id: "plantare", nome: "Plantare (gracile)", lat: "M. plantaris", regione: "gamba-post-sup", tipo: "biarticolare",
+    o: "Estremità inferiore della linea sopracondiloidea laterale, legamento popliteo obliquo",
+    origine: "Estremità inferiore della linea sopracondiloidea laterale del femore e legamento popliteo obliquo. Manca in una parte delle persone (circa il 7–10%).",
+    oK: ["sopracond-lat"],
+    i: "Calcagno, medialmente al tendine d'Achille (o con esso)",
+    inserzione: "Faccia posteriore del calcagno, sul lato mediale del tendine calcaneare (a volte si fonde con esso). Il suo tendine è lunghissimo e sottile.",
+    iK: ["calcagno-post"],
+    nK: ["tibiale"], radici: "S1–S2",
+    azione: ["Debole flessione plantare", "Debole flessione del ginocchio"],
+    ciclismo: "Ruolo minore. Il suo tendine può essere coinvolto in alcuni dolori del tendine d'Achille (lato mediale).",
+    palpazione: "Difficile: il piccolo ventre si trova nel cavo popliteo, sotto il capo laterale del gastrocnemio.",
+    massaggio: "Nessun lavoro specifico (si trova nel cavo popliteo).",
+    attenzione: "Cavo popliteo: solo sfioramento."
+  },
+
+  /* -------------------------------------------------- POLPACCIO PROFONDO */
+  {
+    id: "popliteo", nome: "Popliteo", lat: "M. popliteus", regione: "gamba-post-prof", tipo: "monoarticolare",
+    o: "Faccia laterale del condilo laterale del femore, menisco laterale",
+    origine: "Faccia laterale del condilo laterale del femore (fossetta del popliteo), con un tendine intra-capsulare; menisco laterale; legamento popliteo arcuato.",
+    oK: ["condilo-fem-lat", "menisco-lat"],
+    i: "Faccia posteriore della tibia, sopra la linea del soleo",
+    inserzione: "Faccia posteriore della tibia, nell'area triangolare sopra la linea del soleo.",
+    iK: ["tibia-post-sup"],
+    nK: ["tibiale"], radici: "L4–S1",
+    azione: ["\"Sblocca\" il ginocchio esteso: ruota la tibia all'interno (o il femore all'esterno se il piede è a terra)", "Debole flessione del ginocchio", "Tira indietro il menisco laterale durante la flessione"],
+    ciclismo: "Stabilizzatore postero-laterale del ginocchio. Può dare dolore dietro-lateralmente al ginocchio, soprattutto con tacchette troppo libere o ruotate.",
+    palpazione: "Profondo, sotto i gastrocnemi. Il tendine si può cercare sul lato laterale del ginocchio, tra legamento collaterale laterale e tendine del bicipite, con ginocchio flesso.",
+    massaggio: "Lavoro leggero e molto mirato, solo da esperti: il ventre è nel cavo popliteo, sotto vasi e nervi.",
+    attenzione: "Cavo popliteo: niente pressioni profonde."
+  },
+  {
+    id: "flessore-lungo-alluce", nome: "Flessore lungo dell'alluce", lat: "M. flexor hallucis longus", regione: "gamba-post-prof", tipo: "poliarticolare",
+    o: "2/3 inferiori della faccia posteriore della fibula, membrana interossea",
+    origine: "Due terzi inferiori della faccia posteriore della fibula e parte inferiore della membrana interossea.",
+    oK: ["fibula-post", "membr-interossea"],
+    i: "Base della falange distale dell'alluce (pianta)",
+    inserzione: "Faccia plantare della base della falange distale dell'alluce. Il tendine passa nel solco della faccia posteriore del talo e sotto il sustentaculum tali del calcagno.",
+    iK: ["falange-dist-1-plant"],
+    nK: ["tibiale"], radici: "S2–S3",
+    azione: ["Flessione dell'alluce", "Flessione plantare della caviglia (debole)", "Sostiene l'arco longitudinale mediale"],
+    ciclismo: "Stabilizza l'avampiede sul pedale. Chi \"artiglia\" con l'alluce dentro la scarpa lo sovraccarica.",
+    palpazione: "Il ventre è profondo, lateralmente nella metà inferiore del polpaccio, sotto il soleo. Il tendine si sente dietro il malleolo mediale (il più posteriore) flettendo l'alluce.",
+    massaggio: "Pressioni profonde attraverso il soleo, lateralmente al tendine d'Achille, nella metà inferiore del polpaccio.",
+    attenzione: "Dietro il malleolo mediale passa il fascio vascolo-nervoso tibiale posteriore (arteria, vene, nervo tibiale): niente frizioni profonde lì."
+  },
+  {
+    id: "flessore-lungo-dita", nome: "Flessore lungo delle dita", lat: "M. flexor digitorum longus", regione: "gamba-post-prof", tipo: "poliarticolare",
+    o: "Faccia posteriore della tibia sotto la linea del soleo (parte mediale)",
+    origine: "Parte mediale della faccia posteriore della tibia, sotto la linea del soleo; con un largo tendine anche dalla fibula.",
+    oK: ["tibia-post"],
+    i: "Basi delle falangi distali del 2°–5° dito (pianta)",
+    inserzione: "Faccia plantare delle basi delle falangi distali del 2°–5° dito. Il tendine passa dietro il malleolo mediale e in pianta riceve il quadrato della pianta e dà origine ai lombricali.",
+    iK: ["falangi-dist-2-5-plant"],
+    nK: ["tibiale"], radici: "S2–S3",
+    azione: ["Flessione del 2°–5° dito", "Flessione plantare della caviglia (debole)", "Sostiene l'arco longitudinale"],
+    ciclismo: "Stabilizza le dita sulla soletta durante la spinta.",
+    palpazione: "Il ventre si sente in profondità lungo il margine mediale della tibia, nella metà inferiore della gamba, spingendo il soleo all'indietro. Il tendine è dietro il malleolo mediale, tra quello del tibiale posteriore e il fascio vascolo-nervoso.",
+    massaggio: "Pressioni con pollici lungo il margine mediale della tibia (dietro l'osso), dal basso verso l'alto.",
+    attenzione: "Dolore puntiforme lungo il margine mediale della tibia in chi corre anche a piedi: periostite / stress tibiale mediale → valutazione medica se persiste."
+  },
+  {
+    id: "tibiale-posteriore", nome: "Tibiale posteriore", lat: "M. tibialis posterior", regione: "gamba-post-prof", tipo: "poliarticolare",
+    o: "Membrana interossea, faccia posteriore di tibia e fibula",
+    origine: "Membrana interossea; faccia posteriore della tibia sotto la linea del soleo (parte laterale); faccia posteriore della fibula (parte mediale).",
+    oK: ["membr-interossea", "tibia-post", "fibula-post"],
+    i: "Tuberosità del navicolare (principale), cuneiformi, cuboide, basi del 2°–4° metatarso",
+    inserzione: "Principalmente sulla tuberosità del navicolare; espansioni a tutti e tre i cuneiformi, al cuboide, alle basi del 2°–4° metatarso e al sustentaculum tali del calcagno.",
+    iK: ["navicolare", "cuneiformi", "cuboide", "metatarsi-2-4"],
+    nK: ["tibiale"], radici: "L4–L5",
+    azione: ["Inversione del piede", "Flessione plantare della caviglia", "Principale sostegno dinamico dell'arco longitudinale mediale"],
+    ciclismo: "Tiene stabile l'arco del piede sotto carico. Con piede piatto o pronato e solette inadatte lavora di più.",
+    palpazione: "Il ventre è il più profondo della loggia: non si palpa direttamente. Il tendine è il primo (il più anteriore) dietro il malleolo mediale e si segue fino al navicolare chiedendo inversione + flessione plantare.",
+    massaggio: "Lavoro indiretto in profondità nella metà inferiore del polpaccio. Frizioni leggere lungo il tendine dal malleolo al navicolare (no se dolente o gonfio).",
+    attenzione: "Ordine dei tendini dietro il malleolo mediale, da davanti a dietro: Tibiale posteriore, flessore lungo delle Dita, Arteria e Vene tibiali posteriori, Nervo tibiale, flessore lungo dell'alluce (Hallucis) → \"Tom, Dick And Very Nervous Harry\"."
+  },
+
+  /* ---------------------------------------------------- DORSO PIEDE */
+  {
+    id: "estensore-breve-dita", nome: "Estensore breve delle dita", lat: "M. extensor digitorum brevis", regione: "piede-dors", tipo: "intrinseco",
+    o: "Faccia supero-laterale del calcagno, retinacolo inferiore degli estensori",
+    origine: "Parte anteriore della faccia superiore e laterale del calcagno (davanti al seno del tarso); retinacolo inferiore degli estensori.",
+    oK: ["calcagno-dors"],
+    i: "Tendini dell'estensore lungo del 2°–4° dito",
+    inserzione: "Tre tendini che si uniscono al lato laterale dei tendini dell'estensore lungo delle dita per il 2°, 3° e 4° dito.",
+    iK: ["tendini-edl"],
+    nK: ["peroneo-prof"], radici: "L5–S1",
+    azione: ["Aiuta l'estensione del 2°–4° dito"],
+    ciclismo: "Piccolo muscolo del dorso. Con scarpe troppo strette (chiusure, cinghie) il dorso del piede può diventare dolente.",
+    palpazione: "Il ventre forma un piccolo rilievo morbido davanti al malleolo laterale, sul dorso laterale del piede, estendendo le dita.",
+    massaggio: "Pressioni circolari con i pollici e sfioramento sul dorso del piede verso la caviglia.",
+    attenzione: "Pressione leggera vicino al polso della pedidia."
+  },
+  {
+    id: "estensore-breve-alluce", nome: "Estensore breve dell'alluce", lat: "M. extensor hallucis brevis", regione: "piede-dors", tipo: "intrinseco",
+    o: "Faccia supero-laterale del calcagno (con l'estensore breve delle dita)",
+    origine: "Faccia superiore del calcagno, insieme all'estensore breve delle dita (ne è considerato la parte mediale).",
+    oK: ["calcagno-dors"],
+    i: "Base della falange prossimale dell'alluce (dorso)",
+    inserzione: "Faccia dorsale della base della falange prossimale dell'alluce.",
+    iK: ["falange-prox-1-dors"],
+    nK: ["peroneo-prof"], radici: "L5–S1",
+    azione: ["Estensione dell'alluce a livello della metatarso-falangea"],
+    ciclismo: "Piccolo muscolo del dorso del piede.",
+    palpazione: "Mediale all'estensore breve delle dita, sul dorso del piede.",
+    massaggio: "Come l'estensore breve delle dita.",
+    attenzione: ""
+  },
+
+  /* ---------------------------------------------------- PIANTA PIEDE */
+  {
+    id: "abduttore-alluce", nome: "Abduttore dell'alluce", lat: "M. abductor hallucis", regione: "piede-plant", strato: 1, tipo: "intrinseco",
+    o: "Processo mediale della tuberosità calcaneare, retinacolo dei flessori, aponeurosi plantare",
+    origine: "Processo mediale della tuberosità del calcagno; retinacolo dei flessori; aponeurosi plantare; setto intermuscolare.",
+    oK: ["calcagno-proc-med"],
+    i: "Lato mediale della base della falange prossimale dell'alluce",
+    inserzione: "Lato mediale della base della falange prossimale dell'alluce (insieme al sesamoide mediale e al flessore breve dell'alluce).",
+    iK: ["falange-prox-1-med"],
+    nK: ["plantare-med"], radici: "S2–S3",
+    azione: ["Abduzione e flessione dell'alluce", "Sostiene l'arco longitudinale mediale"],
+    ciclismo: "Sostiene l'arco interno del piede sotto la spinta.",
+    palpazione: "Lungo il bordo mediale del piede, dal tallone alla base dell'alluce: un ventre morbido sotto l'arco.",
+    massaggio: "Supino o prono con piede fuori dal lettino. Pressioni con pollici e sfioramento lungo il bordo mediale, dal tallone verso l'alluce e ritorno.",
+    attenzione: "Sotto il muscolo, vicino al tallone, passano nervi e vasi plantari (tunnel tarsale): pressione graduale."
+  },
+  {
+    id: "flessore-breve-dita", nome: "Flessore breve delle dita", lat: "M. flexor digitorum brevis", regione: "piede-plant", strato: 1, tipo: "intrinseco",
+    o: "Processo mediale della tuberosità calcaneare, aponeurosi plantare",
+    origine: "Processo mediale della tuberosità del calcagno; aponeurosi plantare; setti intermuscolari.",
+    oK: ["calcagno-proc-med"],
+    i: "Lati delle falangi medie del 2°–5° dito",
+    inserzione: "Entrambi i lati delle falangi medie del 2°–5° dito (i tendini si dividono per far passare quelli del flessore lungo).",
+    iK: ["falangi-medie-2-5"],
+    nK: ["plantare-med"], radici: "S2–S3",
+    azione: ["Flessione del 2°–5° dito (interfalangea prossimale)", "Sostiene l'arco longitudinale"],
+    ciclismo: "Stabilizza le dita sulla soletta.",
+    palpazione: "Al centro della pianta, sotto l'aponeurosi plantare.",
+    massaggio: "Pressioni a pollici, frizioni circolari e sfioramento profondo dal tallone verso le dita. Rilassante dopo ore nelle scarpe rigide.",
+    attenzione: ""
+  },
+  {
+    id: "abduttore-quinto", nome: "Abduttore del 5° dito", lat: "M. abductor digiti minimi", regione: "piede-plant", strato: 1, tipo: "intrinseco",
+    o: "Processi mediale e laterale della tuberosità calcaneare, aponeurosi plantare",
+    origine: "Processi mediale e laterale della tuberosità del calcagno; aponeurosi plantare; setto intermuscolare.",
+    oK: ["calcagno-proc-med", "calcagno-proc-lat"],
+    i: "Lato laterale della base della falange prossimale del 5° dito",
+    inserzione: "Lato laterale della base della falange prossimale del quinto dito.",
+    iK: ["falange-prox-5-lat"],
+    nK: ["plantare-lat"], radici: "S2–S3",
+    azione: ["Abduzione e flessione del 5° dito", "Sostiene l'arco laterale"],
+    ciclismo: "Con scarpe strette il bordo esterno del piede è spesso compresso.",
+    palpazione: "Lungo il bordo laterale del piede, dal tallone al 5° dito.",
+    massaggio: "Pressioni e sfioramento lungo il bordo laterale.",
+    attenzione: ""
+  },
+  {
+    id: "quadrato-pianta", nome: "Quadrato della pianta", lat: "M. quadratus plantae", regione: "piede-plant", strato: 2, tipo: "intrinseco",
+    o: "Faccia mediale e margine laterale della faccia plantare del calcagno (due capi)",
+    origine: "Due capi: mediale, dalla faccia mediale del calcagno; laterale, dal margine laterale della faccia plantare del calcagno.",
+    oK: ["calcagno-plant"],
+    i: "Margine postero-laterale del tendine del flessore lungo delle dita",
+    inserzione: "Margine postero-laterale del tendine del flessore lungo delle dita.",
+    iK: ["tendine-fdl"],
+    nK: ["plantare-lat"], radici: "S2–S3",
+    azione: ["Corregge la direzione obliqua di trazione del flessore lungo delle dita, aiutandolo a flettere le dita"],
+    ciclismo: "Collabora con il flessore lungo delle dita.",
+    palpazione: "Non palpabile in modo isolato (secondo strato, sotto il flessore breve delle dita).",
+    massaggio: "Pressioni profonde nella parte posteriore della pianta.",
+    attenzione: ""
+  },
+  {
+    id: "lombricali", nome: "Lombricali (4)", lat: "Mm. lumbricales", regione: "piede-plant", strato: 2, tipo: "intrinseco",
+    o: "Tendini del flessore lungo delle dita",
+    origine: "Tendini del flessore lungo delle dita: il 1° dal margine mediale del tendine per il 2° dito; il 2°, 3° e 4° dalle facce adiacenti di due tendini.",
+    oK: ["tendine-fdl"],
+    i: "Lato mediale delle espansioni dorsali del 2°–5° dito",
+    inserzione: "Faccia mediale delle espansioni dorsali (estensorie) del 2°–5° dito.",
+    iK: ["espansioni-dorsali"],
+    nK: ["plantare-med", "plantare-lat"], radici: "S2–S3",
+    nervoNota: "1° lombricale: n. plantare mediale. 2°–4°: n. plantare laterale (ramo profondo).",
+    azione: ["Flessione delle metatarso-falangee", "Estensione delle interfalangee"],
+    ciclismo: "Mantengono le dita distese sulla soletta (contrastano l'\"artiglio\").",
+    palpazione: "Non palpabili in modo isolato.",
+    massaggio: "Pressioni e frizioni tra le teste dei metatarsi dalla pianta.",
+    attenzione: "Tra le teste del 3° e 4° metatarso passa il nervo digitale comune (neuroma di Morton): dolore bruciante o scossa → niente pressioni lì."
+  },
+  {
+    id: "flessore-breve-alluce", nome: "Flessore breve dell'alluce", lat: "M. flexor hallucis brevis", regione: "piede-plant", strato: 3, tipo: "intrinseco",
+    o: "Faccia plantare del cuboide e del cuneiforme laterale",
+    origine: "Faccia plantare del cuboide e del cuneiforme laterale; tendine del tibiale posteriore.",
+    oK: ["cuboide", "cuneiforme-lat"],
+    i: "Due lati della base della falange prossimale dell'alluce (sesamoidi)",
+    inserzione: "Entrambi i lati della base della falange prossimale dell'alluce, tramite due tendini che contengono i sesamoidi mediale e laterale.",
+    iK: ["falange-prox-1-med", "falange-prox-1-lat"],
+    nK: ["plantare-med"], radici: "S2–S3",
+    azione: ["Flessione dell'alluce a livello della metatarso-falangea"],
+    ciclismo: "La zona dei sesamoidi è spesso sotto pressione sul pedale (tacchetta, suola rigida).",
+    palpazione: "Sotto il primo metatarso, nella parte anteriore dell'arco mediale.",
+    massaggio: "Pressioni con pollice sotto il primo metatarso, mobilizzazioni dell'alluce.",
+    attenzione: "Dolore puntiforme sui sesamoidi → evitare pressione diretta (possibile sesamoidite)."
+  },
+  {
+    id: "adduttore-alluce", nome: "Adduttore dell'alluce", lat: "M. adductor hallucis", regione: "piede-plant", strato: 3, tipo: "intrinseco",
+    o: "Capo obliquo: basi del 2°–4° metatarso. Capo trasverso: legamenti plantari delle MTF 3°–5°",
+    origine: "Capo obliquo: basi del 2°, 3° e 4° metatarso (e guaina del peroneo lungo). Capo trasverso: legamenti plantari delle articolazioni metatarso-falangee del 3°–5° dito.",
+    oK: ["metatarsi-2-4", "lig-mtf"],
+    i: "Lato laterale della base della falange prossimale dell'alluce",
+    inserzione: "Lato laterale della base della falange prossimale dell'alluce, insieme al sesamoide laterale.",
+    iK: ["falange-prox-1-lat"],
+    nK: ["plantare-lat"], radici: "S2–S3",
+    azione: ["Adduzione dell'alluce", "Sostiene l'arco trasverso"],
+    ciclismo: "Sostiene l'arco trasverso dell'avampiede, la zona che appoggia sul pedale.",
+    palpazione: "Non palpabile in modo isolato (terzo strato). Il capo trasverso si raggiunge sotto le teste metatarsali.",
+    massaggio: "Pressioni sotto le teste metatarsali e \"apertura\" a ventaglio dell'avampiede.",
+    attenzione: ""
+  },
+  {
+    id: "flessore-breve-quinto", nome: "Flessore breve del 5° dito", lat: "M. flexor digiti minimi brevis", regione: "piede-plant", strato: 3, tipo: "intrinseco",
+    o: "Base del 5° metatarso",
+    origine: "Base del quinto metatarso (faccia plantare) e guaina del tendine del peroneo lungo.",
+    oK: ["meta5-base-plant"],
+    i: "Base della falange prossimale del 5° dito",
+    inserzione: "Base della falange prossimale del quinto dito (lato plantare-laterale).",
+    iK: ["falange-prox-5-lat"],
+    nK: ["plantare-lat"], radici: "S2–S3",
+    azione: ["Flessione del 5° dito a livello della metatarso-falangea"],
+    ciclismo: "Ruolo minore.",
+    palpazione: "Sotto il quinto metatarso.",
+    massaggio: "Pressioni lungo il bordo laterale della pianta.",
+    attenzione: ""
+  },
+  {
+    id: "interossei-plantari", nome: "Interossei plantari (3)", lat: "Mm. interossei plantares", regione: "piede-plant", strato: 4, tipo: "intrinseco",
+    o: "Basi e facce mediali del 3°–5° metatarso",
+    origine: "Basi e facce mediali del 3°, 4° e 5° metatarso (ognuno da un solo osso: unipennati).",
+    oK: ["metatarsi-3-5"],
+    i: "Lato mediale delle basi delle falangi prossimali del 3°–5° dito",
+    inserzione: "Lato mediale delle basi delle falangi prossimali del 3°–5° dito e relative espansioni dorsali.",
+    iK: ["falangi-prox-3-5-med"],
+    nK: ["plantare-lat"], radici: "S2–S3",
+    azione: ["Adduzione del 3°–5° dito verso il 2° dito", "Flessione delle metatarso-falangee"],
+    ciclismo: "Stabilizzano l'avampiede.",
+    palpazione: "Non palpabili in modo isolato.",
+    massaggio: "Pressioni negli spazi intermetatarsali dalla pianta.",
+    attenzione: ""
+  },
+  {
+    id: "interossei-dorsali", nome: "Interossei dorsali (4)", lat: "Mm. interossei dorsales", regione: "piede-plant", strato: 4, tipo: "intrinseco",
+    o: "Facce adiacenti dei metatarsi 1°–5° (bipennati)",
+    origine: "Facce adiacenti di due metatarsi vicini, dal 1° al 5° (ognuno da due ossa: bipennati).",
+    oK: ["metatarsi"],
+    i: "1°: lato mediale della falange prossimale del 2° dito; 2°–4°: lato laterale delle falangi prossimali del 2°–4° dito",
+    inserzione: "1° interosseo dorsale: lato mediale della base della falange prossimale del 2° dito. 2°, 3° e 4°: lato laterale delle basi delle falangi prossimali del 2°, 3° e 4° dito (e espansioni dorsali).",
+    iK: ["falangi-prox-2-4"],
+    nK: ["plantare-lat"], nKx: ["peroneo-prof"], radici: "S2–S3",
+    nervoNota: "N. plantare laterale; il 1° e il 2° ricevono spesso anche rami dal n. peroneo profondo.",
+    azione: ["Abduzione del 2°–4° dito rispetto all'asse del 2° dito", "Flessione delle metatarso-falangee"],
+    ciclismo: "Stabilizzano l'avampiede e lo allargano sotto carico.",
+    palpazione: "Gli spazi tra i metatarsi si sentono dal dorso del piede.",
+    massaggio: "Pressioni con pollici negli spazi intermetatarsali dal dorso, dalla caviglia verso le dita, e mobilizzazione dei metatarsi.",
+    attenzione: ""
+  }
+];
+
+/* ===================================================== TENDINI E FASCE */
+const TENDINI = [
+  {
+    id: "achille", nome: "Tendine calcaneare (d'Achille)",
+    da: "Unione delle lamine tendinee di gastrocnemio e soleo, circa a metà della gamba (il plantare corre sul suo lato mediale).",
+    a: "Parte media della faccia posteriore del calcagno (tuberosità calcaneare).",
+    note: "Il tendine più robusto del corpo. Le fibre ruotano di circa 90° scendendo. La zona 2–6 cm sopra il calcagno è la meno vascolarizzata e la più colpita da tendinopatia. Tra tendine e calcagno c'è la borsa retrocalcaneare.",
+    ciclismo: "Sovraccaricato da sella troppo alta, tacchette troppo avanzate, pedalata \"di punta\" e freddo (copriscarpe!).",
+    massaggio: "Lavora i ventri di gastrocnemio e soleo. Sul tendine: pinzamento leggero e scollamento del peritenonio tra pollice e indice. Niente frizioni profonde se è gonfio, caldo, scricchiola o fa male al mattino → fisioterapista/medico."
+  },
+  {
+    id: "quadricipitale", nome: "Tendine quadricipitale",
+    da: "Unione dei tendini di retto femorale, vasto laterale, vasto mediale e vasto intermedio, sopra la rotula.",
+    a: "Base (margine superiore) della rotula; le fibre superficiali passano davanti alla rotula e continuano nel legamento rotuleo.",
+    note: "La rotula è un osso sesamoide dentro questo sistema tendineo: aumenta la leva del quadricipite.",
+    ciclismo: "Dolore sopra la rotula con sella bassa o rapporti duri in salita.",
+    massaggio: "Frizioni leggere trasversali sopra la rotula, mobilizzazione della rotula (in alto/basso, medio/laterale) a ginocchio rilassato."
+  },
+  {
+    id: "rotuleo", nome: "Legamento (tendine) rotuleo",
+    da: "Apice (polo inferiore) della rotula.",
+    a: "Tuberosità tibiale.",
+    note: "È la continuazione del tendine quadricipitale. Dietro c'è il corpo adiposo di Hoffa.",
+    ciclismo: "Sella troppo bassa o arretrata → ginocchio molto flesso in spinta → sovraccarico (tendinopatia rotulea).",
+    massaggio: "Frizioni trasversali leggere solo se non è in fase dolorosa acuta. Lavora soprattutto il quadricipite."
+  },
+  {
+    id: "til", nome: "Tratto (bandelletta) ileotibiale",
+    da: "Ispessimento laterale della fascia lata: in alto dal tubercolo della cresta iliaca; riceve le inserzioni del tensore della fascia lata e di gran parte del grande gluteo.",
+    a: "Tubercolo di Gerdy (tubercolo antero-laterale del condilo laterale della tibia); fibre al margine laterale della rotula e al retinacolo laterale. È ancorato al femore (linea aspra) dal setto intermuscolare laterale.",
+    note: "È tessuto fibroso denso: non si allunga in modo apprezzabile con il massaggio né con il foam roller. Vicino al ginocchio scorre sopra l'epicondilo laterale del femore, separato da tessuto adiposo ricco di terminazioni nervose.",
+    ciclismo: "La sindrome della bandelletta ileotibiale è tipica del ciclista: dolore laterale al ginocchio, peggiora con ripetute flessioni intorno ai 30°. Cause frequenti: sella troppo alta, tacchette troppo intraruotate, distanza tra i pedali, aumento brusco dei km.",
+    massaggio: "Lavora TFL, grande gluteo e vasto laterale. Sulla banda solo sfioramento e scollamento leggero; niente frizioni aggressive sull'epicondilo laterale se dolente."
+  },
+  {
+    id: "zampa-oca", nome: "Zampa d'oca superficiale (pes anserinus)",
+    da: "Tendini di Sartorio, Gracile e semiTendinoso (da davanti a dietro: \"S-G-T\").",
+    a: "Faccia antero-mediale della tibia, sotto il piatto tibiale mediale, medialmente alla tuberosità tibiale.",
+    note: "Sotto i tendini c'è la borsa anserina. I tre muscoli arrivano da tre logge diverse (anteriore, mediale, posteriore) e da tre nervi diversi (femorale, otturatorio, tibiale).",
+    ciclismo: "Dolore mediale sotto il ginocchio: spesso legato a ginocchio che lavora in valgo o a tacchette regolate male.",
+    massaggio: "Lavora i ventri dei tre muscoli. Sull'inserzione: frizioni leggere solo se non è gonfia o calda (borsite → medico)."
+  },
+  {
+    id: "femorali-prossimali", nome: "Tendine comune dei femorali (ischiocrurali)",
+    da: "Ventri di semitendinoso e capo lungo del bicipite femorale (tendine comune) e semimembranoso (tendine separato, più laterale e profondo).",
+    a: "Tuberosità ischiatica.",
+    note: "La tuberosità ischiatica è il punto di appoggio sulla sella.",
+    ciclismo: "Dolore profondo nella zona \"del sedere\" con sella alta o troppo arretrata, o con una sella di forma non adatta.",
+    massaggio: "Pressioni lente vicino alla tuberosità, atleta prono. Lavoro rispettoso: zona intima, comunica sempre."
+  },
+  {
+    id: "fascia-plantare", nome: "Aponeurosi (fascia) plantare",
+    da: "Processo mediale della tuberosità calcaneare.",
+    a: "Si divide in cinque bande dirette alle dita, che si inseriscono sui legamenti plantari delle metatarso-falangee e sulle guaine dei flessori, fino alle basi delle falangi prossimali.",
+    note: "Meccanismo \"ad argano\" (windlass): quando le dita si estendono la fascia si tende e alza l'arco.",
+    ciclismo: "Meno colpita che nella corsa, ma il ciclista che corre anche (duathlon, triathlon) o che usa scarpe molto rigide può soffrirne.",
+    massaggio: "Pressioni con pollici e frizioni dal tallone verso le dita, rullare il piede su una pallina. Dolore al primo passo del mattino vicino al tallone → fascite plantare: niente frizioni profonde sull'inserzione dolente."
+  },
+  {
+    id: "tib-post-tendine", nome: "Tendine del tibiale posteriore",
+    da: "Ventre del tibiale posteriore, nella parte inferiore della gamba.",
+    a: "Tuberosità del navicolare (e cuneiformi, cuboide, basi del 2°–4° metatarso, sustentaculum tali).",
+    note: "Passa per primo dietro il malleolo mediale, sotto il retinacolo dei flessori.",
+    ciclismo: "Sovraccaricato in piedi pronati senza un plantare adatto.",
+    massaggio: "Frizioni leggere lungo il decorso retromalleolare, solo se non dolente o gonfio."
+  },
+  {
+    id: "peronei-tendini", nome: "Tendini dei peronei (lungo e breve)",
+    da: "Ventri dei peronei lungo e breve, lato esterno della gamba.",
+    a: "Peroneo breve: tuberosità del 5° metatarso. Peroneo lungo: base del 1° metatarso e cuneiforme mediale (attraversando la pianta).",
+    note: "Passano dietro il malleolo laterale (il breve davanti, a contatto con l'osso; il lungo dietro) sotto il retinacolo dei peronei superiore.",
+    ciclismo: "Coinvolti dopo distorsioni di caviglia (cadute, appoggi a terra).",
+    massaggio: "Frizioni leggere dietro il malleolo laterale, lavoro sui ventri."
+  },
+  {
+    id: "retinacoli", nome: "Retinacoli della caviglia",
+    da: "Ispessimenti della fascia della gamba.",
+    a: "Superiore degli estensori: tra tibia e fibula sopra la caviglia. Inferiore degli estensori (a forma di Y): dal calcagno ai malleoli e al lato mediale del piede. Dei flessori: dal malleolo mediale al calcagno. Dei peronei: dal malleolo laterale al calcagno.",
+    note: "Tengono i tendini aderenti all'osso come delle \"cinghie\".",
+    ciclismo: "Cinghie e chiusure delle scarpe premono proprio qui: possibile irritazione dei tendini estensori sul collo del piede.",
+    massaggio: "Sfioramento e frizioni leggere, mobilizzazione della caviglia."
+  }
+];
+
+/* ===================================================== PUNTI DI REPERE */
+const REPERE = [
+  { nome: "Cresta iliaca", dove: "Bordo superiore del bacino, si sente con le mani sui fianchi.", come: "Atleta in piedi o supino: segui il bordo osseo dalla SIAS alla SIPS.", muscoli: "Grande, medio gluteo, TFL, iliaco (labbro interno)" },
+  { nome: "SIAS — spina iliaca antero-superiore", dove: "Estremità anteriore della cresta iliaca.", come: "Supino: la sporgenza ossea più evidente davanti al bacino.", muscoli: "Sartorio, TFL (+ legamento inguinale)" },
+  { nome: "SIAI — spina iliaca antero-inferiore", dove: "Circa 2–3 cm sotto la SIAS, profonda.", come: "Supino con anca flessa per rilassare i tessuti; difficile da sentire.", muscoli: "Retto femorale (capo diretto)" },
+  { nome: "SIPS — spina iliaca postero-superiore", dove: "Estremità posteriore della cresta, sotto le \"fossette di Venere\".", come: "Prono: segui la cresta indietro fino alla fossetta.", muscoli: "Riferimento per il piriforme (sacro S2 poco sotto)" },
+  { nome: "Sacro e coccige", dove: "Osso triangolare al centro, sotto la colonna lombare.", come: "Prono: margini laterali del sacro fino al coccige.", muscoli: "Grande gluteo, piriforme (faccia anteriore)" },
+  { nome: "Tuberosità ischiatica", dove: "\"Osso della seduta\", in basso nel gluteo.", come: "Decubito laterale con anca flessa: il gluteo scorre in alto e la tuberosità si sente sotto la piega glutea.", muscoli: "Femorali, grande adduttore (parte ischiocrurale), gemello inferiore, quadrato del femore" },
+  { nome: "Grande trocantere", dove: "Sporgenza laterale del femore, a livello dell'anca.", come: "Ruota passivamente la gamba: lo senti girare sotto la mano.", muscoli: "Medio e piccolo gluteo, piriforme, gemelli, otturatori, vasto laterale" },
+  { nome: "Tubercolo pubico e sinfisi", dove: "Davanti, in basso al centro del bacino.", come: "Comunica sempre prima di toccare. Si raggiunge dal tendine dell'adduttore lungo risalendo.", muscoli: "Adduttori, gracile, pettineo" },
+  { nome: "Tubercolo dell'adduttore", dove: "Sopra il condilo mediale del femore.", come: "Segui il tendine del grande adduttore sul lato interno della coscia fino al ginocchio.", muscoli: "Grande adduttore (parte ischiocrurale)" },
+  { nome: "Rotula e suoi margini", dove: "Davanti al ginocchio.", come: "Ginocchio esteso e rilassato: si muove in tutte le direzioni.", muscoli: "Quadricipite (base), legamento rotuleo (apice)" },
+  { nome: "Tuberosità tibiale", dove: "Sporgenza sotto la rotula, sul davanti della tibia.", come: "Segui il legamento rotuleo verso il basso.", muscoli: "Quadricipite tramite il legamento rotuleo" },
+  { nome: "Tubercolo di Gerdy", dove: "Lato antero-laterale della tibia, sotto il ginocchio, a metà tra tuberosità tibiale e testa della fibula.", come: "Segui il tratto ileotibiale fino alla tibia.", muscoli: "Tratto ileotibiale (TFL, grande gluteo)" },
+  { nome: "Zampa d'oca", dove: "Faccia antero-mediale della tibia, circa 5 cm sotto la rima articolare.", come: "Flessione del ginocchio contro resistenza: si sentono i tendini arrivare.", muscoli: "Sartorio, gracile, semitendinoso" },
+  { nome: "Testa della fibula", dove: "Lato esterno della gamba, subito sotto il ginocchio, un po' indietro.", come: "Segui il tendine del bicipite femorale verso il basso.", muscoli: "Bicipite femorale, soleo, peroneo lungo — ATTENZIONE: nervo peroneo comune sul collo" },
+  { nome: "Margine mediale e faccia mediale della tibia", dove: "Lato interno della gamba: la faccia è sottocutanea (si sente l'osso).", come: "Scorri dal ginocchio al malleolo mediale.", muscoli: "Soleo, flessore lungo delle dita (dietro il margine)" },
+  { nome: "Malleolo mediale", dove: "Sporgenza interna della caviglia (tibia).", come: "Evidente. Dietro passano i tendini \"Tom, Dick, Harry\".", muscoli: "Tibiale posteriore, flessore lungo dita e alluce (dietro)" },
+  { nome: "Malleolo laterale", dove: "Sporgenza esterna della caviglia (fibula), più bassa e posteriore del mediale.", come: "Evidente. Dietro passano i tendini dei peronei.", muscoli: "Peroneo lungo e breve (dietro)" },
+  { nome: "Tuberosità calcaneare", dove: "Tallone.", come: "Prono: il tendine d'Achille arriva sulla sua faccia posteriore.", muscoli: "Tricipite surale (Achille), plantare, muscoli plantari, fascia plantare" },
+  { nome: "Sustentaculum tali", dove: "Circa un dito sotto il malleolo mediale.", come: "Sporgenza ossea del calcagno sotto il malleolo mediale.", muscoli: "Sotto: tendine del flessore lungo dell'alluce; inserzione accessoria del tibiale posteriore" },
+  { nome: "Tuberosità del navicolare", dove: "Bordo mediale del piede, 2–3 cm davanti e sotto il malleolo mediale.", come: "Inversione del piede: il tendine del tibiale posteriore la indica.", muscoli: "Tibiale posteriore" },
+  { nome: "Tuberosità del 5° metatarso", dove: "Metà del bordo esterno del piede.", come: "Sporgenza ossea evidente sul bordo laterale.", muscoli: "Peroneo breve, terzo peroneo (dorso), flessore breve del 5° dito" },
+  { nome: "Teste metatarsali e sesamoidi dell'alluce", dove: "Avampiede, sotto la base delle dita.", come: "Dalla pianta: i sesamoidi sono due piccoli noduli sotto la testa del 1° metatarso.", muscoli: "Flessore breve dell'alluce, adduttore dell'alluce, lombricali, interossei" }
+];
+
+/* ===================================================== ZONE A RISCHIO */
+const ZONE_RISCHIO = [
+  { nome: "Triangolo femorale (di Scarpa)", dove: "Inguine. Limiti: legamento inguinale (sopra), sartorio (lato), adduttore lungo (medio).", cosa: "Da laterale a mediale: Nervo, Arteria, Vena femorali e Linfonodi inguinali profondi (\"N-A-V-L\").", regola: "Solo sfioramento leggero e drenante verso i linfonodi. Mai pressioni profonde o prolungate. Se senti la pulsazione dell'arteria, spostati." },
+  { nome: "Canale degli adduttori (di Hunter)", dove: "Terzo medio della coscia interna, sotto il sartorio.", cosa: "Arteria e vena femorali, nervo safeno.", regola: "Lavora i ventri muscolari, non affondare sotto il sartorio con pressioni puntiformi." },
+  { nome: "Iato degli adduttori", dove: "Terzo inferiore della coscia, lato interno-posteriore, sopra il ginocchio.", cosa: "Passaggio dei vasi femorali che diventano poplitei.", regola: "Niente pressioni profonde puntiformi." },
+  { nome: "Cavo popliteo", dove: "Dietro il ginocchio, a rombo tra i tendini dei femorali (sopra) e i capi del gastrocnemio (sotto).", cosa: "Arteria e vena poplitee, nervo tibiale, nervo peroneo comune, linfonodi poplitei.", regola: "Solo sfioramento leggero (drenaggio). Mai pressioni, impastamenti o frizioni." },
+  { nome: "Testa e collo della fibula", dove: "Lato esterno, subito sotto il ginocchio.", cosa: "Nervo peroneo comune, molto superficiale, gira intorno al collo della fibula.", regola: "Niente pressioni o frizioni. Rischio di formicolio e, nei casi gravi, deficit di sollevamento del piede." },
+  { nome: "Zona del nervo sciatico", dove: "Gluteo: a metà fra tuberosità ischiatica e grande trocantere, poi lungo il centro della coscia posteriore.", cosa: "Nervo sciatico (il più grosso del corpo).", regola: "Niente gomito o nocche sostenuti sulla linea del nervo. Scossa o formicolio → togli pressione." },
+  { nome: "Dietro il malleolo mediale (tunnel tarsale)", dove: "Tra malleolo mediale e calcagno.", cosa: "Arteria e vene tibiali posteriori, nervo tibiale.", regola: "Solo frizioni leggere e sfioramento." },
+  { nome: "Dorso del piede", dove: "Tra i tendini dell'estensore lungo dell'alluce e delle dita.", cosa: "Arteria dorsale del piede (pedidia), nervo peroneo profondo.", regola: "Pressione leggera." },
+  { nome: "Vena grande safena e varici", dove: "Lato interno di gamba e coscia, davanti al malleolo mediale.", cosa: "Vena superficiale, spesso dilatata.", regola: "Su varici evidenti: solo sfioramento leggero centripeto, mai pressioni o impastamenti." }
+];
+
+/* ===================================================== CONTROINDICAZIONI */
+const CONTROINDICAZIONI = {
+  assolute: [
+    { t: "Sospetta trombosi venosa profonda (TVP)", d: "Polpaccio o coscia gonfi, caldi, arrossati, dolenti, spesso da un solo lato, senza un trauma chiaro. Rischio più alto dopo viaggi lunghi in auto o aereo tra le gare, disidratazione, immobilità, traumi. NON massaggiare: medico subito (il massaggio potrebbe mobilizzare il coagulo)." },
+    { t: "Febbre, infezione in corso, malessere generale", d: "Rimanda il massaggio." },
+    { t: "Lesione muscolare acuta (stiramento/strappo)", d: "Dolore improvviso, puntiforme, durante lo sforzo, a volte con ecchimosi: niente massaggio sulla zona nelle prime 48–72 ore. Protezione, ghiaccio, compressione → fisioterapista o medico." },
+    { t: "Sospetta frattura o lussazione dopo caduta", d: "Dolore forte su un punto osseo, deformità, impossibilità a caricare: immobilizza e invia al medico." },
+    { t: "Ferite aperte, abrasioni da caduta, ustioni", d: "Le abrasioni da caduta sono frequentissime nel ciclismo: non massaggiare sopra né vicino; copri con garze e lavora solo le zone integre, con mani e prodotti puliti." },
+    { t: "Sospetta rabdomiolisi", d: "Dolore muscolare intenso e sproporzionato, muscoli gonfi e duri, debolezza, urine scure (color tè/cola) dopo uno sforzo estremo: emergenza medica, niente massaggio." },
+    { t: "Sospetto trauma cranico dopo caduta", d: "Mal di testa, confusione, nausea, vista offuscata: la priorità è la valutazione medica, non il massaggio." },
+    { t: "Infezioni cutanee, linfangite, cellulite infettiva", d: "Cute rossa, calda, striature rosse, febbre." }
+  ],
+  relative: [
+    { t: "Ematomi e contusioni", d: "Evita la zona nella fase acuta; dopo alcuni giorni solo drenaggio leggero intorno, mai sopra con pressione." },
+    { t: "Varici evidenti", d: "Solo sfioramento leggero centripeto." },
+    { t: "Farmaci anticoagulanti o antiaggreganti", d: "Pressione leggera: rischio di lividi." },
+    { t: "Tendinopatia in fase dolorosa", d: "Niente frizioni profonde sul tendine; lavora i ventri muscolari e invia al fisioterapista." },
+    { t: "Gonfiore di origine non chiara, dolore notturno, perdita di peso", d: "Chiedi una valutazione medica prima di continuare." },
+    { t: "Cute irritata da sella (follicoliti, foruncoli, \"saddle sores\")", d: "Non lavorare sulle zone arrossate di inguine e glutei. Le gambe depilate possono avere follicoliti: usa prodotti non comedogenici e mani pulite." },
+    { t: "Diabete con neuropatia, disturbi della sensibilità", d: "L'atleta può non sentire la pressione: lavora con pressione moderata." },
+    { t: "Sindrome compartimentale cronica da sforzo sospetta", d: "Dolore a \"tensione\" in una loggia della gamba che sale con lo sforzo e passa a riposo: valutazione medica." },
+    { t: "Endofibrosi dell'arteria iliaca esterna sospetta", d: "Tipica del ciclista d'élite: \"gamba che si svuota\", dolore o perdita di forza a una coscia SOLO agli sforzi massimali, che passa in pochi minuti. Non è un problema muscolare: invia a un medico dello sport/angiologo." }
+  ]
+};
+
+/* ===================================================== TECNICHE */
+const TECNICHE = [
+  { nome: "Sfioramento (effleurage)", come: "Scorrimento lungo e continuo delle mani, a pressione leggera o media, sempre in direzione del cuore (centripeto) quando si spinge.", quando: "Apertura e chiusura di ogni zona; in tutti i protocolli. Post-gara: lento e profondo per il drenaggio. Pre-gara: rapido.", effetto: "Spalma il prodotto, valuta i tessuti, rilassa (lento) o attiva (rapido), favorisce il ritorno venoso e linfatico." },
+  { nome: "Impastamento (pétrissage)", come: "Sollevare, comprimere e torcere il muscolo tra le mani, come impastare.", quando: "Grandi masse: quadricipite, femorali, polpacci, glutei. Pre-gara: rapido e superficiale. Recupero: lento e più profondo.", effetto: "Mobilizza le fibre e la fascia, riduce la sensazione di rigidità." },
+  { nome: "Pressioni (statiche e scorrevoli)", come: "Pressione con pollice, palmo, pugno morbido o avambraccio, ferma (5–30 s) o in scorrimento lungo le fibre.", quando: "Sedute di recupero; pressioni leggere drenanti dopo gara.", effetto: "Rilascio di punti tesi (trigger point), drenaggio." },
+  { nome: "Frizioni (circolari e trasversali)", come: "Piccoli movimenti della cute sui piani profondi; le trasversali (tipo Cyriax) vanno perpendicolari alle fibre, su tendini o inserzioni.", quando: "Recupero, lontano da gare importanti. Mai su tendini infiammati in fase acuta.", effetto: "Mobilizza tessuti aderenti, stimola il rimodellamento." },
+  { nome: "Scuotimenti / vibrazioni (shaking)", come: "Muovere rapidamente la massa muscolare rilassata da un lato all'altro.", quando: "Pre-gara (attivazione) e post-gara (rilassamento), su polpacci, femorali, quadricipite.", effetto: "Riduce il tono, sensazione di \"gambe sciolte\"." },
+  { nome: "Percussioni (tapotement)", come: "Colpetti ritmici con il bordo delle mani, le mani a coppa o i pugni morbidi.", quando: "Solo pre-gara e brevi (pochi secondi per zona), sulle grandi masse. Evitare dopo gara.", effetto: "Stimola, aumenta la sensazione di reattività." },
+  { nome: "Scollamento / pinzamento cutaneo", come: "Sollevare la pelle e il sottocutaneo tra pollice e indici e farlo rotolare.", quando: "Recupero; zona del tendine d'Achille, coscia laterale.", effetto: "Mobilizza i piani superficiali e la fascia." },
+  { nome: "Mobilizzazioni passive e stretching assistito", come: "Muovere le articolazioni nel range comodo; allungamenti lenti 20–30 s senza dolore.", quando: "Post-gara dolce; recupero più completo. Pre-gara solo mobilizzazioni dinamiche leggere.", effetto: "Mantiene il range di movimento, rilassa." }
+];
+
+/* ===================================================== PROTOCOLLI */
+const PROTOCOLLI = [
+  {
+    id: "pre-gara", nome: "Pre-gara", quando: "30–60 minuti prima della partenza, prima del riscaldamento sui rulli.", durata: "10–15 minuti per entrambe le gambe (5–7 per arto).",
+    obiettivo: "Gambe \"pronte\", attivazione, routine e tranquillità mentale dell'atleta.",
+    ritmo: "Vivace", pressione: "Leggera–media",
+    prodotto: "Olio leggero o crema. Con freddo e pioggia si usano oli/creme riscaldanti: provali sempre prima in allenamento (mai la prima volta in gara), tieni lontano da mucose, inguine e occhi, lavati bene le mani.",
+    sequenza: [
+      "Prono — polpacci: sfioramento rapido, impastamento veloce, scuotimenti",
+      "Prono — femorali: sfioramento, impastamento rapido, scuotimenti",
+      "Prono — glutei: impastamento e pressioni brevi con il palmo",
+      "Supino — loggia anteriore e peronei: sfioramento, pressioni rapide a pollici",
+      "Supino — quadricipite: sfioramento, impastamento rapido, scuotimenti, percussioni brevi",
+      "Supino — adduttori e TFL: impastamento rapido",
+      "Chiusura: sfioramento energico di tutta la gamba dal piede all'anca"
+    ],
+    evita: ["Lavoro profondo, trigger point, frizioni trasverse", "Massaggio lungo, lento e rilassante (può togliere reattività)", "Stretching passivo intenso e prolungato", "Prodotti nuovi o mai provati dall'atleta", "Lavorare su zone dolenti scoperte all'ultimo: segnalale al medico o al fisioterapista della squadra"],
+    nota: "Le ricerche non mostrano un miglioramento diretto della prestazione grazie al massaggio pre-gara; il beneficio è soprattutto di percezione e routine. Per questo deve essere breve, stimolante e sempre seguito dal riscaldamento in bici."
+  },
+  {
+    id: "post-gara", nome: "Post-gara / post-tappa", quando: "Dopo reintegro, doccia e pasto di recupero: di solito 1–3 ore dopo l'arrivo. Nelle gare a tappe ogni sera.", durata: "20–30 minuti per le gambe (seduta totale 30–45 minuti con schiena bassa, collo, spalle e avambracci).",
+    obiettivo: "Rilassamento, drenaggio, riduzione della sensazione di fatica e di indolenzimento, controllo dei tessuti.",
+    ritmo: "Lento", pressione: "Leggera → media, mai dolorosa",
+    prodotto: "Olio o crema neutra. Ambiente caldo, telo per coprire le zone non trattate.",
+    sequenza: [
+      "Valutazione: chiedi com'è andata la gara, cadute, crampi, dolori. Guarda la pelle (abrasioni, ematomi, gonfiori)",
+      "Supino con gambe sollevate (cuscino sotto i polpacci): sfioramento lungo dal piede all'inguine",
+      "Piede: pressioni e frizioni in pianta, mobilizzazioni delle dita e della caviglia",
+      "Gamba anteriore e peronei: sfioramento e pressioni drenanti dal basso verso l'alto",
+      "Quadricipite e adduttori: impastamento lento, pressioni scorrevoli, scuotimenti",
+      "Prono: polpacci (soleo a ginocchio flesso), femorali, glutei: impastamento lento e pressioni scorrevoli",
+      "Mobilizzazioni passive e stretching dolce (opzionale)",
+      "Chiusura: sfioramento lento centripeto di tutta la gamba, a gamba sollevata"
+    ],
+    evita: ["Frizioni profonde, trigger point dolorosi e lavoro aggressivo dopo gare molto dure", "Lavorare su abrasioni, ematomi recenti, zone gonfie o calde", "Pressioni nel cavo popliteo e nel triangolo femorale", "Massaggiare un polpaccio sospetto per TVP"],
+    nota: "Le revisioni scientifiche (es. Dupuy et al. 2018; Davis et al. 2020) indicano che il massaggio riduce l'indolenzimento muscolare e la percezione di fatica; gli effetti diretti sulla prestazione successiva sono piccoli o non chiari. È però molto apprezzato dagli atleti e aiuta a monitorare lo stato dei tessuti."
+  },
+  {
+    id: "post-allenamento", nome: "Post-allenamento", quando: "Dopo sedute di qualità (ripetute, salite, lavori di forza) o uscite lunghe.", durata: "15–30 minuti.",
+    obiettivo: "Recupero tra due sedute ravvicinate.",
+    ritmo: "Lento–moderato", pressione: "Media",
+    prodotto: "Olio o crema neutra.",
+    sequenza: [
+      "Come il post-gara, con un po' più di lavoro mirato sui muscoli più caricati (es. quadricipite e glutei dopo salite, polpacci dopo lavori di agilità)",
+      "Controlla le zone che l'atleta segnala ripetutamente: annotale nella scheda"
+    ],
+    evita: ["Lavoro profondo se il giorno dopo c'è un'altra seduta di qualità o una gara"],
+    nota: "Il ciclismo è uno sport con poco lavoro eccentrico: l'indolenzimento (DOMS) è di solito minore che nella corsa, ma la fatica di quadricipite e glutei dopo salite e cronometro è alta."
+  },
+  {
+    id: "recupero", nome: "Giorno di riposo / seduta di lavoro", quando: "Giorni di scarico o di riposo, a distanza di almeno 48 ore da una gara importante.", durata: "40–60 minuti.",
+    obiettivo: "Lavoro più profondo su rigidità, punti tesi e aderenze; mantenimento della mobilità.",
+    ritmo: "Lento", pressione: "Media → profonda (sempre tollerata, scala del fastidio 5–6 su 10 al massimo)",
+    prodotto: "Poco olio o crema (serve più presa).",
+    sequenza: [
+      "Riscaldamento dei tessuti: sfioramento e impastamento",
+      "Lavoro mirato: pressioni sostenute sui punti tesi (gluteo medio, piriforme, TFL, vasto laterale, soleo)",
+      "Frizioni trasversali su zone aderenti (non su tendini dolenti in fase acuta)",
+      "Scollamento della fascia (coscia laterale, polpaccio)",
+      "Mobilizzazioni e stretching assistito di ileopsoas, retto femorale, femorali, polpacci",
+      "Chiusura drenante"
+    ],
+    evita: ["Lavoro profondo nelle 48 ore prima di una gara importante", "Superare la soglia di dolore tollerata: crea difesa muscolare"],
+    nota: "È la seduta in cui conosci davvero i muscoli dell'atleta: annota cosa trovi."
+  }
+];
+
+/* ===================================================== PEDALATA */
+/* 0° = punto morto superiore (pedivella in alto), 180° = punto morto inferiore.
+   Intervalli indicativi da studi EMG (soprattutto Hug & Dorel 2009, review);
+   cambiano con potenza, cadenza, posizione e atleta. */
+const PEDALATA = [
+  { muscolo: "Grande gluteo", id: "grande-gluteo", da: 340, a: 130, fase: "Spinta" },
+  { muscolo: "Vasto laterale e mediale", id: "vasto-laterale", da: 300, a: 130, fase: "Spinta" },
+  { muscolo: "Retto femorale", id: "retto-femorale", da: 200, a: 110, fase: "Fine risalita e inizio spinta" },
+  { muscolo: "Soleo", id: "soleo", da: 340, a: 180, fase: "Spinta" },
+  { muscolo: "Gastrocnemio", id: "gastrocnemio", da: 30, a: 270, fase: "Spinta e punto morto inferiore" },
+  { muscolo: "Femorali (bicipite, semitendinoso, semimembranoso)", id: "bicipite-femorale", da: 10, a: 230, fase: "Seconda metà della spinta e punto morto inferiore" },
+  { muscolo: "Tibiale anteriore", id: "tibiale-anteriore", da: 280, a: 90, fase: "Risalita e punto morto superiore" },
+  { muscolo: "Ileopsoas (stima: non misurabile con EMG di superficie)", id: "iliaco", da: 200, a: 350, fase: "Risalita" }
+];
+
+/* ===================================================== PROBLEMI DEL CICLISTA */
+const PROBLEMI = [
+  { nome: "Dolore laterale al ginocchio (sindrome della bandelletta ileotibiale)", segni: "Dolore sul lato esterno del ginocchio, sopra l'epicondilo laterale, che compare dopo un certo tempo di pedalata e peggiora.", muscoli: ["tensore-fascia-lata", "grande-gluteo", "vasto-laterale", "medio-gluteo"], bike: "Sella troppo alta, tacchette troppo intraruotate, piedi troppo vicini, aumento brusco del volume.", massaggio: "TFL, grande gluteo e vasto laterale; scollamento leggero della coscia laterale; niente frizioni dolorose sull'epicondilo.", invia: "Gonfiore, dolore a riposo, nessun miglioramento in 1–2 settimane → fisioterapista e biomeccanico (bike fit)." },
+  { nome: "Dolore anteriore al ginocchio (femoro-rotuleo)", segni: "Dolore intorno o dietro la rotula, peggiora in salita, con rapporti duri e dopo stare seduti a lungo.", muscoli: ["vasto-laterale", "vasto-mediale", "retto-femorale", "tensore-fascia-lata", "medio-gluteo"], bike: "Sella troppo bassa o troppo avanzata, pedivelle lunghe, rapporti troppo duri.", massaggio: "Quadricipite (attenzione al vasto laterale rigido), TFL, retinacolo laterale con frizioni leggere, mobilizzazione della rotula.", invia: "Gonfiore del ginocchio, blocchi, cedimenti." },
+  { nome: "Tendinopatia rotulea / quadricipitale", segni: "Dolore puntiforme sotto (rotuleo) o sopra (quadricipitale) la rotula, all'inizio della pedalata e dopo.", muscoli: ["retto-femorale", "vasto-laterale", "vasto-mediale", "vasto-intermedio"], bike: "Sella bassa, carichi improvvisi (salite, forza).", massaggio: "Ventri del quadricipite; sul tendine solo lavoro leggero fuori dalla fase acuta.", invia: "Dolore che limita l'allenamento: programma di carico con il fisioterapista." },
+  { nome: "Tendinopatia d'Achille", segni: "Dolore e rigidità al tendine, peggiore al mattino e all'inizio dello sforzo; a volte tendine ispessito.", muscoli: ["gastrocnemio", "soleo", "plantare"], bike: "Sella alta, tacchette molto avanzate, pedalata di punta, freddo.", massaggio: "Ventri del tricipite surale, scollamento leggero del peritenonio, niente frizioni profonde su tendine gonfio.", invia: "Gonfiore, scricchiolio, dolore che peggiora → fisioterapista/medico." },
+  { nome: "Dolore dietro il ginocchio", segni: "Dolore posteriore, a volte sul tendine del bicipite femorale (laterale) o del semimembranoso (mediale).", muscoli: ["bicipite-femorale", "semimembranoso", "semitendinoso", "popliteo", "gastrocnemio"], bike: "Sella alta o arretrata, gamba troppo distesa al punto morto inferiore.", massaggio: "Ventri dei femorali e del gastrocnemio, niente lavoro nel cavo popliteo.", invia: "Gonfiore dietro il ginocchio (cisti di Baker), dolore al polpaccio (escludere TVP)." },
+  { nome: "Mal di schiena lombare e flessori dell'anca rigidi", segni: "Dolore lombare in sella, soprattutto dopo ore o in posizione aerodinamica; difficoltà a raddrizzarsi scendendo dalla bici.", muscoli: ["iliaco", "grande-psoas", "retto-femorale", "grande-gluteo", "medio-gluteo"], bike: "Manubrio troppo basso o lontano, sella troppo alta (bacino che oscilla), core debole.", massaggio: "Glutei, iliaco (dalla cresta), retto femorale; stretching dei flessori dell'anca. Il quadrato dei lombi e i paravertebrali vanno trattati in una seduta per il tronco.", invia: "Dolore che scende sotto il ginocchio, formicolio, perdita di forza → medico." },
+  { nome: "Dolore gluteo profondo (piriforme e rotatori)", segni: "Dolore profondo nel gluteo, a volte esteso dietro la coscia, peggiore stando seduti.", muscoli: ["piriforme", "medio-gluteo", "piccolo-gluteo", "quadrato-femore", "otturatore-interno"], bike: "Sella non adatta, bacino instabile, dislivello tra le gambe non compensato.", massaggio: "Pressioni lente sul piriforme e sui rotatori, medio e piccolo gluteo, stretching in rotazione.", invia: "Formicolio, perdita di sensibilità o di forza alla gamba." },
+  { nome: "Crampi muscolari", segni: "Contrazione involontaria dolorosa, di solito polpacci, femorali, adduttori, quadricipite, a fine gara o con caldo.", muscoli: ["gastrocnemio", "soleo", "bicipite-femorale", "grande-adduttore", "vasto-mediale"], bike: "La causa principale è la fatica neuromuscolare (intensità e durata superiori all'abitudine); disidratazione e perdita di sali contribuiscono, soprattutto con il caldo.", massaggio: "Nel crampo: allungamento lento e continuo del muscolo (es. polpaccio: porta la punta verso la tibia), poi sfioramento leggero. Dopo: massaggio drenante delicato, niente lavoro profondo.", invia: "Crampi frequenti a riposo, debolezza, urine scure." },
+  { nome: "Dolore all'avampiede, formicolii (metatarsalgia, neuroma di Morton, \"hot foot\")", segni: "Bruciore o formicolio sotto l'avampiede, spesso tra 3° e 4° dito, che peggiora con le ore e passa togliendo la scarpa.", muscoli: ["lombricali", "adduttore-alluce", "interossei-plantari", "flessore-breve-dita"], bike: "Scarpe strette, chiusure troppo serrate, tacchette troppo avanzate, piedi che si gonfiano col caldo.", massaggio: "Pianta, apertura dell'avampiede, mobilizzazione dei metatarsi; nessuna pressione diretta sul punto del nervo.", invia: "Formicolio persistente: podologo/biomeccanico (plantare, scarpe, tacchette)." },
+  { nome: "Contusioni ed ematomi da caduta", segni: "Zona dolente, gonfia, livida dopo una caduta.", muscoli: ["vasto-laterale", "grande-gluteo", "tibiale-anteriore"], bike: "Caduta.", massaggio: "Nelle prime 48–72 ore niente massaggio sulla zona (ghiaccio, compressione, protezione). Poi drenaggio leggero intorno alla zona, verso i linfonodi. Mai impastamenti su un ematoma: rischio di miosite ossificante.", invia: "Gonfiore molto grande o in aumento, dolore forte, impossibilità di muovere l'articolazione." }
+];
+
+/* ===================================================== BIBLIOGRAFIA */
+const BIBLIOGRAFIA = [
+  "Standring S. (ed.). Gray's Anatomy — The Anatomical Basis of Clinical Practice. 42ª ed. Elsevier, 2020.",
+  "Moore K.L., Dalley A.F., Agur A.M.R. Clinically Oriented Anatomy. 9ª ed. Wolters Kluwer, 2022.",
+  "Netter F.H. Atlante di anatomia umana. Edra (ed. italiana più recente).",
+  "Biel A. Trail Guide to the Body — guida alla palpazione. Books of Discovery.",
+  "Hug F., Dorel S. Electromyographic analysis of pedaling: a review. Journal of Electromyography and Kinesiology, 2009; 19(2):182–198.",
+  "Weerapong P., Hume P.A., Kolt G.S. The mechanisms of massage and effects on performance, muscle recovery and injury prevention. Sports Medicine, 2005; 35(3):235–256.",
+  "Dupuy O. et al. An evidence-based approach for choosing post-exercise recovery techniques to reduce markers of muscle damage, soreness, fatigue, and inflammation: a systematic review with meta-analysis. Frontiers in Physiology, 2018; 9:403.",
+  "Davis H.L., Alabed S., Chico T.J.A. Effect of sports massage on performance and recovery: a systematic review and meta-analysis. BMJ Open Sport & Exercise Medicine, 2020; 6:e000614."
+];
+
+const DATI = { REGIONI, NERVI, MUSCOLI, TENDINI, REPERE, ZONE_RISCHIO, CONTROINDICAZIONI, TECNICHE, PROTOCOLLI, PEDALATA, PROBLEMI, BIBLIOGRAFIA };
+if (typeof module !== "undefined") module.exports = DATI;
+if (typeof window !== "undefined") window.DATI = DATI;
+
+</script>
+<script>
+/* Grafici condivisi tra web app e PDF: mappa delle regioni e ruota della pedalata.
+   Tutti i colori passano da variabili CSS, così funzionano in tema chiaro/scuro e in stampa. */
+
+function mappaCorpo(vista) {
+  // Schema dell'arto inferiore DESTRO. Non in scala: serve a orientarsi tra le regioni.
+  const R = (id, d, label) => `<path class="reg" data-reg="${id}" d="${d}" tabindex="0" role="button" aria-label="${label}"><title>${label}</title></path>`;
+  const B = (d) => `<path class="osso" d="${d}"/>`;
+  let g = "";
+  if (vista === "ant") {
+    g += B("M28 66 Q40 22 108 18 Q170 22 208 62 L208 70 L28 70 Z");
+    g += R("glutea", "M28 70 L70 70 L66 140 L40 150 Q30 110 28 70 Z", "Regione glutea laterale (tensore della fascia lata, medio gluteo)");
+    g += R("flessori-anca", "M85 70 L204 70 L140 146 Z", "Inguine: ileopsoas");
+    g += R("coscia-med", "M204 70 Q218 120 212 170 Q204 222 180 264 L160 264 L140 146 Z", "Coscia mediale: adduttori");
+    g += R("coscia-ant", "M70 70 L85 70 L140 146 L160 264 L62 264 Q42 210 40 150 L66 140 Z", "Coscia anteriore: quadricipite, sartorio");
+    g += `<ellipse class="osso" cx="112" cy="285" rx="19" ry="21"/>`;
+    g += R("gamba-lat", "M70 310 L95 310 L105 466 L92 466 Q72 384 70 310 Z", "Gamba laterale: peronei");
+    g += R("gamba-ant", "M95 310 L128 310 L122 466 L105 466 Z", "Gamba anteriore: tibiale anteriore, estensori");
+    g += B("M128 310 L141 310 L133 466 L122 466 Z");
+    g += R("gamba-post-sup", "M141 310 L164 310 Q162 392 140 466 L133 466 Z", "Polpaccio (visibile dal lato mediale)");
+    g += R("piede-dors", "M90 472 L140 472 L150 500 Q168 530 120 532 Q72 532 80 500 Z", "Dorso del piede");
+    g += `<text class="lbl" x="34" y="300">LAT</text><text class="lbl" x="176" y="300">MED</text>`;
+    g += `<text class="lbl dim" x="146" y="400" transform="rotate(-84 146 400)">tibia</text>`;
+  } else {
+    g += R("glutea", "M36 64 Q44 22 114 20 Q192 24 210 70 L212 150 Q160 168 100 162 L48 152 Q32 110 36 64 Z", "Regione glutea: glutei e rotatori");
+    g += R("coscia-med", "M30 128 L48 152 Q62 210 82 264 L62 260 Q34 200 30 128 Z", "Coscia mediale: adduttori (grande adduttore, gracile)");
+    g += R("coscia-post", "M48 152 L100 162 Q160 168 212 150 Q208 214 182 264 L82 264 Q62 210 48 152 Z", "Coscia posteriore: femorali");
+    g += `<path class="rischio" data-rischio="1" d="M130 262 L168 286 L130 314 L92 286 Z" tabindex="0" role="button" aria-label="Cavo popliteo: zona a rischio"><title>Cavo popliteo: zona a rischio, solo sfioramento</title></path>`;
+    g += R("gamba-post-sup", "M70 292 L92 286 L130 314 L168 286 L180 292 Q182 362 152 466 L106 466 Q66 362 70 292 Z", "Polpaccio: gastrocnemio, soleo");
+    g += `<ellipse class="reg prof" data-reg="gamba-post-prof" cx="128" cy="402" rx="17" ry="44" tabindex="0" role="button" aria-label="Loggia posteriore profonda"><title>Loggia posteriore profonda</title></ellipse>`;
+    g += R("piede-plant", "M102 472 L150 472 Q166 502 160 530 Q128 546 98 530 Q92 502 102 472 Z", "Pianta del piede");
+    g += `<text class="lbl" x="22" y="300">MED</text><text class="lbl" x="188" y="300">LAT</text>`;
+    g += `<text class="lbl dim" x="113" y="406">prof.</text>`;
+  }
+  return `<svg class="mappa" viewBox="0 0 240 548" role="group" aria-label="Schema arto inferiore destro, vista ${vista === "ant" ? "anteriore" : "posteriore"}">${g}</svg>`;
+}
+
+function _pt(cx, cy, r, deg) {
+  const t = (deg * Math.PI) / 180;
+  return [cx + r * Math.sin(t), cy - r * Math.cos(t)];
+}
+function _arco(cx, cy, r, da, a) {
+  let sweep = (a - da + 360) % 360;
+  if (sweep === 0) sweep = 360;
+  const [x1, y1] = _pt(cx, cy, r, da);
+  const [x2, y2] = _pt(cx, cy, r, da + Math.min(sweep, 359.9));
+  return `M${x1.toFixed(1)} ${y1.toFixed(1)} A${r} ${r} 0 ${sweep > 180 ? 1 : 0} 1 ${x2.toFixed(1)} ${y2.toFixed(1)}`;
+}
+function attivo(angolo, da, a) {
+  angolo = ((angolo % 360) + 360) % 360;
+  return da <= a ? angolo >= da && angolo <= a : angolo >= da || angolo <= a;
+}
+
+function ruotaPedalata(pedalata, angolo) {
+  // 0° = punto morto superiore; rotazione oraria = ciclista visto dal lato destro che va verso destra.
+  const cx = 200, cy = 200, r0 = 62, step = 15;
+  let s = "";
+  // settori di fase
+  s += `<path class="fase-spinta" d="${_arco(cx, cy, 186, 0, 180)}" />`;
+  s += `<path class="fase-risalita" d="${_arco(cx, cy, 186, 180, 360)}" />`;
+  pedalata.forEach((p, i) => {
+    const r = r0 + i * step;
+    const on = angolo == null ? true : attivo(angolo, p.da, p.a);
+    s += `<circle class="traccia" cx="${cx}" cy="${cy}" r="${r}"/>`;
+    s += `<path class="arco c${i}${on ? " on" : ""}" d="${_arco(cx, cy, r, p.da, p.a)}"><title>${p.muscolo}: ${p.da}°–${p.a}°</title></path>`;
+  });
+  [0, 90, 180, 270].forEach((d) => {
+    const [x1, y1] = _pt(cx, cy, 44, d), [x2, y2] = _pt(cx, cy, 176, d);
+    s += `<line class="tick" x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}"/>`;
+  });
+  const lab = (d, t, dy) => { const [x, y] = _pt(cx, cy, 198, d); return `<text class="wl" x="${x.toFixed(1)}" y="${(y + (dy || 0)).toFixed(1)}" text-anchor="middle">${t}</text>`; };
+  s += lab(0, "0° PMS", 4) + lab(90, "90°", 4) + lab(180, "180° PMI", 4) + lab(270, "270°", 4);
+  s += `<text class="wl fase" x="${cx + 120}" y="${cy - 150}" text-anchor="middle">SPINTA</text>`;
+  s += `<text class="wl fase" x="${cx - 120}" y="${cy + 160}" text-anchor="middle">RISALITA</text>`;
+  if (angolo != null) {
+    const [px, py] = _pt(cx, cy, 36, angolo), [lx, ly] = _pt(cx, cy, 182, angolo);
+    s += `<line class="lancetta" x1="${cx}" y1="${cy}" x2="${lx.toFixed(1)}" y2="${ly.toFixed(1)}"/>`;
+    s += `<circle class="perno" cx="${cx}" cy="${cy}" r="9"/><circle class="pedale" cx="${px.toFixed(1)}" cy="${py.toFixed(1)}" r="8"/>`;
+  } else {
+    s += `<circle class="perno" cx="${cx}" cy="${cy}" r="9"/>`;
+  }
+  return `<svg class="ruota" viewBox="-20 -20 440 440" role="img" aria-label="Attivazione muscolare durante il giro di pedivella">${s}</svg>`;
+}
+
+const SVG = { mappaCorpo, ruotaPedalata, attivo };
+if (typeof module !== "undefined") module.exports = SVG;
+if (typeof window !== "undefined") window.SVG = SVG;
+
+</script>
+<script>
+(function(){
+"use strict";
+const D = window.DATI, S = window.SVG;
+const M = D.MUSCOLI, REG = D.REGIONI;
+const byId = Object.fromEntries(M.map(m => [m.id, m]));
+const regById = Object.fromEntries(REG.map(r => [r.id, r]));
+const $ = s => document.querySelector(s);
+const esc = s => String(s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const norm = s => String(s).toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "");
+const nervi = m => m.nK.map(k => D.NERVI[k]).join(" + ");
+
+/* ---------- storage (solo comodità personale: funziona anche senza) ---------- */
+const KEY = "rp-anatomia-v1";
+let store = { studiati: [], ripassare: [] };
+try { const raw = localStorage.getItem(KEY); if (raw) store = Object.assign(store, JSON.parse(raw)); } catch (e) {}
+const save = () => { try { localStorage.setItem(KEY, JSON.stringify(store)); } catch (e) {} updProg(); };
+const isS = id => store.studiati.includes(id), isR = id => store.ripassare.includes(id);
+function setStato(id, stato) {
+  store.studiati = store.studiati.filter(x => x !== id);
+  store.ripassare = store.ripassare.filter(x => x !== id);
+  if (stato === "s") store.studiati.push(id);
+  if (stato === "r") store.ripassare.push(id);
+  save();
+}
+function updProg() {
+  const n = store.studiati.filter(id => byId[id]).length;
+  $("#prog").innerHTML = `Studiati <b>${n}</b>/${M.length}`;
+  $("#progbar").style.width = (100 * n / M.length) + "%";
+}
+
+/* ---------- ATLANTE ---------- */
+let fReg = "tutte";
+function regChips() {
+  const all = [{ id: "tutte", breve: "Tutte" }].concat(REG);
+  $("#regchips").innerHTML = all.map(r => `<button class="chip" type="button" data-reg="${r.id}" aria-pressed="${r.id === fReg}">${esc(r.breve)}</button>`).join("");
+}
+function mcard(m) {
+  const st = isS(m.id) ? "y" : isR(m.id) ? "r" : "";
+  return `<button class="mcard" type="button" data-m="${m.id}">
+    <div class="h"><div><h4>${esc(m.nome)}</h4><div class="lat">${esc(m.lat)}</div></div><span class="done ${st}" title="${st === "y" ? "Studiato" : st === "r" ? "Da ripassare" : "Da studiare"}"></span></div>
+    <div class="oi"><span class="tag o">ORI</span><span>${esc(m.o)}</span><span class="tag i">INS</span><span>${esc(m.i)}</span><span class="tag n">NER</span><span>${esc(nervi(m))} <span class="mono">${esc(m.radici)}</span></span></div>
+  </button>`;
+}
+function renderAtlante() {
+  const q = norm($("#q").value.trim()), fs = $("#fstato").value;
+  const list = M.filter(m => {
+    if (fReg !== "tutte" && m.regione !== fReg) return false;
+    if (fs === "studiati" && !isS(m.id)) return false;
+    if (fs === "ripassare" && !isR(m.id)) return false;
+    if (fs === "dafare" && (isS(m.id))) return false;
+    if (!q) return true;
+    return norm([m.nome, m.lat, m.origine, m.inserzione, m.azione.join(" "), nervi(m), m.ciclismo].join(" ")).includes(q);
+  });
+  $("#acount").textContent = `${list.length} muscol${list.length === 1 ? "o" : "i"}`;
+  if (!list.length) { $("#agrid").innerHTML = `<div class="empty" style="grid-column:1/-1">Nessun muscolo trovato. Prova con un'altra parola o togli i filtri.</div>`; return; }
+  let h = "", last = "";
+  list.forEach(m => {
+    if (m.regione !== last) { last = m.regione; const n = list.filter(x => x.regione === last).length; h += `<div class="regione-h"><h3>${esc(regById[last].nome)}</h3><span class="count">${n}</span></div>`; }
+    h += mcard(m);
+  });
+  $("#agrid").innerHTML = h;
+}
+
+/* ---------- DETTAGLIO ---------- */
+let cur = null;
+function openM(id, push) {
+  const m = byId[id]; if (!m) return;
+  cur = id;
+  const ped = D.PEDALATA.find(p => p.id === id);
+  const st = isS(id) ? "s" : isR(id) ? "r" : "";
+  const same = M.filter(x => x.regione === m.regione && x.id !== id);
+  const strato = m.strato ? ` · ${m.strato}° strato plantare` : "";
+  $("#pbody-m").innerHTML = `
+    <div class="d-head"><div class="reg-l">${esc(regById[m.regione].nome)}${strato}</div><h2 id="d-title">${esc(m.nome)}</h2><div class="lat">${esc(m.lat)}</div><div class="tipo">Muscolo ${esc(m.tipo)}</div></div>
+    <div class="blk o"><h4>Origine</h4><p class="short">${esc(m.o)}</p><p>${esc(m.origine)}</p></div>
+    <div class="blk i"><h4>Inserzione</h4><p class="short">${esc(m.i)}</p><p>${esc(m.inserzione)}</p></div>
+    <div class="blk"><h4>Innervazione</h4><p><strong>${esc(nervi(m))}</strong> · <span class="mono">${esc(m.radici)}</span></p>${m.nervoNota ? `<p style="margin-top:4px;color:var(--muted)">${esc(m.nervoNota)}</p>` : ""}</div>
+    <div class="blk"><h4>Azione</h4><ul>${m.azione.map(a => `<li>${esc(a)}</li>`).join("")}</ul></div>
+    <div class="blk bike"><h4>Nel ciclismo</h4><p>${esc(m.ciclismo)}</p>${ped ? `<p style="margin-top:6px" class="mono">Attività EMG indicativa: ${ped.da}° → ${ped.a}° · <button class="lnk" type="button" data-go="pedalata">vedi sulla ruota</button></p>` : ""}</div>
+    <div class="blk"><h4>Palpazione</h4><p>${esc(m.palpazione)}</p></div>
+    <div class="blk"><h4>Massaggio</h4><p>${esc(m.massaggio)}</p></div>
+    ${m.attenzione ? `<div class="blk warn"><h4>Attenzione</h4><p>${esc(m.attenzione)}</p></div>` : ""}
+    <div class="controls">
+      <button class="btn okb" type="button" id="bS" aria-pressed="${st === "s"}">${st === "s" ? "Studiato ✓" : "Segna come studiato"}</button>
+      <button class="btn" type="button" id="bR" aria-pressed="${st === "r"}">${st === "r" ? "Da ripassare ●" : "Da ripassare"}</button>
+    </div>
+    ${same.length ? `<div><h4 style="font-family:var(--f-body);font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:6px">Nella stessa regione</h4><div class="mchips">${same.map(x => `<button type="button" data-m="${x.id}">${esc(x.nome)}</button>`).join("")}</div></div>` : ""}`;
+  $("#scrim").hidden = false; $("#panel").hidden = false;
+  $("#panel").scrollTop = 0;
+  document.body.style.overflow = "hidden";
+  $("#pclose").focus({ preventScroll: true });
+  if (push !== false) { try { history.replaceState(null, "", "#m-" + id); } catch (e) {} }
+}
+function closeM() {
+  $("#scrim").hidden = true; $("#panel").hidden = true; document.body.style.overflow = ""; cur = null;
+  try { history.replaceState(null, "", "#" + curView); } catch (e) {}
+  renderCurrent();
+}
+function stepM(d) {
+  const i = M.findIndex(m => m.id === cur);
+  openM(M[(i + d + M.length) % M.length].id);
+}
+
+/* ---------- MAPPA ---------- */
+let mapReg = "coscia-ant";
+function renderMappa() {
+  $("#map-ant").innerHTML = S.mappaCorpo("ant");
+  $("#map-post").innerHTML = S.mappaCorpo("post");
+  document.querySelectorAll("svg.mappa .reg").forEach(p => p.classList.toggle("sel", p.dataset.reg === mapReg));
+  const r = regById[mapReg], list = M.filter(m => m.regione === mapReg);
+  $("#map-side").innerHTML = `<div class="card"><span class="count">${list.length} muscoli</span><h4 style="font-size:22px">${esc(r.nome)}</h4>
+    <div class="mlist">${list.map(m => `<button class="mrow on" type="button" data-m="${m.id}" style="grid-template-columns:minmax(0,1fr) auto"><span><strong>${esc(m.nome)}</strong><br><span style="font-size:13px;color:var(--muted)"><span style="color:var(--ori)">O</span> ${esc(m.o)}<br><span style="color:var(--ins)">I</span> ${esc(m.i)}</span></span><span class="done ${isS(m.id) ? "y" : isR(m.id) ? "r" : ""}"></span></button>`).join("")}</div>
+    <button class="btn" type="button" data-atl="${r.id}">Apri nell'atlante</button></div>`;
+}
+
+/* ---------- PEDALATA ---------- */
+let ang = 90, playing = false, raf = 0, lastT = 0;
+function renderPedal() {
+  $("#wheel").innerHTML = S.ruotaPedalata(D.PEDALATA, ang);
+  $("#angv").textContent = Math.round(ang) + "°";
+  $("#ang").value = Math.round(ang);
+  const a = Math.round(ang);
+  let fase = a < 20 || a > 340 ? "Punto morto superiore: passaggio dalla risalita alla spinta" : a < 160 ? "Fase di spinta: si produce la potenza" : a <= 200 ? "Punto morto inferiore: il pedale viene accompagnato indietro" : "Fase di risalita: la gamba torna su";
+  $("#phase").textContent = fase;
+  $("#mlist").innerHTML = D.PEDALATA.map((p, i) => { const on = S.attivo(ang, p.da, p.a); return `<button class="mrow${on ? " on" : ""}" type="button" data-m="${p.id}"><span class="sw" style="background:var(--c${i})"></span><span><strong>${esc(p.muscolo)}</strong><br><span style="font-size:12.5px;color:var(--muted)">${esc(p.fase)}</span></span><span class="rg">${p.da}°–${p.a}°${on ? " · attivo" : ""}</span></button>`; }).join("");
+}
+function angFromEvent(ev) {
+  const svg = $("#wheel svg"); if (!svg) return null;
+  const r = svg.getBoundingClientRect();
+  // viewBox -20..420 → centro (200,200)
+  const sx = 440 / r.width, sy = 440 / r.height;
+  const x = (ev.clientX - r.left) * sx - 20 - 200, y = (ev.clientY - r.top) * sy - 20 - 200;
+  let d = Math.atan2(x, -y) * 180 / Math.PI; if (d < 0) d += 360; return d;
+}
+function tick(t) {
+  if (!playing) return;
+  if (lastT) ang = (ang + (t - lastT) * 0.09) % 360; // ~ 15 giri/min, per osservare
+  lastT = t; renderPedal(); raf = requestAnimationFrame(tick);
+}
+function setPlay(p) {
+  playing = p; $("#play").textContent = p ? "Pausa" : "Avvia"; lastT = 0;
+  cancelAnimationFrame(raf); if (p) raf = requestAnimationFrame(tick);
+}
+
+/* ---------- PROTOCOLLI ---------- */
+let pSel = "pre-gara";
+function renderMassaggio() {
+  $("#ptabs").innerHTML = D.PROTOCOLLI.map(p => `<button class="chip" type="button" data-p="${p.id}" aria-pressed="${p.id === pSel}">${esc(p.nome)}</button>`).join("");
+  const p = D.PROTOCOLLI.find(x => x.id === pSel);
+  $("#pbody").innerHTML = `<div class="proto">
+    <div class="card"><h4 style="font-size:24px">${esc(p.nome)}</h4>
+      <div class="facts"><div class="fact"><small>Quando</small>${esc(p.quando)}</div><div class="fact"><small>Durata</small>${esc(p.durata)}</div>
+      <div class="fact"><small>Ritmo</small>${esc(p.ritmo)}</div><div class="fact"><small>Pressione</small>${esc(p.pressione)}</div></div>
+      <p><strong>Obiettivo.</strong> ${esc(p.obiettivo)}</p><p><strong>Prodotto.</strong> ${esc(p.prodotto)}</p>
+      <div class="blk warn"><h4>Da evitare</h4><ul>${p.evita.map(e => `<li>${esc(e)}</li>`).join("")}</ul></div>
+      <p class="note">${esc(p.nota)}</p></div>
+    <div class="card"><h4>Sequenza</h4><ol class="seq">${p.sequenza.map(s => `<li><span>${esc(s)}</span></li>`).join("")}</ol></div></div>`;
+  $("#tecniche").innerHTML = D.TECNICHE.map(t => `<div class="card"><h4>${esc(t.nome)}</h4><dl class="kv"><dt>Come</dt><dd>${esc(t.come)}</dd><dt>Quando</dt><dd>${esc(t.quando)}</dd><dt>Effetto</dt><dd>${esc(t.effetto)}</dd></dl></div>`).join("");
+}
+
+/* ---------- SICUREZZA / CICLISTA / TENDINI / REPERE ---------- */
+function renderSicurezza() {
+  $("#zone").innerHTML = D.ZONE_RISCHIO.map(z => `<div class="card zone"><h4>${esc(z.nome)}</h4><dl class="kv"><dt>Dove</dt><dd>${esc(z.dove)}</dd><dt>Cosa c'è</dt><dd>${esc(z.cosa)}</dd><dt>Regola</dt><dd><strong>${esc(z.regola)}</strong></dd></dl></div>`).join("");
+  $("#ci-ass").innerHTML = D.CONTROINDICAZIONI.assolute.map(c => `<div class="card danger"><h4>${esc(c.t)}</h4><p>${esc(c.d)}</p></div>`).join("");
+  $("#ci-rel").innerHTML = D.CONTROINDICAZIONI.relative.map(c => `<div class="card warnc"><h4>${esc(c.t)}</h4><p>${esc(c.d)}</p></div>`).join("");
+}
+function renderCiclista() {
+  $("#probl").innerHTML = D.PROBLEMI.map(p => `<div class="card"><h4>${esc(p.nome)}</h4><dl class="kv"><dt>Segni</dt><dd>${esc(p.segni)}</dd><dt>Bici</dt><dd>${esc(p.bike)}</dd><dt>Massaggio</dt><dd>${esc(p.massaggio)}</dd><dt>Invia</dt><dd><strong>${esc(p.invia)}</strong></dd></dl><div class="mchips">${p.muscoli.map(id => `<button type="button" data-m="${id}">${esc(byId[id].nome)}</button>`).join("")}</div></div>`).join("");
+}
+function renderTendini() {
+  $("#tend").innerHTML = D.TENDINI.map(t => `<div class="card"><h4>${esc(t.nome)}</h4><dl class="kv"><dt style="color:var(--ori)">Da</dt><dd>${esc(t.da)}</dd><dt style="color:var(--ins)">A</dt><dd>${esc(t.a)}</dd><dt>Note</dt><dd>${esc(t.note)}</dd><dt>Bici</dt><dd>${esc(t.ciclismo)}</dd><dt>Massaggio</dt><dd>${esc(t.massaggio)}</dd></dl></div>`).join("");
+}
+function renderRepere() {
+  $("#rep").innerHTML = D.REPERE.map(r => `<div class="card"><h4>${esc(r.nome)}</h4><dl class="kv"><dt>Dove</dt><dd>${esc(r.dove)}</dd><dt>Come</dt><dd>${esc(r.come)}</dd><dt>Muscoli</dt><dd>${esc(r.muscoli)}</dd></dl></div>`).join("");
+}
+
+/* ---------- TABELLA ---------- */
+function renderTabella() {
+  let h = `<thead><tr><th>Muscolo</th><th>Origine</th><th>Inserzione</th><th>Innervazione</th><th>Azione principale</th></tr></thead><tbody>`;
+  REG.forEach(r => {
+    h += `<tr class="rg"><td colspan="5">${esc(r.nome)}</td></tr>`;
+    M.filter(m => m.regione === r.id).forEach(m => {
+      h += `<tr><td class="mn"><button type="button" data-m="${m.id}">${esc(m.nome)}</button></td><td><span class="o">${esc(m.o)}</span></td><td><span class="i">${esc(m.i)}</span></td><td>${esc(nervi(m))}<br><span class="mono">${esc(m.radici)}</span></td><td>${esc(m.azione[0])}</td></tr>`;
+    });
+  });
+  $("#tbl").innerHTML = h + "</tbody>";
+}
+
+/* ---------- RIPASSO: QUIZ + FLASHCARD ---------- */
+let rMode = "quiz", quiz = null, deck = null;
+const shuffle = a => { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
+const disj = (a, b) => !a.some(x => b.includes(x));
+function pool() { const r = $("#rreg").value; return r === "tutte" ? M : M.filter(m => m.regione === r); }
+function distrattori(m, campo) {
+  // campo: "o" | "i" → muscoli con attacchi diversi (chiavi disgiunte e testo diverso)
+  const K = campo === "o" ? "oK" : "iK";
+  const ok = M.filter(x => x.id !== m.id && disj(x[K], m[K]) && x[campo] !== m[campo]);
+  const vicini = shuffle(ok.filter(x => x.regione === m.regione)), lontani = shuffle(ok.filter(x => x.regione !== m.regione));
+  const out = [], seen = new Set([m[campo]]);
+  for (const x of vicini.concat(lontani)) { if (!seen.has(x[campo])) { seen.add(x[campo]); out.push(x); } if (out.length === 3) break; }
+  return out;
+}
+function domanda(m, tipo) {
+  if (tipo === "misto") tipo = shuffle(["origine", "inserzione", "nervo", "chi-o", "chi-i"])[0];
+  if (tipo === "origine" || tipo === "inserzione") {
+    const c = tipo === "origine" ? "o" : "i", full = tipo === "origine" ? m.origine : m.inserzione;
+    const opts = shuffle([{ t: m[c], ok: true }].concat(distrattori(m, c).map(x => ({ t: x[c], ok: false }))));
+    return { m, txt: `Qual è l'<em>${tipo}</em> del muscolo <em>${esc(m.nome)}</em>?`, opts, spieg: full };
+  }
+  if (tipo === "chi-o" || tipo === "chi-i") {
+    const c = tipo === "chi-o" ? "o" : "i";
+    const opts = shuffle([{ t: m.nome, ok: true }].concat(distrattori(m, c).map(x => ({ t: x.nome, ok: false }))));
+    return { m, txt: `Quale muscolo ha questa <em>${tipo === "chi-o" ? "origine" : "inserzione"}</em>?<br><span style="font-weight:500">${esc(m[c])}</span>`, opts, spieg: `${m.nome}: ${tipo === "chi-o" ? m.origine : m.inserzione}` };
+  }
+  // nervo
+  const escl = m.nK.concat(m.nKx || []);
+  const altri = shuffle(Object.keys(D.NERVI).filter(k => !escl.includes(k))).slice(0, 3);
+  const opts = shuffle([{ t: nervi(m), ok: true }].concat(altri.map(k => ({ t: D.NERVI[k], ok: false }))));
+  return { m, txt: `Quale <em>nervo</em> innerva il muscolo <em>${esc(m.nome)}</em>?`, opts, spieg: `${nervi(m)} (${m.radici}). ${m.nervoNota || ""}` };
+}
+function nuovoQuiz() {
+  const p = shuffle(pool()), n = Math.min(10, p.length), tipo = $("#rtipo").value;
+  quiz = { qs: p.slice(0, n).map(m => domanda(m, tipo)), i: 0, punti: 0, sbagliati: [], risposto: false };
+  renderQuiz();
+}
+function renderQuiz() {
+  const b = $("#rbody");
+  if (!quiz) { b.innerHTML = `<div class="empty">Scegli regione e tipo di domanda, poi premi <strong>Nuovo quiz</strong>.</div>`; return; }
+  if (quiz.i >= quiz.qs.length) {
+    const tot = quiz.qs.length;
+    b.innerHTML = `<div class="qbox"><div class="qtext">Risultato: ${quiz.punti}/${tot}</div><p>${quiz.punti === tot ? "Perfetto. Prova un'altra regione o le domande miste." : "Ripassa questi muscoli (sono stati segnati \"da ripassare\"):"}</p>
+      <div class="mchips">${[...new Set(quiz.sbagliati)].map(id => `<button type="button" data-m="${id}">${esc(byId[id].nome)}</button>`).join("")}</div>
+      <div><button class="btn pri" type="button" id="qagain">Nuovo quiz</button></div></div>`;
+    return;
+  }
+  const q = quiz.qs[quiz.i];
+  b.innerHTML = `<div class="qbox"><div class="qmeta"><span>Domanda ${quiz.i + 1}/${quiz.qs.length}</span><span>Punti ${quiz.punti}</span></div>
+    <div class="qtext">${q.txt}</div>
+    <div class="qopts">${q.opts.map((o, k) => `<button class="qopt" type="button" data-k="${k}">${esc(o.t)}</button>`).join("")}</div>
+    <div id="qfb"></div></div>`;
+}
+function rispondi(k) {
+  if (!quiz || quiz.risposto) return;
+  const q = quiz.qs[quiz.i], ok = q.opts[k].ok;
+  quiz.risposto = true;
+  document.querySelectorAll(".qopt").forEach((el, j) => { el.disabled = true; if (q.opts[j].ok) el.classList.add("ok"); else if (j === k) el.classList.add("no"); });
+  if (ok) quiz.punti++; else { quiz.sbagliati.push(q.m.id); if (!isS(q.m.id)) setStato(q.m.id, "r"); }
+  $("#qfb").innerHTML = `<div class="qfb ${ok ? "ok" : "no"}"><strong>${ok ? "Giusto." : "Non è corretto."}</strong><span class="full">${esc(q.spieg)}</span></div>
+    <div style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap"><button class="btn pri" type="button" id="qnext">${quiz.i + 1 < quiz.qs.length ? "Avanti" : "Vedi risultato"}</button><button class="btn" type="button" data-m="${q.m.id}">Apri la scheda</button></div>`;
+  $("#qnext").focus({ preventScroll: true });
+}
+function nuovoDeck() {
+  const f = $("#fdeck").value;
+  let p = pool();
+  if (f === "ripassare") p = p.filter(m => isR(m.id));
+  if (f === "dafare") p = p.filter(m => !isS(m.id));
+  deck = { c: shuffle(p), i: 0 };
+  renderFlash();
+}
+function renderFlash() {
+  const b = $("#rbody");
+  if (!deck) nuovoDeck();
+  if (!deck.c.length) { b.innerHTML = `<div class="empty">Nessuna carta in questo mazzo. Cambia regione o mazzo.</div>`; return; }
+  if (deck.i >= deck.c.length) { b.innerHTML = `<div class="qbox"><div class="qtext">Mazzo finito.</div><div><button class="btn pri" type="button" id="fagain">Rimescola</button></div></div>`; return; }
+  const m = deck.c[deck.i];
+  b.innerHTML = `<div class="qmeta" style="max-width:640px"><span>Carta ${deck.i + 1}/${deck.c.length}</span><span>${esc(regById[m.regione].breve)}</span></div>
+  <div class="flash" id="flash"><div class="flash-in" tabindex="0" role="button" aria-label="Gira la carta">
+    <div class="face front"><span class="hint">${esc(regById[m.regione].nome)}</span><h3>${esc(m.nome)}</h3><span class="lat" style="font-style:italic;color:var(--muted)">${esc(m.lat)}</span><span class="hint" style="margin-top:14px">Ricorda origine, inserzione, nervo e azione. Tocca per girare.</span></div>
+    <div class="face back"><div class="oi" style="font-size:14.5px"><span class="tag o">ORI</span><span>${esc(m.o)}</span><span class="tag i">INS</span><span>${esc(m.i)}</span><span class="tag n">NER</span><span>${esc(nervi(m))} <span class="mono">${esc(m.radici)}</span></span><span class="tag n">AZ</span><span>${esc(m.azione.slice(0, 2).join("; "))}</span></div></div>
+  </div></div>
+  <div class="controls" style="max-width:640px"><button class="btn" type="button" id="fno">Da ripassare</button><button class="btn pri" type="button" id="fyes">Lo so</button><button class="btn" type="button" data-m="${m.id}">Scheda completa</button></div>`;
+}
+function renderStats() {
+  const s = store.studiati.filter(id => byId[id]).length, r = store.ripassare.filter(id => byId[id]).length;
+  $("#stats").innerHTML = `<div class="stat"><b>${s}</b><span>studiati</span></div><div class="stat"><b>${r}</b><span>da ripassare</span></div><div class="stat"><b>${M.length - s - r}</b><span>non ancora visti</span></div>`;
+}
+function renderRipasso() {
+  if (!$("#rreg").options.length) $("#rreg").innerHTML = `<option value="tutte">Tutte le regioni</option>` + REG.map(r => `<option value="${r.id}">${esc(r.breve)}</option>`).join("");
+  document.querySelectorAll("#rtabs .chip").forEach(c => c.setAttribute("aria-pressed", c.dataset.r === rMode));
+  $("#rtipo").hidden = rMode !== "quiz"; $("#fdeck").hidden = rMode !== "flash";
+  $("#rstart").textContent = rMode === "quiz" ? "Nuovo quiz" : "Rimescola";
+  renderStats();
+  rMode === "quiz" ? renderQuiz() : renderFlash();
+}
+
+/* ---------- ROUTING ---------- */
+const VIEWS = ["atlante", "mappa", "pedalata", "massaggio", "sicurezza", "ciclista", "tendini", "repere", "ripasso", "tabella"];
+const RENDER = { atlante: renderAtlante, mappa: renderMappa, pedalata: renderPedal, massaggio: renderMassaggio, sicurezza: renderSicurezza, ciclista: renderCiclista, tendini: renderTendini, repere: renderRepere, ripasso: renderRipasso, tabella: renderTabella };
+let curView = "atlante", booted = false;
+function renderCurrent() { RENDER[curView](); }
+function show(v) {
+  if (!VIEWS.includes(v)) v = "atlante";
+  if (curView === "pedalata" && v !== "pedalata") setPlay(false);
+  curView = v;
+  VIEWS.forEach(x => { $("#v-" + x).hidden = x !== v; });
+  document.querySelectorAll("#tabs a").forEach(a => a.setAttribute("aria-current", a.getAttribute("href") === "#" + v ? "page" : "false"));
+  const a = document.querySelector(`#tabs a[href="#${v}"]`); if (a && a.scrollIntoView) a.scrollIntoView({ block: "nearest", inline: "nearest" });
+  renderCurrent();
+}
+function route() {
+  const h = (location.hash || "").slice(1);
+  if (h.startsWith("m-") && byId[h.slice(2)]) { if (!booted) show(curView); booted = true; openM(h.slice(2), false); return; }
+  if (!$("#panel").hidden) { $("#scrim").hidden = true; $("#panel").hidden = true; document.body.style.overflow = ""; }
+  booted = true;
+  show(h || "atlante");
+  window.scrollTo(0, 0);
+}
+
+/* ---------- EVENTI ---------- */
+document.addEventListener("click", e => {
+  const t = e.target.closest("[data-m],[data-reg],[data-p],[data-go],[data-atl],[data-r],[data-rischio],[data-k],#qnext,#qagain,#fyes,#fno,#fagain,.flash-in,#bS,#bR");
+  if (!t) return;
+  if (t.matches(".chip[data-reg]")) { fReg = t.dataset.reg; regChips(); renderAtlante(); return; }
+  if (t.matches("svg.mappa [data-reg]")) { mapReg = t.dataset.reg; renderMappa(); if (innerWidth < 820) $("#map-side").scrollIntoView({ behavior: "smooth", block: "start" }); return; }
+  if (t.matches("[data-rischio]")) { location.hash = "sicurezza"; return; }
+  if (t.dataset.m) { openM(t.dataset.m); return; }
+  if (t.dataset.p) { pSel = t.dataset.p; renderMassaggio(); return; }
+  if (t.dataset.go) { closeM(); location.hash = t.dataset.go; return; }
+  if (t.dataset.atl) { fReg = t.dataset.atl; regChips(); location.hash = "atlante"; return; }
+  if (t.dataset.r) { rMode = t.dataset.r; renderRipasso(); return; }
+  if (t.dataset.k !== undefined) { rispondi(+t.dataset.k); return; }
+  if (t.id === "qnext") { quiz.i++; quiz.risposto = false; renderQuiz(); return; }
+  if (t.id === "qagain") { nuovoQuiz(); return; }
+  if (t.id === "fagain") { nuovoDeck(); return; }
+  if (t.id === "fyes" || t.id === "fno") { setStato(deck.c[deck.i].id, t.id === "fyes" ? "s" : "r"); deck.i++; renderStats(); renderFlash(); return; }
+  if (t.matches(".flash-in")) { $("#flash").classList.toggle("flip"); return; }
+  if (t.id === "bS") { setStato(cur, isS(cur) ? "" : "s"); openM(cur, false); return; }
+  if (t.id === "bR") { setStato(cur, isR(cur) ? "" : "r"); openM(cur, false); return; }
+});
+document.addEventListener("keydown", e => {
+  if (!$("#panel").hidden) {
+    if (e.key === "Escape") closeM();
+    if (e.key === "ArrowRight") stepM(1);
+    if (e.key === "ArrowLeft") stepM(-1);
+    return;
+  }
+  if ((e.key === "Enter" || e.key === " ") && e.target.matches && e.target.matches("svg.mappa [tabindex], .flash-in")) { e.preventDefault(); e.target.dispatchEvent(new MouseEvent("click", { bubbles: true })); }
+});
+$("#scrim").addEventListener("click", closeM);
+$("#pclose").addEventListener("click", closeM);
+$("#pprev").addEventListener("click", () => stepM(-1));
+$("#pnext").addEventListener("click", () => stepM(1));
+$("#q").addEventListener("input", renderAtlante);
+$("#fstato").addEventListener("change", renderAtlante);
+$("#ang").addEventListener("input", e => { setPlay(false); ang = +e.target.value; renderPedal(); });
+$("#play").addEventListener("click", () => setPlay(!playing));
+let drag = false;
+$("#wheel").addEventListener("pointerdown", e => { drag = true; setPlay(false); try { e.target.setPointerCapture && $("#wheel").setPointerCapture(e.pointerId); } catch (x) {} const a = angFromEvent(e); if (a != null) { ang = a; renderPedal(); } });
+$("#wheel").addEventListener("pointermove", e => { if (!drag) return; const a = angFromEvent(e); if (a != null) { ang = a; renderPedal(); } });
+["pointerup", "pointercancel"].forEach(ev => $("#wheel").addEventListener(ev, () => { drag = false; }));
+$("#rstart").addEventListener("click", () => rMode === "quiz" ? nuovoQuiz() : nuovoDeck());
+$("#rreg").addEventListener("change", () => { quiz = null; deck = null; renderRipasso(); });
+$("#rtipo").addEventListener("change", () => { quiz = null; renderQuiz(); });
+$("#fdeck").addEventListener("change", () => { deck = null; renderFlash(); });
+window.addEventListener("hashchange", route);
+
+regChips(); updProg(); route();
+})();
+</script>
+
+</body>
+</html>

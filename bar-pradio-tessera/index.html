@@ -86,8 +86,28 @@
         <span id="reward-txt"></span><br>
         <span class="muted">Mostra il QR alla cassa per ritirare il premio.</span>
       </div>
-      <p class="muted" style="text-align:center;margin:14px 0 0" id="stamp-hint">Fai inquadrare il QR alla cassa: il timbro comparirà qui in automatico.</p>
+      <p class="muted" style="text-align:center;margin:14px 0 0" id="stamp-hint">Fai inquadrare il QR alla cassa: timbri e punti compariranno qui in automatico.</p>
       <p class="muted" style="text-align:center;margin:6px 0 0" id="redeemed-info"></p>
+    </div>
+
+    <div class="panel" id="punti-panel">
+      <div class="stamp-head">
+        <h2>Raccolta punti</h2>
+        <span class="stamp-count" id="punti-count"></span>
+      </div>
+      <p class="muted" id="punti-rule" style="margin-top:-6px"></p>
+      <div class="points-big"><b id="punti-num">0</b><span>punti</span></div>
+      <div class="bar" role="progressbar" aria-label="Punti verso la bevuta omaggio" aria-valuemin="0" id="punti-bar-wrap"><div class="bar-fill" id="punti-bar"></div></div>
+      <p class="muted" style="text-align:center;margin:8px 0 0" id="punti-manca"></p>
+      <div class="reward" id="reward-punti">
+        <strong>Bevuta omaggio sbloccata! 🍸</strong>
+        <span id="reward-punti-txt"></span><br>
+        <span class="muted">Mostra il QR alla cassa per ritirarla.</span>
+      </div>
+      <h3 class="sub">Come guadagnare punti</h3>
+      <ul class="listino" id="listino"></ul>
+      <p class="muted small-note" id="avviso-alcol"></p>
+      <p class="muted" style="text-align:center;margin:6px 0 0" id="punti-redeemed"></p>
       <div class="status" id="status"></div>
     </div>
 
@@ -199,6 +219,34 @@ function renderCard(prev) {
     } catch (e) { $("qr").textContent = card.numero; }
   }
   renderStamps(prev);
+  renderPunti(prev);
+}
+
+function renderPunti(prev) {
+  const ob = card.obiettivo_punti || 50, pt = card.punti || 0;
+  const listino = card.listino || [];
+  $("punti-panel").hidden = listino.length === 0;
+  $("punti-rule").textContent = CFG.regolaPunti || "";
+  $("punti-num").textContent = pt;
+  $("punti-count").textContent = Math.min(pt, ob) + " / " + ob;
+  $("punti-bar").style.width = Math.min(100, Math.round(pt / ob * 100)) + "%";
+  $("punti-bar-wrap").setAttribute("aria-valuemax", ob);
+  $("punti-bar-wrap").setAttribute("aria-valuenow", Math.min(pt, ob));
+  const full = pt >= ob;
+  $("punti-manca").textContent = full ? "" : "Ti mancano " + (ob - pt) + " punti per una bevuta omaggio.";
+  $("reward-punti").classList.toggle("show", full);
+  $("reward-punti-txt").textContent = CFG.premioPunti || "";
+  $("listino").innerHTML = listino.map(p => "<li><span>" + esc(p.nome) + "</span><b>+" + p.punti + " pt</b></li>").join("");
+  $("avviso-alcol").textContent = listino.some(p => p.alcolico) ? (CFG.avvisoAlcol || "") : "";
+  $("punti-redeemed").textContent = card.premi_punti ? "Bevute omaggio già ritirate: " + card.premi_punti : "";
+  if (prev && prev.numero === card.numero) {
+    const diff = pt - (prev.punti || 0);
+    if ((card.premi_punti || 0) > (prev.premi_punti || 0)) toast("Bevuta omaggio ritirata, salute! 🍸");
+    else if (diff > 0) {
+      toast("+" + diff + " punti 🍸" + (full && (prev.punti || 0) < ob ? " Bevuta omaggio sbloccata!" : ""));
+      $("punti-num").classList.remove("pop"); void $("punti-num").offsetWidth; $("punti-num").classList.add("pop");
+    }
+  }
 }
 
 const CUP = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9h12v5a5 5 0 0 1-5 5H9a5 5 0 0 1-5-5V9z"/><path d="M16 11h1.5a2.5 2.5 0 0 1 0 5H16"/><path d="M9 3c-1 1 1 2 0 3.5M12.5 3c-1 1 1 2 0 3.5"/></svg>';

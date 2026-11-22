@@ -1,7 +1,8 @@
 -- =====================================================================
 --  TESSERA DIGITALE BAR PRADIO – database Supabase
 --  Incolla tutto questo file in Supabase → SQL Editor → "Run".
---  Si può rieseguire senza problemi (non cancella i dati esistenti).
+--  Si può rieseguire senza problemi (non cancella i dati esistenti):
+--  rieseguilo anche per aggiornare un database creato con una versione precedente.
 -- =====================================================================
 
 -- ---------- Tabelle ----------
@@ -10,6 +11,9 @@ create table if not exists public.impostazioni (
   id                 int primary key default 1 check (id = 1),
   timbri_per_premio  int not null default 10 check (timbri_per_premio between 1 and 50)
 );
+alter table public.impostazioni add column if not exists punti_per_premio int not null default 50;
+alter table public.impostazioni drop constraint if exists impostazioni_punti_check;
+alter table public.impostazioni add constraint impostazioni_punti_check check (punti_per_premio between 1 and 10000);
 insert into public.impostazioni (id) values (1) on conflict (id) do nothing;
 
 create table if not exists public.clienti (
@@ -26,29 +30,64 @@ create table if not exists public.clienti (
   creato_il        timestamptz not null default now(),
   ultimo_timbro    timestamptz
 );
+-- raccolta punti (bevande)
+alter table public.clienti add column if not exists punti        int not null default 0;
+alter table public.clienti add column if not exists punti_totali int not null default 0;
+alter table public.clienti add column if not exists premi_punti  int not null default 0;
+alter table public.clienti drop constraint if exists clienti_punti_check;
+alter table public.clienti add constraint clienti_punti_check check (punti >= 0 and punti_totali >= 0 and premi_punti >= 0);
 
 create table if not exists public.movimenti (
   id          bigint generated always as identity primary key,
   cliente_id  uuid not null references public.clienti(id) on delete cascade,
-  tipo        text not null check (tipo in ('timbro', 'premio', 'annullato')),
+  tipo        text not null,
   operatore   uuid,
   creato_il   timestamptz not null default now()
 );
+alter table public.movimenti add column if not exists punti     int;
+alter table public.movimenti add column if not exists prodotto  text;
+alter table public.movimenti add column if not exists quantita  int;
+alter table public.movimenti add column if not exists annullato boolean not null default false;
+alter table public.movimenti drop constraint if exists movimenti_tipo_check;
+alter table public.movimenti add constraint movimenti_tipo_check
+  check (tipo in ('timbro', 'premio', 'annullato', 'punti', 'premio_punti', 'punti_annullati'));
 create index if not exists movimenti_cliente_idx on public.movimenti (cliente_id, creato_il desc);
 create index if not exists movimenti_data_idx on public.movimenti (creato_il desc);
 
--- Chi lavora al bar: solo questi utenti possono mettere timbri e vedere i clienti
+-- Listino punti: modificalo da Supabase → Table Editor → prodotti_punti
+create table if not exists public.prodotti_punti (
+  id        bigint generated always as identity primary key,
+  nome      text not null check (char_length(nome) between 1 and 40),
+  punti     int  not null check (punti between 1 and 1000),
+  alcolico  boolean not null default true,
+  attivo    boolean not null default true,
+  ordine    int not null default 0
+);
+insert into public.prodotti_punti (nome, punti, alcolico, ordine)
+select * from (values
+  ('Superalcolico', 5, true, 1),
+  ('Cocktail',      5, true, 2),
+  ('Amaro',         3, true, 3),
+  ('Spritz / Aperitivo', 3, true, 4),
+  ('Birra',         2, true, 5),
+  ('Calice di vino', 2, true, 6),
+  ('Analcolico / Succo', 1, false, 7)
+) v(nome, punti, alcolico, ordine)
+where not exists (select 1 from public.prodotti_punti);
+
+-- Chi lavora al bar: solo questi utenti possono mettere timbri/punti e vedere i clienti
 create table if not exists public.staff (
   user_id  uuid primary key references auth.users(id) on delete cascade,
   nome     text
 );
 
 -- Nessun accesso diretto alle tabelle: tutto passa dalle funzioni qui sotto
-alter table public.impostazioni enable row level security;
-alter table public.clienti      enable row level security;
-alter table public.movimenti    enable row level security;
-alter table public.staff        enable row level security;
-revoke all on public.impostazioni, public.clienti, public.movimenti, public.staff from anon, authenticated;
+alter table public.impostazioni   enable row level security;
+alter table public.clienti        enable row level security;
+alter table public.movimenti      enable row level security;
+alter table public.staff          enable row level security;
+alter table public.prodotti_punti enable row level security;
+revoke all on public.impostazioni, public.clienti, public.movimenti, public.staff, public.prodotti_punti from anon, authenticated;
 
 -- ---------- Funzioni di supporto ----------
 
@@ -70,6 +109,21 @@ language sql stable security definer set search_path = public as $$
   select timbri_per_premio from impostazioni where id = 1;
 $$;
 
+create or replace function public._obiettivo_punti() returns int
+language sql stable security definer set search_path = public as $$
+  select punti_per_premio from impostazioni where id = 1;
+$$;
+
+create or replace function public._listino(con_id boolean) returns json
+language sql stable security definer set search_path = public as $$
+  select coalesce(json_agg(
+    case when con_id
+      then json_build_object('id', id, 'nome', nome, 'punti', punti, 'alcolico', alcolico)
+      else json_build_object('nome', nome, 'punti', punti, 'alcolico', alcolico) end
+    order by ordine, id), '[]'::json)
+  from prodotti_punti where attivo;
+$$;
+
 -- Dati della tessera visibili al cliente
 create or replace function public._tessera_json(c public.clienti) returns json
 language sql stable security definer set search_path = public as $$
@@ -77,18 +131,24 @@ language sql stable security definer set search_path = public as $$
     'numero', c.numero, 'nome', c.nome, 'cognome', c.cognome, 'nascita', c.nascita,
     'timbri', c.timbri, 'premi', c.premi, 'timbri_totali', c.timbri_totali,
     'creato_il', c.creato_il, 'ultimo_timbro', c.ultimo_timbro,
-    'obiettivo', public._obiettivo()
+    'obiettivo', public._obiettivo(),
+    'punti', c.punti, 'punti_totali', c.punti_totali, 'premi_punti', c.premi_punti,
+    'obiettivo_punti', public._obiettivo_punti(),
+    'listino', public._listino(false)
   );
 $$;
 
--- Dati visibili allo staff (in più: token per il link di recupero e ultimi movimenti)
+-- Dati visibili allo staff (in più: token per il link di recupero, ultimi movimenti, listino con id)
 create or replace function public._scheda_staff(c public.clienti) returns json
 language sql stable security definer set search_path = public as $$
   select (public._tessera_json(c)::jsonb || jsonb_build_object(
     'token', c.token,
+    'listino', public._listino(true),
     'movimenti', coalesce((
-      select json_agg(json_build_object('tipo', m.tipo, 'creato_il', m.creato_il) order by m.creato_il desc)
-      from (select * from movimenti where cliente_id = c.id order by creato_il desc limit 8) m
+      select json_agg(json_build_object('tipo', m.tipo, 'creato_il', m.creato_il, 'punti', m.punti,
+                                        'prodotto', m.prodotto, 'quantita', m.quantita, 'annullato', m.annullato)
+                      order by m.creato_il desc, m.id desc)
+      from (select * from movimenti where cliente_id = c.id order by creato_il desc, id desc limit 10) m
     ), '[]'::json)
   ))::json;
 $$;
@@ -190,6 +250,8 @@ begin
   return public._scheda_staff(public._trova(p_numero));
 end $$;
 
+-- ===== Timbri caffetteria =====
+
 create or replace function public.aggiungi_timbro(p_numero text)
 returns json language plpgsql volatile security definer set search_path = public as $$
 declare c clienti;
@@ -235,6 +297,72 @@ begin
   return public._scheda_staff(c);
 end $$;
 
+-- ===== Punti bevande =====
+
+create or replace function public.aggiungi_punti(p_numero text, p_prodotto bigint, p_quantita int default 1)
+returns json language plpgsql volatile security definer set search_path = public as $$
+declare c clienti; p prodotti_punti; tot int;
+begin
+  perform public._richiedi_staff();
+  c := public._trova(p_numero);
+  select * into p from prodotti_punti where id = p_prodotto and attivo;
+  if not found then
+    raise exception 'prodotto_non_valido' using errcode = '22023';
+  end if;
+  if p_quantita is null or p_quantita < 1 or p_quantita > 20 then
+    raise exception 'quantita_non_valida' using errcode = '22023';
+  end if;
+  -- se la data di nascita è nota, niente punti su alcolici ai minorenni
+  if p.alcolico and c.nascita is not null and c.nascita > (current_date - interval '18 years')::date then
+    raise exception 'minorenne' using errcode = '22023';
+  end if;
+  tot := p.punti * p_quantita;
+  update clienti set punti = punti + tot, punti_totali = punti_totali + tot, ultimo_timbro = now()
+  where id = c.id returning * into c;
+  insert into movimenti (cliente_id, tipo, operatore, punti, prodotto, quantita)
+  values (c.id, 'punti', auth.uid(), tot, p.nome, p_quantita);
+  return public._scheda_staff(c);
+end $$;
+
+create or replace function public.riscatta_premio_punti(p_numero text)
+returns json language plpgsql volatile security definer set search_path = public as $$
+declare c clienti; ob int := public._obiettivo_punti();
+begin
+  perform public._richiedi_staff();
+  c := public._trova(p_numero);
+  if c.punti < ob then
+    raise exception 'punti_insufficienti' using errcode = '22023';
+  end if;
+  -- i punti in eccesso restano sulla tessera
+  update clienti set punti = punti - ob, premi_punti = premi_punti + 1 where id = c.id returning * into c;
+  insert into movimenti (cliente_id, tipo, operatore, punti) values (c.id, 'premio_punti', auth.uid(), -ob);
+  return public._scheda_staff(c);
+end $$;
+
+-- Annulla l'ultima aggiunta di punti (in caso di errore alla cassa)
+create or replace function public.annulla_punti(p_numero text)
+returns json language plpgsql volatile security definer set search_path = public as $$
+declare c clienti; m movimenti;
+begin
+  perform public._richiedi_staff();
+  c := public._trova(p_numero);
+  select * into m from movimenti
+  where cliente_id = c.id and tipo = 'punti' and not annullato
+  order by creato_il desc, id desc limit 1;
+  if not found then
+    raise exception 'nessun_punto' using errcode = '22023';
+  end if;
+  if c.punti < m.punti then
+    raise exception 'punti_gia_usati' using errcode = '22023';
+  end if;
+  update movimenti set annullato = true where id = m.id;
+  update clienti set punti = punti - m.punti, punti_totali = greatest(punti_totali - m.punti, 0)
+  where id = c.id returning * into c;
+  insert into movimenti (cliente_id, tipo, operatore, punti, prodotto, quantita)
+  values (c.id, 'punti_annullati', auth.uid(), -m.punti, m.prodotto, m.quantita);
+  return public._scheda_staff(c);
+end $$;
+
 create or replace function public.elimina_cliente(p_numero text)
 returns boolean language plpgsql volatile security definer set search_path = public as $$
 declare c clienti;
@@ -253,20 +381,24 @@ begin
   perform public._richiedi_staff();
   return json_build_object(
     'obiettivo', public._obiettivo(),
+    'obiettivo_punti', public._obiettivo_punti(),
     'stats', json_build_object(
       'clienti',        (select count(*) from clienti),
       'nuovi_30gg',     (select count(*) from clienti where creato_il > now() - interval '30 days'),
       'timbri_oggi',    (select count(*) from movimenti where tipo = 'timbro' and creato_il >= oggi)
                       - (select count(*) from movimenti where tipo = 'annullato' and creato_il >= oggi),
-      'premi_oggi',     (select count(*) from movimenti where tipo = 'premio' and creato_il >= oggi),
+      'premi_oggi',     (select count(*) from movimenti where tipo in ('premio', 'premio_punti') and creato_il >= oggi),
       'timbri_7gg',     (select count(*) from movimenti where tipo = 'timbro' and creato_il > now() - interval '7 days')
                       - (select count(*) from movimenti where tipo = 'annullato' and creato_il > now() - interval '7 days'),
-      'premi_totali',   (select coalesce(sum(premi), 0) from clienti)
+      'punti_oggi',     (select coalesce(sum(punti), 0) from movimenti where tipo in ('punti', 'punti_annullati') and creato_il >= oggi),
+      'premi_totali',   (select coalesce(sum(premi), 0) from clienti),
+      'premi_punti_totali', (select coalesce(sum(premi_punti), 0) from clienti)
     ),
     'clienti', coalesce((
       select json_agg(json_build_object(
         'numero', numero, 'nome', nome, 'cognome', cognome, 'nascita', nascita,
         'timbri', timbri, 'premi', premi, 'timbri_totali', timbri_totali,
+        'punti', punti, 'punti_totali', punti_totali, 'premi_punti', premi_punti,
         'creato_il', creato_il, 'ultimo_timbro', ultimo_timbro
       ) order by coalesce(ultimo_timbro, creato_il) desc)
       from clienti
@@ -283,13 +415,16 @@ grant execute on function public.leggi_tessera(uuid)                      to ano
 grant execute on function public.aggiorna_nome(uuid, text, text)          to anon, authenticated;
 grant execute on function public.elimina_tessera(uuid)                    to anon, authenticated;
 
-grant execute on function public.is_staff()                to authenticated;
-grant execute on function public.cerca_cliente(text)       to authenticated;
-grant execute on function public.aggiungi_timbro(text)     to authenticated;
-grant execute on function public.riscatta_premio(text)     to authenticated;
-grant execute on function public.annulla_timbro(text)      to authenticated;
-grant execute on function public.elimina_cliente(text)     to authenticated;
-grant execute on function public.pannello()                to authenticated;
+grant execute on function public.is_staff()                           to authenticated;
+grant execute on function public.cerca_cliente(text)                  to authenticated;
+grant execute on function public.aggiungi_timbro(text)                to authenticated;
+grant execute on function public.riscatta_premio(text)                to authenticated;
+grant execute on function public.annulla_timbro(text)                 to authenticated;
+grant execute on function public.aggiungi_punti(text, bigint, int)    to authenticated;
+grant execute on function public.riscatta_premio_punti(text)          to authenticated;
+grant execute on function public.annulla_punti(text)                  to authenticated;
+grant execute on function public.elimina_cliente(text)                to authenticated;
+grant execute on function public.pannello()                           to authenticated;
 
 -- =====================================================================
 --  DOPO aver creato l'utente del bar (Authentication → Users → Add user),
@@ -298,6 +433,12 @@ grant execute on function public.pannello()                to authenticated;
 --  insert into public.staff (user_id, nome)
 --  select id, 'Titolare' from auth.users where email = 'EMAIL-DEL-BAR@esempio.it';
 --
---  Per cambiare i timbri necessari per il premio (es. 8):
+--  Timbri necessari per il caffè omaggio (es. 8):
 --  update public.impostazioni set timbri_per_premio = 8 where id = 1;
+--
+--  Punti necessari per la bevuta omaggio (es. 40):
+--  update public.impostazioni set punti_per_premio = 40 where id = 1;
+--
+--  Listino punti (prodotti e punti): Table Editor → prodotti_punti
+--  (modifica nome/punti, "attivo = false" per nascondere un prodotto).
 -- =====================================================================

@@ -17,6 +17,13 @@ window.PRADIO_CONFIG = {
   regola: "Un timbro per ogni colazione o consumazione al banco.",
   timbriDemo: 10,         // solo modalità demo: col database vale "timbri_per_premio" nel database
 
+  // ---- Raccolta punti (bevande) ----
+  // Il listino (prodotti e punti) e la soglia si cambiano nel database: vedi GUIDA.md
+  premioPunti: "Una bevuta a scelta offerta da noi!",
+  regolaPunti: "Ogni consumazione al bar ti fa guadagnare punti.",
+  avvisoAlcol: "Punti sugli alcolici riservati ai maggiorenni · Bevi responsabilmente.",
+  puntiDemo: 50,          // solo modalità demo: col database vale "punti_per_premio" nel database
+
   // ---- Contatti (lascia "" per nascondere) ----
   indirizzo: "Badalucco (IM)",
   mappa: "https://maps.google.com/?q=Bar+Pradio+Badalucco",
@@ -31,6 +38,7 @@ window.PRADIO_CONFIG = {
   // ---- Vantaggi mostrati ai clienti ----
   vantaggi: [
     { ico: "☕", titolo: "Caffè omaggio", testo: "Completa la raccolta timbri e il prossimo è offerto da noi." },
+    { ico: "🍸", titolo: "Bevuta omaggio", testo: "Accumula punti con le consumazioni al bar: raggiunta la soglia, una bevuta è offerta da noi." },
     { ico: "🎂", titolo: "Sorpresa di compleanno", testo: "Nel giorno del tuo compleanno una pasta o un gelato in omaggio." },
     { ico: "🍰", titolo: "-10% su torte su ordinazione", testo: "Per i titolari della tessera, su tutte le torte della nostra pasticceria." },
     { ico: "🍨", titolo: "Gusti in anteprima", testo: "Assaggia per primo i nuovi gusti di gelato della stagione." }

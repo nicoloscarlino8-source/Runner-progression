@@ -8,7 +8,8 @@
   const CFG = window.PRADIO_CONFIG || {};
   const CODICI = [
     "tessera_completa", "timbri_insufficienti", "nessun_timbro", "tessera_non_trovata",
-    "non_autorizzato", "consenso_mancante", "dati_mancanti", "troppe_richieste"
+    "non_autorizzato", "consenso_mancante", "dati_mancanti", "troppe_richieste",
+    "punti_insufficienti", "nessun_punto", "punti_gia_usati", "prodotto_non_valido", "quantita_non_valida", "minorenne"
   ];
   const MESSAGGI = {
     tessera_completa: "Tessera completa: prima riscatta il premio.",
@@ -19,6 +20,12 @@
     consenso_mancante: "Per continuare accetta l'informativa privacy.",
     dati_mancanti: "Inserisci nome e cognome.",
     troppe_richieste: "Troppe richieste in questo momento, riprova tra qualche minuto.",
+    punti_insufficienti: "Non ci sono ancora abbastanza punti per il premio.",
+    nessun_punto: "Non ci sono punti da annullare.",
+    punti_gia_usati: "Quei punti sono già stati usati per un premio: non si possono annullare.",
+    prodotto_non_valido: "Prodotto non più nel listino: ricarica la scheda.",
+    quantita_non_valida: "Quantità non valida.",
+    minorenne: "Cliente minorenne: niente punti sugli alcolici.",
     login: "Email o password non corretti.",
     rete: "Connessione assente. Controlla internet e riprova.",
     sconosciuto: "Qualcosa è andato storto, riprova."
@@ -87,6 +94,9 @@
       timbro: (n) => rpc("aggiungi_timbro", { p_numero: n }),
       premio: (n) => rpc("riscatta_premio", { p_numero: n }),
       annulla: (n) => rpc("annulla_timbro", { p_numero: n }),
+      punti: (n, prodotto, qta) => rpc("aggiungi_punti", { p_numero: n, p_prodotto: prodotto, p_quantita: qta || 1 }),
+      premioPunti: (n) => rpc("riscatta_premio_punti", { p_numero: n }),
+      annullaPunti: (n) => rpc("annulla_punti", { p_numero: n }),
       eliminaCliente: (n) => rpc("elimina_cliente", { p_numero: n }),
       pannello: () => rpc("pannello")
     };
@@ -97,7 +107,15 @@
      ------------------------------------------------------------------ */
   function creaDemo() {
     const KEY = "pradio-demo-db", SKEY = "pradio-demo-staff";
-    const obiettivo = CFG.timbriDemo || 10;
+    const obiettivo = CFG.timbriDemo || 10, obiettivoPunti = CFG.puntiDemo || 50;
+    // stesso listino iniziale del database (supabase/schema.sql)
+    const LISTINO = [
+      { id: 1, nome: "Superalcolico", punti: 5, alcolico: true }, { id: 2, nome: "Cocktail", punti: 5, alcolico: true },
+      { id: 3, nome: "Amaro", punti: 3, alcolico: true }, { id: 4, nome: "Spritz / Aperitivo", punti: 3, alcolico: true },
+      { id: 5, nome: "Birra", punti: 2, alcolico: true }, { id: 6, nome: "Calice di vino", punti: 2, alcolico: true },
+      { id: 7, nome: "Analcolico / Succo", punti: 1, alcolico: false }
+    ];
+    const minorenne = (n) => { if (!n) return false; const d = new Date(n); d.setFullYear(d.getFullYear() + 18); return d > new Date(); };
     const ls = {
       get(k) { try { return JSON.parse(localStorage.getItem(k)); } catch (e) { return null; } },
       set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} },
@@ -110,11 +128,14 @@
 
     function pubblico(c) {
       return { numero: c.numero, nome: c.nome, cognome: c.cognome, nascita: c.nascita, timbri: c.timbri, premi: c.premi,
-        timbri_totali: c.timbri_totali, creato_il: c.creato_il, ultimo_timbro: c.ultimo_timbro, obiettivo };
+        timbri_totali: c.timbri_totali, creato_il: c.creato_il, ultimo_timbro: c.ultimo_timbro, obiettivo,
+        punti: c.punti || 0, punti_totali: c.punti_totali || 0, premi_punti: c.premi_punti || 0, obiettivo_punti: obiettivoPunti,
+        listino: LISTINO.map(({ nome, punti, alcolico }) => ({ nome, punti, alcolico })) };
     }
     function scheda(d, c) {
-      const mov = d.movimenti.filter(m => m.cliente === c.numero).slice(-8).reverse().map(m => ({ tipo: m.tipo, creato_il: m.creato_il }));
-      return Object.assign(pubblico(c), { token: c.token, movimenti: mov });
+      const mov = d.movimenti.filter(m => m.cliente === c.numero).slice(-10).reverse()
+        .map(m => ({ tipo: m.tipo, creato_il: m.creato_il, punti: m.punti, prodotto: m.prodotto, quantita: m.quantita, annullato: !!m.annullato }));
+      return Object.assign(pubblico(c), { token: c.token, movimenti: mov, listino: LISTINO });
     }
     function staff() { if (!ls.get(SKEY)) throw errore("non_autorizzato"); }
     function trova(d, n) {
@@ -123,7 +144,7 @@
       if (!c) throw errore("tessera_non_trovata");
       return c;
     }
-    function movimento(d, c, tipo) { d.movimenti.push({ cliente: c.numero, tipo, creato_il: new Date().toISOString() }); }
+    function movimento(d, c, tipo, extra) { d.movimenti.push(Object.assign({ cliente: c.numero, tipo, creato_il: new Date().toISOString() }, extra || {})); }
     async function op(fn) { await attesa(); const d = db(); const r = fn(d); salva(d); return r; }
 
     return {
@@ -175,6 +196,29 @@
         if (c.timbri <= 0) throw errore("nessun_timbro");
         c.timbri--; c.timbri_totali = Math.max(0, c.timbri_totali - 1); movimento(d, c, "annullato"); return scheda(d, c);
       }),
+      punti: (n, prodotto, qta) => op(d => {
+        staff(); const c = trova(d, n); qta = qta || 1;
+        const p = LISTINO.find(x => x.id === prodotto); if (!p) throw errore("prodotto_non_valido");
+        if (qta < 1 || qta > 20) throw errore("quantita_non_valida");
+        if (p.alcolico && minorenne(c.nascita)) throw errore("minorenne");
+        const tot = p.punti * qta;
+        c.punti = (c.punti || 0) + tot; c.punti_totali = (c.punti_totali || 0) + tot; c.ultimo_timbro = new Date().toISOString();
+        movimento(d, c, "punti", { punti: tot, prodotto: p.nome, quantita: qta }); return scheda(d, c);
+      }),
+      premioPunti: (n) => op(d => {
+        staff(); const c = trova(d, n);
+        if ((c.punti || 0) < obiettivoPunti) throw errore("punti_insufficienti");
+        c.punti -= obiettivoPunti; c.premi_punti = (c.premi_punti || 0) + 1;
+        movimento(d, c, "premio_punti", { punti: -obiettivoPunti }); return scheda(d, c);
+      }),
+      annullaPunti: (n) => op(d => {
+        staff(); const c = trova(d, n);
+        const m = d.movimenti.filter(x => x.cliente === c.numero && x.tipo === "punti" && !x.annullato).pop();
+        if (!m) throw errore("nessun_punto");
+        if ((c.punti || 0) < m.punti) throw errore("punti_gia_usati");
+        m.annullato = true; c.punti -= m.punti; c.punti_totali = Math.max(0, c.punti_totali - m.punti);
+        movimento(d, c, "punti_annullati", { punti: -m.punti, prodotto: m.prodotto, quantita: m.quantita }); return scheda(d, c);
+      }),
       eliminaCliente: (n) => op(d => {
         staff(); const c = trova(d, n);
         d.clienti = d.clienti.filter(x => x !== c); d.movimenti = d.movimenti.filter(m => m.cliente !== c.numero); return true;
@@ -184,13 +228,16 @@
         const oggi = new Date(); oggi.setHours(0, 0, 0, 0);
         const sett = Date.now() - 7 * 864e5, mese = Date.now() - 30 * 864e5;
         const conta = (tipo, da) => d.movimenti.filter(m => m.tipo === tipo && new Date(m.creato_il) >= da).length;
+        const somma = (tipi, da) => d.movimenti.filter(m => tipi.includes(m.tipo) && new Date(m.creato_il) >= da).reduce((s, m) => s + (m.punti || 0), 0);
         return {
-          obiettivo,
+          obiettivo, obiettivo_punti: obiettivoPunti,
           stats: {
             clienti: d.clienti.length,
             nuovi_30gg: d.clienti.filter(c => new Date(c.creato_il) > mese).length,
             timbri_oggi: conta("timbro", oggi) - conta("annullato", oggi),
-            premi_oggi: conta("premio", oggi),
+            premi_oggi: conta("premio", oggi) + conta("premio_punti", oggi),
+            punti_oggi: somma(["punti", "punti_annullati"], oggi),
+            premi_punti_totali: d.clienti.reduce((s, c) => s + (c.premi_punti || 0), 0),
             timbri_7gg: conta("timbro", new Date(sett)) - conta("annullato", new Date(sett)),
             premi_totali: d.clienti.reduce((s, c) => s + c.premi, 0)
           },

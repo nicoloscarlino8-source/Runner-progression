@@ -50,6 +50,20 @@
   .mov li { display: flex; justify-content: space-between; padding: 6px 0; border-top: 1px solid var(--line); }
   .mov li:first-child { border-top: 0; }
 
+  .tabs.mode { margin-top: 16px; }
+  .tabs.mode button { font-size: .8rem; padding: 10px 6px; }
+  .prod-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-top: 12px; }
+  .prod {
+    font: inherit; text-align: left; cursor: pointer; border-radius: 14px; padding: 14px 12px;
+    background: var(--bg); border: 1px solid var(--line); color: var(--ink); transition: transform .1s ease;
+  }
+  .prod:active { transform: scale(.97); }
+  .prod b { display: block; font-weight: 600; font-size: .95rem; line-height: 1.2; }
+  .prod span { display: block; margin-top: 4px; color: var(--brand-2); font-weight: 600; font-size: .9rem; }
+  .prod[disabled] { opacity: .5; }
+  .qty { display: flex; align-items: center; justify-content: center; gap: 14px; margin-top: 14px; color: var(--ink-soft); font-size: .85rem; letter-spacing: .06em; text-transform: uppercase; }
+  .qty b { font-size: 1.3rem; color: var(--ink); min-width: 1.5em; text-align: center; }
+  .qbtn { width: 40px; height: 40px; border-radius: 50%; border: 1px solid var(--line); background: var(--surface); color: var(--ink); font-size: 1.3rem; cursor: pointer; }
   .stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
   .stat { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 12px; }
   .stat b { display: block; font-family: "Marcellus", serif; font-weight: 400; font-size: 1.7rem; color: var(--brand-2); line-height: 1.1; }
@@ -127,14 +141,35 @@
             <div class="num" id="c-num"></div>
             <span class="badge" id="c-bday" hidden>🎂 Oggi compie gli anni!</span>
           </div>
-          <div class="big-count"><span id="c-timbri"></span><small id="c-obiettivo"></small></div>
+          <div class="big-count"><span id="c-big"></span><small id="c-big-of"></small></div>
         </div>
-        <div class="stamps" id="c-stamps" style="margin-top:16px"></div>
-        <button class="btn huge" id="btn-timbro" type="button">+1 Timbro</button>
-        <div class="row-btns">
-          <button class="btn ghost" id="btn-annulla" type="button">Togli un timbro</button>
-          <button class="btn ghost" id="btn-nuova" type="button">Nuova scansione</button>
+
+        <div class="tabs mode" role="tablist" aria-label="Tipo di raccolta">
+          <button role="tab" id="mode-caffe" aria-selected="true">☕ Caffetteria</button>
+          <button role="tab" id="mode-punti" aria-selected="false">🍸 Punti</button>
         </div>
+
+        <div id="sez-caffe">
+          <div class="stamps" id="c-stamps" style="margin-top:16px"></div>
+          <button class="btn huge" id="btn-timbro" type="button">+1 Timbro</button>
+          <button class="btn ghost" id="btn-annulla" type="button" style="margin-top:10px">Togli un timbro</button>
+        </div>
+
+        <div id="sez-punti" hidden>
+          <div class="bar" style="margin-top:16px"><div class="bar-fill" id="c-punti-bar"></div></div>
+          <p class="muted" style="text-align:center;margin:8px 0 0" id="c-punti-txt"></p>
+          <button class="btn huge accent" id="btn-premio-punti" type="button" hidden>🎁 Consegna bevuta omaggio</button>
+          <div class="qty" aria-label="Quantità">
+            <span>Quantità</span>
+            <button type="button" class="qbtn" id="q-meno" aria-label="Diminuisci">−</button>
+            <b id="q-val">1</b>
+            <button type="button" class="qbtn" id="q-piu" aria-label="Aumenta">+</button>
+          </div>
+          <div class="prod-grid" id="prod-grid"></div>
+          <button class="btn ghost" id="btn-annulla-punti" type="button" style="margin-top:10px">Annulla ultimi punti</button>
+        </div>
+
+        <button class="btn ghost" id="btn-nuova" type="button" style="margin-top:10px">📷 Nuova scansione</button>
         <p class="muted" style="margin:16px 0 0" id="c-info"></p>
         <ul class="mov" id="c-mov"></ul>
         <div class="row-btns">
@@ -344,8 +379,7 @@ function renderCliente(pop) {
   $("c-nome").textContent = c.nome + " " + c.cognome;
   $("c-num").textContent = c.numero;
   $("c-bday").hidden = !compleannoOggi(c.nascita);
-  $("c-timbri").textContent = c.timbri;
-  $("c-obiettivo").textContent = " / " + n;
+  renderModo();
   let h = "";
   for (let i = 0; i < n; i++) {
     const last = i === n - 1, on = i < c.timbri;
@@ -357,10 +391,72 @@ function renderCliente(pop) {
   b.textContent = full ? "🎁 Consegna premio" : "+1 Timbro";
   b.className = "btn huge" + (full ? " accent" : "");
   $("btn-annulla").disabled = c.timbri <= 0;
+
+  // punti
+  const ob = c.obiettivo_punti || 50, pt = c.punti || 0, fullP = pt >= ob;
+  $("c-punti-bar").style.width = Math.min(100, Math.round(pt / ob * 100)) + "%";
+  $("c-punti-txt").textContent = fullP ? "Bevuta omaggio disponibile! " + (pt > ob ? "(resteranno " + (pt - ob) + " punti)" : "") : "Mancano " + (ob - pt) + " punti alla bevuta omaggio";
+  $("btn-premio-punti").hidden = !fullP;
+  $("prod-grid").innerHTML = (c.listino || []).map(p =>
+    '<button type="button" class="prod" data-id="' + p.id + '"><b>' + esc(p.nome) + (p.alcolico ? "" : " 🧃") + '</b><span>+' + p.punti + ' pt</span></button>').join("");
+  aggiornaBottoni();
+
   $("c-info").textContent = "Cliente dal " + new Date(c.creato_il).toLocaleDateString("it-IT") +
-    " · timbri totali " + c.timbri_totali + " · premi " + c.premi + (full ? " · " + CFG.premio : "");
-  $("c-mov").innerHTML = (c.movimenti || []).map(m => "<li><span>" + (TIPI[m.tipo] || m.tipo) + "</span><span>" + quando(m.creato_il) + "</span></li>").join("");
+    " · caffè omaggio " + c.premi + " · bevute omaggio " + (c.premi_punti || 0) + " · punti totali " + (c.punti_totali || 0);
+  $("c-mov").innerHTML = (c.movimenti || []).map(m => "<li><span" + (m.annullato ? ' style="text-decoration:line-through"' : "") + ">" + descriviMov(m) + "</span><span>" + quando(m.creato_il) + "</span></li>").join("");
 }
+
+function aggiornaBottoni() {
+  const c = corrente; if (!c) return;
+  $("btn-annulla").disabled = c.timbri <= 0;
+  $("btn-annulla-punti").disabled = !(c.movimenti || []).some(m => m.tipo === "punti" && !m.annullato);
+}
+
+function descriviMov(m) {
+  if (m.tipo === "punti") return "🍸 " + esc(m.prodotto) + (m.quantita > 1 ? " ×" + m.quantita : "") + " +" + m.punti + " pt";
+  if (m.tipo === "punti_annullati") return "↩︎ Annullati " + Math.abs(m.punti) + " pt (" + esc(m.prodotto) + ")";
+  if (m.tipo === "premio_punti") return "🎁 Bevuta omaggio (" + m.punti + " pt)";
+  return TIPI[m.tipo] || m.tipo;
+}
+
+/* ---- Modalità Caffetteria / Punti (ricordata su questo telefono) ---- */
+let modo = "caffe";
+try { modo = localStorage.getItem("pradio-cassa-modo") === "punti" ? "punti" : "caffe"; } catch (e) {}
+let quantita = 1;
+function renderModo() {
+  const c = corrente; if (!c) return;
+  $("mode-caffe").setAttribute("aria-selected", modo === "caffe");
+  $("mode-punti").setAttribute("aria-selected", modo === "punti");
+  $("sez-caffe").hidden = modo !== "caffe";
+  $("sez-punti").hidden = modo !== "punti";
+  if (modo === "caffe") { $("c-big").textContent = c.timbri; $("c-big-of").textContent = " / " + (c.obiettivo || 10); }
+  else { $("c-big").textContent = c.punti || 0; $("c-big-of").textContent = " pt"; }
+  $("q-val").textContent = quantita;
+}
+function setModo(m) { modo = m; try { localStorage.setItem("pradio-cassa-modo", m); } catch (e) {} renderModo(); }
+$("mode-caffe").addEventListener("click", () => setModo("caffe"));
+$("mode-punti").addEventListener("click", () => setModo("punti"));
+$("q-meno").addEventListener("click", () => { quantita = Math.max(1, quantita - 1); $("q-val").textContent = quantita; });
+$("q-piu").addEventListener("click", () => { quantita = Math.min(20, quantita + 1); $("q-val").textContent = quantita; });
+$("prod-grid").addEventListener("click", (e) => {
+  const b = e.target.closest(".prod"); if (!b) return;
+  const id = Number(b.dataset.id), q = quantita;
+  const p = (corrente.listino || []).find(x => x.id === id);
+  azione((n) => API.punti(n, id, q), (c) => {
+    quantita = 1; $("q-val").textContent = 1;
+    const ob = c.obiettivo_punti || 50;
+    return "+" + (p ? p.punti * q : "") + " punti" + (p ? " · " + p.nome + (q > 1 ? " ×" + q : "") : "") + (c.punti >= ob ? " · Bevuta omaggio sbloccata! 🎁" : "");
+  });
+});
+$("btn-premio-punti").addEventListener("click", () => {
+  if (!confirm("Confermi la consegna della bevuta omaggio a " + corrente.nome + "? Verranno scalati " + (corrente.obiettivo_punti || 50) + " punti.")) return;
+  azione(API.premioPunti, () => "Bevuta omaggio consegnata 🍸");
+});
+$("btn-annulla-punti").addEventListener("click", () => {
+  const m = (corrente.movimenti || []).find(x => x.tipo === "punti" && !x.annullato);
+  if (!m || !confirm("Annullare gli ultimi punti (" + m.prodotto + (m.quantita > 1 ? " ×" + m.quantita : "") + ", " + m.punti + " pt)?")) return;
+  azione(API.annullaPunti, () => "Punti annullati");
+});
 
 async function azione(fn, okMsg) {
   if (busy || !corrente) return;
@@ -370,7 +466,7 @@ async function azione(fn, okMsg) {
   finally {
     busy = false;
     document.querySelectorAll("#cliente-panel .btn").forEach(b => b.disabled = false);
-    if (corrente) $("btn-annulla").disabled = corrente.timbri <= 0;
+    aggiornaBottoni();
   }
 }
 $("btn-timbro").addEventListener("click", () => {
@@ -414,7 +510,8 @@ async function caricaPannello() {
 }
 function renderPannello() {
   const s = pannello.stats, n = pannello.obiettivo;
-  const tiles = [["Clienti", s.clienti], ["Nuovi 30 gg", s.nuovi_30gg], ["Premi totali", s.premi_totali], ["Timbri oggi", s.timbri_oggi], ["Timbri 7 gg", s.timbri_7gg], ["Premi oggi", s.premi_oggi]];
+  const tiles = [["Clienti", s.clienti], ["Nuovi 30 gg", s.nuovi_30gg], ["Omaggi totali", (s.premi_totali || 0) + (s.premi_punti_totali || 0)],
+    ["Timbri oggi", s.timbri_oggi], ["Punti oggi", s.punti_oggi || 0], ["Omaggi oggi", s.premi_oggi]];
   $("stats").innerHTML = tiles.map(t => '<div class="stat"><b>' + t[1] + "</b><span>" + t[0] + "</span></div>").join("");
 
   const mese = new Date().getMonth() + 1, oggiG = new Date().getDate();
@@ -430,10 +527,10 @@ function renderPannello() {
 function renderLista() {
   if (!pannello) return;
   const q = $("search").value.trim().toLowerCase(), qn = q.replace(/[^0-9]/g, "");
-  const n = pannello.obiettivo;
+  const n = pannello.obiettivo, np = pannello.obiettivo_punti || 50;
   const l = pannello.clienti.filter(c => !q || (c.nome + " " + c.cognome).toLowerCase().includes(q) || (qn && c.numero.replace(/[^0-9]/g, "").includes(qn)));
   $("lista").innerHTML = l.length ? l.slice(0, 300).map(c =>
-    '<li data-num="' + esc(c.numero) + '"><div><div class="n">' + esc(c.nome + " " + c.cognome) + '</div><div class="s">' + esc(c.numero) + " · ultima visita " + quando(c.ultimo_timbro) + '</div></div><div class="t' + (c.timbri >= n ? " full" : "") + '">' + (c.timbri >= n ? "🎁 " : "") + c.timbri + "/" + n + "</div></li>"
+    '<li data-num="' + esc(c.numero) + '"><div><div class="n">' + esc(c.nome + " " + c.cognome) + '</div><div class="s">' + esc(c.numero) + " · ultima visita " + quando(c.ultimo_timbro) + '</div></div><div class="t' + (c.timbri >= n || (c.punti || 0) >= np ? " full" : "") + '" style="text-align:right">' + (c.timbri >= n ? "🎁 " : "") + "☕ " + c.timbri + "/" + n + '<br><span style="font-weight:400">' + ((c.punti || 0) >= np ? "🎁 " : "") + "🍸 " + (c.punti || 0) + " pt</span></div></li>"
   ).join("") : '<li class="empty">' + (pannello.clienti.length ? "Nessun risultato" : "Ancora nessun cliente. Condividi il link della tessera!") + "</li>";
 }
 $("search").addEventListener("input", renderLista);
@@ -442,8 +539,8 @@ $("search").addEventListener("input", renderLista);
 }));
 $("btn-csv").addEventListener("click", () => {
   if (!pannello) return;
-  const righe = [["Numero", "Nome", "Cognome", "Data di nascita", "Timbri attuali", "Timbri totali", "Premi", "Iscritto il", "Ultimo timbro"]]
-    .concat(pannello.clienti.map(c => [c.numero, c.nome, c.cognome, c.nascita || "", c.timbri, c.timbri_totali, c.premi,
+  const righe = [["Numero", "Nome", "Cognome", "Data di nascita", "Timbri attuali", "Timbri totali", "Caffè omaggio", "Punti attuali", "Punti totali", "Bevute omaggio", "Iscritto il", "Ultima visita"]]
+    .concat(pannello.clienti.map(c => [c.numero, c.nome, c.cognome, c.nascita || "", c.timbri, c.timbri_totali, c.premi, c.punti || 0, c.punti_totali || 0, c.premi_punti || 0,
       new Date(c.creato_il).toLocaleDateString("it-IT"), c.ultimo_timbro ? new Date(c.ultimo_timbro).toLocaleString("it-IT") : ""]));
   const csv = "﻿" + righe.map(r => r.map(v => '"' + String(v).replace(/"/g, '""') + '"').join(";")).join("\r\n");
   const a = document.createElement("a");

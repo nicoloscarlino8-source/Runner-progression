@@ -84,6 +84,13 @@ In alternativa vanno bene GitHub Pages, Cloudflare Pages o il sito del bar: bast
 4. Il timbro compare **da solo** sul telefono del cliente in pochi secondi.
 5. Al 10° timbro il pulsante diventa **🎁 Consegna premio** e la tessera riparte da zero.
 
+**Raccolta punti (bevande):**
+1. Dopo la scansione, nella scheda del cliente tocca **🍸 Punti**. La Cassa si ricorda la scelta: la sera, ad esempio, resta sui Punti.
+2. Se serve, imposta la **quantità** (es. 3), poi tocca il prodotto (es. **Superalcolico +5 pt** → +15 punti).
+3. A 50 punti compare **🎁 Consegna bevuta omaggio**: vengono scalati 50 punti e quelli in più restano sulla tessera.
+4. **Annulla ultimi punti** corregge l'ultima aggiunta sbagliata.
+5. Se il cliente ha indicato la data di nascita ed è minorenne, i punti sugli alcolici vengono rifiutati.
+
 Altre funzioni:
 - **Togli un timbro**: per correggere un errore.
 - **Nuova scansione**: passa al cliente successivo.
@@ -104,5 +111,15 @@ Altre funzioni:
 - **Progetto in pausa:** sul piano gratuito Supabase mette in pausa i progetti senza attività per 7 giorni. Con l'uso quotidiano non succede. Se il bar resta chiuso per ferie più a lungo, al rientro entra in Supabase e premi **Restore project**.
 - **Numero di timbri:** per cambiare quanti timbri servono per il premio (ad esempio 8), esegui in SQL Editor:
   `update public.impostazioni set timbri_per_premio = 8 where id = 1;`
+- **Punti per la bevuta omaggio** (ad esempio 40):
+  `update public.impostazioni set punti_per_premio = 40 where id = 1;`
+- **Listino punti:** in Supabase apri **Table Editor** → tabella **prodotti_punti**. Si modifica come un foglio Excel:
+  - cambia `punti` per cambiare il valore di un prodotto;
+  - aggiungi una riga (**Insert row**) per un nuovo prodotto: `nome`, `punti`, `alcolico` (true/false), `ordine` (posizione nell'elenco);
+  - metti `attivo` = false per nasconderlo, invece di cancellarlo.
+
+  Le modifiche compaiono subito in Cassa e sulle tessere, senza ricaricare il sito.
+- **Aggiornare un database già creato:** se avevi già eseguito una versione precedente di `schema.sql`, riesegui quella nuova: aggiunge le parti mancanti senza toccare clienti e timbri.
 - **Privacy:** l'informativa (`privacy.html`) è un modello di partenza. Falla controllare a chi segue il bar (commercialista o consulente privacy). Le tessere inattive da 24 mesi vengono cancellate in automatico.
-- **Sicurezza:** i clienti non vedono mai i dati degli altri. Solo gli account nella tabella `staff` possono cercare clienti e mettere timbri.
+- **Sicurezza:** i clienti non vedono mai i dati degli altri. Solo gli account nella tabella `staff` possono cercare clienti e mettere timbri e punti.
+- **Alcolici:** promozioni e premi legati agli alcolici vanno gestiti con responsabilità (solo maggiorenni, nessun invito a bere di più). Sulla tessera compare l'avviso "Bevi responsabilmente". Il premio può essere anche una bevanda analcolica a scelta.

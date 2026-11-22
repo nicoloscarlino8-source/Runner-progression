@@ -91,10 +91,46 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
 .hero .actions{display:flex;flex-wrap:wrap;gap:.8rem;margin-top:1.8rem}
 .facts{display:flex;flex-wrap:wrap;gap:1.6rem;margin-top:2.4rem;padding-top:1.4rem;border-top:1px solid #4d3d31;font-size:.92rem;color:#cdbba7}
 .facts b{display:block;font-family:var(--f-display);font-weight:400;font-size:1.5rem;color:#f3e7d8}
-.paiolo{width:100%;max-width:300px;justify-self:center}
-.paiolo .swing{transform-origin:150px 10px;animation:swing 6s ease-in-out infinite}
-@keyframes swing{0%,100%{transform:rotate(-2deg)}50%{transform:rotate(2deg)}}
-@media (max-width:760px){.hero .wrap{grid-template-columns:1fr}.paiolo{max-width:180px;order:-1;justify-self:start}}
+.hero{position:relative}
+.hero .wrap{position:relative;z-index:1}
+#leaves{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:0}
+.scene{width:100%;max-width:380px;justify-self:center;filter:drop-shadow(0 30px 40px rgba(0,0,0,.35))}
+.sway{transform-box:fill-box;transform-origin:50% 100%;animation:sway 5s ease-in-out infinite}
+.sway.d2{animation-delay:-1.7s;animation-duration:6s}.sway.d3{animation-delay:-3.1s;animation-duration:4.4s}
+@keyframes sway{0%,100%{transform:rotate(-2.5deg)}50%{transform:rotate(2.5deg)}}
+.glow{animation:glow 5s ease-in-out infinite}
+@keyframes glow{50%{opacity:.55;transform:scale(1.06)}}
+.glow{transform-box:fill-box;transform-origin:center}
+.steam{animation:steam 3.5s ease-in infinite;opacity:0}
+.steam.s2{animation-delay:1.2s}.steam.s3{animation-delay:2.3s}
+@keyframes steam{0%{opacity:0;transform:translateY(10px)}30%{opacity:.7}100%{opacity:0;transform:translateY(-40px)}}
+.flame{transform-box:fill-box;transform-origin:50% 100%;animation:flick .9s ease-in-out infinite alternate}
+.flame.f2{animation-duration:.7s}
+@keyframes flick{to{transform:scaleY(1.18) scaleX(.92)}}
+/* ingresso hero */
+.hero .in{animation:rise .9s cubic-bezier(.2,.7,.2,1) both}
+.hero .in:nth-child(2){animation-delay:.12s}.hero .in:nth-child(3){animation-delay:.24s}.hero .in:nth-child(4){animation-delay:.36s}.hero .in:nth-child(5){animation-delay:.48s}
+.scene.in{animation:pop 1.1s .2s cubic-bezier(.2,.8,.2,1) both}
+@keyframes rise{from{opacity:0;transform:translateY(24px)}}
+@keyframes pop{from{opacity:0;transform:translateY(30px) scale(.94)}}
+/* comparsa allo scroll (solo browser che la supportano; altrimenti tutto è già visibile) */
+@supports (animation-timeline: view()){
+  .reveal{animation:rise linear both;animation-timeline:view();animation-range:entry 5% entry 45%}
+}
+/* nastro scorrevole */
+.ribbon{background:var(--copper);color:#fff;overflow:hidden;white-space:nowrap;padding-block:.8rem}
+.ribbon div{display:inline-flex;gap:2.2rem;animation:marquee 32s linear infinite;font-family:var(--f-display);font-size:1.35rem;padding-left:2.2rem}
+.ribbon span::after{content:"✦";margin-left:2.2rem;opacity:.6;font-size:.8em}
+@keyframes marquee{to{transform:translateX(-50%)}}
+/* galleria illustrata */
+.gallery{display:grid;grid-template-columns:repeat(3,1fr);gap:1.2rem;margin-top:2rem}
+.frame{margin:0;border-radius:18px;overflow:hidden;background:var(--bark);position:relative}
+.frame svg{display:block;width:100%;height:auto;transition:transform .8s cubic-bezier(.2,.7,.2,1)}
+.frame:hover svg{transform:scale(1.05)}
+.frame figcaption{position:absolute;left:0;right:0;bottom:0;padding:2.2rem 1.1rem 1rem;background:linear-gradient(transparent,rgba(20,14,10,.85));color:#f3e7d8;font-family:var(--f-display);font-size:1.15rem}
+.frame figcaption small{display:block;font-family:var(--f-body);font-size:.82rem;color:#d4c3b0;margin-top:.15rem}
+@media (max-width:760px){.hero .wrap{grid-template-columns:1fr}.scene{max-width:260px;order:-1;justify-self:start}.gallery{grid-template-columns:1fr}}
+@media (prefers-reduced-motion: reduce){#leaves{display:none}.ribbon div{animation:none}}
 
 /* Storia */
 .story{display:grid;grid-template-columns:1fr 1fr;gap:3rem;align-items:start}
@@ -107,12 +143,16 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
 
 /* Piatti */
 .menu-head{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:end;gap:1rem;margin-bottom:2rem}
-.dishes{display:grid;grid-template-columns:repeat(auto-fit,minmax(15rem,1fr));gap:0;border-top:1px solid var(--line)}
-.dish{padding:1.3rem 1rem 1.3rem 0;border-bottom:1px solid var(--line);display:grid;grid-template-columns:auto 1fr;gap:.9rem;align-items:start}
+.dishes{display:grid;grid-template-columns:repeat(4,1fr);gap:1.4rem 1.2rem}
+.dish{display:flex;flex-direction:column;gap:.7rem;min-width:0}
+.dish .ph{aspect-ratio:1;max-width:100%;border-radius:50%;display:grid;place-items:center;transition:transform .5s cubic-bezier(.2,.7,.2,1),box-shadow .5s;box-shadow:0 14px 30px -18px rgba(43,33,27,.6)}
+.dish .ph svg{width:78%;height:78%;transition:transform .6s cubic-bezier(.2,.7,.2,1)}
+.dish:hover .ph{transform:translateY(-6px);box-shadow:0 24px 40px -20px rgba(43,33,27,.7)}
+.dish:hover .ph svg{transform:rotate(-8deg) scale(1.06)}
 .dish h3{font-size:1.2rem}
-.dish p{margin:.25rem 0 0;color:var(--muted);font-size:.95rem}
+.dish p{margin:.2rem 0 0;color:var(--muted);font-size:.95rem}
 .dish .tag{font-size:.72rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--moss)}
-.dish svg{width:34px;height:34px;flex:none;margin-top:.2rem}
+@media (max-width:860px){.dishes{grid-template-columns:repeat(2,1fr)}}
 .note{font-size:.9rem;color:var(--muted);margin-top:1.4rem}
 
 /* Servizi */
@@ -165,6 +205,69 @@ footer .wrap{display:flex;flex-wrap:wrap;justify-content:space-between;gap:1rem;
 </head>
 <body>
 
+<!-- Illustrazioni riutilizzabili -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <linearGradient id="capG" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#a8673a"/><stop offset="1" stop-color="#5c3218"/></linearGradient>
+    <linearGradient id="stemG" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#fbf1df"/><stop offset="1" stop-color="#d9c3a0"/></linearGradient>
+    <symbol id="porcino" viewBox="0 0 100 100">
+      <path d="M33 56C28 70 27 84 34 92Q50 99 66 92C73 84 72 70 67 56Z" fill="url(#stemG)"/>
+      <path d="M38 66l6 4m6-6l6 5m-16 8l7 3m8-4l7 4m-21 7l6 2m8-3l7 3" stroke="#c9ae86" stroke-width="1.4" fill="none"/>
+      <path d="M8 52C8 25 28 10 50 10S92 25 92 52C92 59 85 61 78 61H22C15 61 8 59 8 52Z" fill="url(#capG)"/>
+      <path d="M24 30C30 20 40 16 50 16" stroke="#d9965e" stroke-width="5" stroke-linecap="round" fill="none" opacity=".7"/>
+      <path d="M16 58Q50 66 84 58" stroke="#e8c78f" stroke-width="3" fill="none" opacity=".8"/>
+    </symbol>
+    <symbol id="slice" viewBox="0 0 20 20">
+      <path d="M1 9C1 3 6 1 10 1S19 3 19 9L13 10V18Q10 20 7 18V10Z" fill="#8a4f28"/>
+      <path d="M4 9Q10 7 16 9L12.5 10.5V17Q10 18 7.5 17V10.5Z" fill="#f1dfbf"/>
+    </symbol>
+    <symbol id="d-fritti" viewBox="0 0 100 100">
+      <ellipse cx="50" cy="56" rx="44" ry="34" fill="#fffaf1"/><ellipse cx="50" cy="56" rx="34" ry="25" fill="none" stroke="#e3d6c1" stroke-width="2"/>
+      <g fill="#e0a64b" stroke="#b97a2a" stroke-width="1.5"><path d="M24 50q6-12 18-6q4 10-6 14q-12 2-12-8z"/><path d="M48 40q10-8 18 0q2 12-10 12q-10-2-8-12z"/><path d="M42 62q8-8 16 0q0 10-9 10q-9-2-7-10z"/></g>
+      <use href="#slice" x="60" y="54" width="20" height="20"/><use href="#slice" x="66" y="40" width="16" height="16"/><use href="#slice" x="26" y="60" width="15" height="15"/>
+      <circle cx="58" cy="66" r="2" fill="#5f8a3a"/><circle cx="36" cy="44" r="1.8" fill="#5f8a3a"/><circle cx="72" cy="60" r="1.6" fill="#5f8a3a"/>
+    </symbol>
+    <symbol id="d-pasta" viewBox="0 0 100 100">
+      <ellipse cx="50" cy="56" rx="44" ry="34" fill="#fffaf1"/>
+      <g fill="none" stroke="#e9c264" stroke-width="3.2" stroke-linecap="round"><path d="M24 58c6-20 46-24 52-4"/><path d="M26 52c12-16 40-14 48 6"/><path d="M30 64c8-18 38-16 42 0"/><path d="M28 60c14-8 30-8 44 2"/><path d="M34 48c10-6 26-6 34 4"/></g>
+      <use href="#slice" x="38" y="40" width="18" height="18"/><use href="#slice" x="54" y="50" width="16" height="16"/><use href="#slice" x="32" y="56" width="14" height="14"/>
+      <circle cx="50" cy="62" r="1.8" fill="#5f8a3a"/><circle cx="62" cy="46" r="1.6" fill="#5f8a3a"/>
+    </symbol>
+    <symbol id="d-risotto" viewBox="0 0 100 100">
+      <ellipse cx="50" cy="56" rx="44" ry="34" fill="#fffaf1"/><ellipse cx="50" cy="56" rx="30" ry="21" fill="#ead9b4"/>
+      <g fill="#f8eed7"><circle cx="38" cy="52" r="2"/><circle cx="46" cy="60" r="2"/><circle cx="60" cy="54" r="2"/><circle cx="54" cy="66" r="2"/><circle cx="42" cy="66" r="2"/><circle cx="64" cy="62" r="2"/></g>
+      <use href="#slice" x="40" y="44" width="18" height="18"/><use href="#slice" x="56" y="52" width="15" height="15"/>
+      <circle cx="50" cy="56" r="1.8" fill="#5f8a3a"/><circle cx="36" cy="60" r="1.6" fill="#5f8a3a"/>
+    </symbol>
+    <symbol id="d-frittata" viewBox="0 0 100 100">
+      <ellipse cx="50" cy="56" rx="44" ry="34" fill="#fffaf1"/><ellipse cx="50" cy="56" rx="32" ry="23" fill="#f0c64e"/><ellipse cx="50" cy="56" rx="32" ry="23" fill="none" stroke="#d9a53a" stroke-width="3"/>
+      <path d="M50 56L82 56A32 23 0 0 1 72 72Z" fill="#fffaf1"/>
+      <use href="#slice" x="30" y="44" width="16" height="16"/><use href="#slice" x="48" y="58" width="15" height="15"/><use href="#slice" x="54" y="40" width="14" height="14"/>
+    </symbol>
+    <symbol id="d-trifolati" viewBox="0 0 100 100">
+      <path d="M78 52L98 40" stroke="#3b3029" stroke-width="7" stroke-linecap="round"/>
+      <ellipse cx="44" cy="58" rx="40" ry="30" fill="#3b3029"/><ellipse cx="44" cy="56" rx="34" ry="24" fill="#5a4a3e"/>
+      <use href="#slice" x="22" y="42" width="20" height="20"/><use href="#slice" x="42" y="38" width="18" height="18"/><use href="#slice" x="48" y="56" width="20" height="20"/><use href="#slice" x="28" y="60" width="16" height="16"/>
+      <circle cx="40" cy="58" r="2" fill="#7fae4a"/><circle cx="60" cy="50" r="1.8" fill="#7fae4a"/><circle cx="30" cy="54" r="1.6" fill="#7fae4a"/>
+    </symbol>
+    <symbol id="d-tiramisu" viewBox="0 0 100 100">
+      <ellipse cx="50" cy="72" rx="40" ry="14" fill="#fffaf1"/>
+      <path d="M26 40L74 40L74 70L26 70Z" fill="#f4e6cc"/><rect x="26" y="48" width="48" height="6" fill="#7a4a2a"/><rect x="26" y="60" width="48" height="6" fill="#7a4a2a"/>
+      <path d="M26 40L40 30L88 30L74 40Z" fill="#6b3e22"/><path d="M74 40L88 30V60L74 70Z" fill="#e8d6b4"/>
+    </symbol>
+    <symbol id="d-vino" viewBox="0 0 100 100">
+      <rect x="60" y="22" width="16" height="58" rx="5" fill="#2e3d26"/><rect x="64" y="10" width="8" height="16" fill="#2e3d26"/><rect x="60" y="44" width="16" height="16" fill="#efe1c6"/>
+      <path d="M26 30H50Q52 58 38 60Q24 58 26 30Z" fill="#fff" opacity=".7"/><path d="M27 42H49Q48 58 38 59Q28 58 27 42Z" fill="#8e1f2e"/>
+      <rect x="36" y="60" width="4" height="18" fill="#fff" opacity=".8"/><ellipse cx="38" cy="80" rx="12" ry="3" fill="#fff" opacity=".8"/>
+    </symbol>
+    <symbol id="d-limoncello" viewBox="0 0 100 100">
+      <path d="M38 28H54V40Q64 46 64 58V82Q46 88 28 82V58Q28 46 38 40Z" fill="#f3e15b" opacity=".95"/><rect x="40" y="16" width="12" height="12" fill="#c2703d"/>
+      <rect x="32" y="58" width="28" height="12" fill="#fff8d8"/>
+      <ellipse cx="74" cy="76" rx="14" ry="10" fill="#f5d82e"/><path d="M84 70q6-6 8-2" stroke="#5f8a3a" stroke-width="3" fill="none"/>
+    </symbol>
+  </defs>
+</svg>
+
 <header class="bar">
   <div class="wrap">
     <a class="brand" href="#top">Ca' Mea</a>
@@ -179,33 +282,57 @@ footer .wrap{display:flex;flex-wrap:wrap;justify-content:space-between;gap:1rem;
 
 <main id="top">
   <section class="hero" aria-labelledby="h1">
+    <canvas id="leaves" aria-hidden="true"></canvas>
     <div class="wrap">
       <div>
-        <p class="eyebrow">Ravezza · Badalucco · Valle Argentina</p>
-        <h1 id="h1">La casa dei <em>funghi porcini</em></h1>
-        <p>Un piccolo ristorante di famiglia lungo la statale 548, tra castagni e paioli di rame. Porcini fritti e trifolati, tagliatelle, risotto e frittata di funghi, come si fanno in casa.</p>
-        <div class="actions">
+        <p class="eyebrow in">Ravezza · Badalucco · Valle Argentina</p>
+        <h1 id="h1" class="in">La casa dei <em>funghi porcini</em></h1>
+        <p class="in">Un piccolo ristorante di famiglia lungo la statale 548, tra castagni e paioli di rame. Porcini fritti e trifolati, tagliatelle, risotto e frittata di funghi, come si fanno in casa.</p>
+        <div class="actions in">
           <a class="btn btn-copper" href="#prenota">Prenota un tavolo</a>
           <a class="btn btn-ghost" href="#piatti">Guarda i piatti</a>
         </div>
-        <div class="facts">
+        <div class="facts in">
           <div><b>4,6 <span class="stars" aria-hidden="true">★</span></b>1.162 recensioni Google</div>
           <div><b>40–50 €</b>a persona</div>
           <div><b data-open-time>19:30</b>apertura cena</div>
         </div>
       </div>
-      <svg class="paiolo" viewBox="0 0 300 300" role="img" aria-label="Disegno di un paiolo di rame appeso">
-        <g class="swing">
-          <line x1="150" y1="0" x2="150" y2="70" stroke="#8d7766" stroke-width="4"/>
-          <path d="M70 120 Q150 30 230 120" fill="none" stroke="#8d7766" stroke-width="5"/>
-          <path d="M60 120 H240 L226 230 Q150 285 74 230 Z" fill="#c2703d"/>
-          <path d="M60 120 H240 L236 150 H64 Z" fill="#a95b2e"/>
-          <path d="M92 165 Q100 220 130 245" fill="none" stroke="#e6a77a" stroke-width="7" stroke-linecap="round" opacity=".55"/>
-          <ellipse cx="150" cy="120" rx="92" ry="12" fill="#7d4322"/>
+      <svg class="scene in" viewBox="0 0 360 440" role="img" aria-label="Illustrazione: porcini nel sottobosco al tramonto">
+        <defs>
+          <clipPath id="arch"><path d="M20 440V190A160 160 0 0 1 340 190V440Z"/></clipPath>
+          <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f0c58a"/><stop offset=".55" stop-color="#c47a45"/><stop offset="1" stop-color="#5a3a26"/></linearGradient>
+        </defs>
+        <g clip-path="url(#arch)">
+          <rect width="360" height="440" fill="url(#sky)"/>
+          <circle class="glow" cx="235" cy="165" r="46" fill="#fbe2b3" opacity=".85"/>
+          <path d="M0 250 Q70 200 140 235 T280 215 T360 230V440H0Z" fill="#8a5a3c"/>
+          <path d="M0 290 Q90 245 180 280 T360 265V440H0Z" fill="#5d3f2b"/>
+          <g fill="#3a281d">
+            <path d="M48 300V215M48 215c-22 8-26 40-2 46c-24 6-14 36 4 34M48 215c22 8 26 40 2 46c24 6 14 36-4 34" stroke="#3a281d" stroke-width="5"/>
+            <ellipse cx="48" cy="232" rx="26" ry="36"/><ellipse cx="312" cy="222" rx="30" ry="44"/>
+            <rect x="45" y="250" width="6" height="60"/><rect x="309" y="240" width="7" height="70"/>
+          </g>
+          <path d="M0 340 Q90 310 180 330 T360 320V440H0Z" fill="#3e4f2b"/>
+          <path d="M0 375 Q120 350 220 368 T360 360V440H0Z" fill="#2f3d22"/>
+          <g fill="none" stroke="#5f7a40" stroke-width="3" stroke-linecap="round">
+            <path class="sway d2" d="M70 380 Q60 340 30 320M58 352l-14-4M50 340l-12-8M64 364l-14 2"/>
+            <path class="sway d3" d="M300 384 Q312 346 342 330M314 356l14-6M322 345l12-10M308 368l14 0"/>
+          </g>
+          <use class="sway" href="#porcino" x="105" y="250" width="150" height="150"/>
+          <use class="sway d2" href="#porcino" x="210" y="312" width="80" height="80"/>
+          <use class="sway d3" href="#porcino" x="70" y="330" width="62" height="62"/>
+          <g fill="#c8743a" opacity=".9"><ellipse cx="190" cy="402" rx="9" ry="4" transform="rotate(-20 190 402)"/><ellipse cx="150" cy="408" rx="8" ry="3.5" transform="rotate(25 150 408)"/></g>
         </g>
+        <path d="M20 440V190A160 160 0 0 1 340 190V440" fill="none" stroke="#c2703d" stroke-width="3"/>
       </svg>
     </div>
   </section>
+
+  <div class="ribbon" aria-hidden="true"><div>
+    <span>Porcini fritti</span><span>Tagliatelle ai funghi</span><span>Risotto</span><span>Frittata di funghi</span><span>Tiramisù della casa</span><span>Limoncello</span>
+    <span>Porcini fritti</span><span>Tagliatelle ai funghi</span><span>Risotto</span><span>Frittata di funghi</span><span>Tiramisù della casa</span><span>Limoncello</span>
+  </div></div>
 
   <section id="storia" aria-labelledby="h-storia">
     <div class="wrap story">
@@ -216,11 +343,63 @@ footer .wrap{display:flex;flex-wrap:wrap;justify-content:space-between;gap:1rem;
         <p>Alle pareti ci sono paioli e vecchi oggetti di campagna. In cucina c'è soprattutto il porcino, preparato in tanti modi diversi. Nelle sere miti si mangia anche sulla piccola terrazza.</p>
         <p class="hint">Vengono a trovarci tanti ospiti dalla Costa Azzurra: on parle français.</p>
       </div>
-      <figure class="quote">
+      <figure class="quote reveal">
         <div class="stars" aria-label="5 stelle su 5">★★★★★</div>
         <blockquote lang="fr">"Endroit fabuleux, calme, service parfait, plats multiples et tous plus délicieux les uns des autres… mais il faut avoir faim. Qualité-prix parfaite, petite terrasse très sympathique."</blockquote>
         <figcaption>Recensione di un ospite su Google Maps</figcaption>
       </figure>
+    </div>
+  </section>
+
+  <section aria-labelledby="h-mondo" style="padding-top:0">
+    <div class="wrap">
+      <p class="eyebrow reveal">Il nostro mondo</p>
+      <h2 id="h-mondo" class="reveal">Bosco, fuoco e terrazza</h2>
+      <div class="gallery">
+        <figure class="frame reveal">
+          <svg viewBox="0 0 400 300" role="img" aria-label="Illustrazione: porcini tra il muschio nel bosco di castagni">
+            <rect width="400" height="300" fill="#2f3a24"/>
+            <g fill="#f6e3b0" opacity=".14"><path class="glow" d="M230 0L300 0L190 300L120 300Z"/><path class="glow" d="M320 0L360 0L270 300L230 300Z"/></g>
+            <g fill="#241a13"><rect x="40" width="26" height="240"/><rect x="150" width="18" height="230"/><rect x="330" width="30" height="250"/></g>
+            <path d="M0 220Q100 190 200 215T400 205V300H0Z" fill="#4a6230"/>
+            <path d="M0 255Q120 232 240 250T400 245V300H0Z" fill="#3a4e26"/>
+            <use class="sway" href="#porcino" x="140" y="150" width="120" height="120"/>
+            <use class="sway d2" href="#porcino" x="235" y="195" width="70" height="70"/>
+            <use class="sway d3" href="#porcino" x="95" y="205" width="55" height="55"/>
+            <g fill="#c8743a"><ellipse cx="60" cy="270" rx="10" ry="4" transform="rotate(-15 60 270)"/><ellipse cx="320" cy="268" rx="9" ry="4" transform="rotate(20 320 268)"/></g>
+          </svg>
+          <figcaption>Il bosco di castagni<small>Da dove arrivano i porcini in stagione</small></figcaption>
+        </figure>
+        <figure class="frame reveal">
+          <svg viewBox="0 0 400 300" role="img" aria-label="Illustrazione: paiolo di rame appeso sopra il fuoco">
+            <rect width="400" height="300" fill="#2b211b"/>
+            <g stroke="#3a2d24" stroke-width="2" fill="none"><path d="M0 60H400M0 120H400M0 180H400M80 0V60M240 0V60M160 60V120M320 60V120M60 120V180M220 120V180M360 120V180"/></g>
+            <line x1="200" y1="0" x2="200" y2="80" stroke="#8d7766" stroke-width="4" stroke-dasharray="8 4"/>
+            <path d="M140 120Q200 60 260 120" fill="none" stroke="#8d7766" stroke-width="5"/>
+            <g fill="none" stroke="#efe3cf" stroke-width="5" stroke-linecap="round"><path class="steam" d="M180 110q-10-15 0-30"/><path class="steam s2" d="M205 110q10-15 0-30"/><path class="steam s3" d="M225 110q-10-15 0-30"/></g>
+            <path d="M130 118H270L258 200Q200 240 142 200Z" fill="#c2703d"/><path d="M130 118H270L266 138H134Z" fill="#a95b2e"/>
+            <path d="M152 150Q158 190 182 210" fill="none" stroke="#eab088" stroke-width="6" stroke-linecap="round" opacity=".5"/>
+            <g><path class="flame" d="M170 290Q160 260 178 240Q182 262 192 250Q200 270 190 290Z" fill="#e8892e"/><path class="flame f2" d="M196 290Q186 250 206 228Q212 256 224 244Q232 270 220 290Z" fill="#f2b33d"/><path class="flame" d="M222 290Q214 262 232 248Q238 268 244 262Q248 278 240 290Z" fill="#e8892e"/></g>
+            <rect x="140" y="286" width="120" height="10" rx="4" fill="#4a3426"/>
+          </svg>
+          <figcaption>Il paiolo sul fuoco<small>Paioli e oggetti di campagna in sala</small></figcaption>
+        </figure>
+        <figure class="frame reveal">
+          <svg viewBox="0 0 400 300" role="img" aria-label="Illustrazione: terrazza al tramonto sulla Valle Argentina">
+            <defs><linearGradient id="dusk" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#6b4a6e"/><stop offset=".5" stop-color="#e2895a"/><stop offset="1" stop-color="#f5c98a"/></linearGradient></defs>
+            <rect width="400" height="300" fill="url(#dusk)"/>
+            <circle class="glow" cx="280" cy="150" r="34" fill="#fde7b6"/>
+            <path d="M0 170L60 120L120 160L190 100L260 150L330 110L400 150V300H0Z" fill="#7a4f5a"/>
+            <path d="M0 200L80 160L160 195L250 150L330 190L400 170V300H0Z" fill="#553845"/>
+            <path d="M0 230Q100 210 200 228T400 222V300H0Z" fill="#3b2a2c"/>
+            <g stroke="#2b211b" stroke-width="5"><line x1="0" y1="232" x2="400" y2="232"/><path d="M20 232V300M80 232V300M140 232V300M260 232V300M320 232V300M380 232V300"/></g>
+            <ellipse cx="200" cy="246" rx="62" ry="10" fill="#efe3cf"/><rect x="196" y="250" width="8" height="50" fill="#2b211b"/>
+            <path d="M178 214H192Q193 232 185 234Q177 232 178 214Z" fill="#fff" opacity=".8"/><path d="M178.6 222H191.4Q191 232 185 233Q179 232 178.6 222Z" fill="#8e1f2e"/><rect x="184" y="234" width="2" height="10" fill="#fff"/>
+            <path d="M208 214H222Q223 232 215 234Q207 232 208 214Z" fill="#fff" opacity=".8"/><path d="M208.6 222H221.4Q221 232 215 233Q209 232 208.6 222Z" fill="#8e1f2e"/><rect x="214" y="234" width="2" height="10" fill="#fff"/>
+          </svg>
+          <figcaption>La terrazza<small>Nelle sere miti si cena all'aperto</small></figcaption>
+        </figure>
+      </div>
     </div>
   </section>
 
@@ -243,9 +422,9 @@ footer .wrap{display:flex;flex-wrap:wrap;justify-content:space-between;gap:1rem;
       <p class="eyebrow">Come vuoi</p>
       <h2 id="h-serv">In sala, da asporto o a casa tua</h2>
       <div class="svc">
-        <div><h3>In sala e in terrazza</h3><p>Pochi tavoli, quindi conviene prenotare, soprattutto nel weekend e in autunno.</p></div>
-        <div><h3>Ritiro all'esterno</h3><p>Ordina per telefono o WhatsApp e passa a ritirare a Ravezza.</p></div>
-        <div><h3>Consegna a domicilio</h3><p>Nelle zone vicine. Chiamaci per sapere se arriviamo fino a te.</p></div>
+        <div class="reveal"><h3>In sala e in terrazza</h3><p>Pochi tavoli, quindi conviene prenotare, soprattutto nel weekend e in autunno.</p></div>
+        <div class="reveal"><h3>Ritiro all'esterno</h3><p>Ordina per telefono o WhatsApp e passa a ritirare a Ravezza.</p></div>
+        <div class="reveal"><h3>Consegna a domicilio</h3><p>Nelle zone vicine. Chiamaci per sapere se arriviamo fino a te.</p></div>
       </div>
     </div>
   </section>
@@ -264,7 +443,7 @@ footer .wrap{display:flex;flex-wrap:wrap;justify-content:space-between;gap:1rem;
         <p class="hint" style="margin-top:1.6rem">Gruppi oltre <span data-max-online>8</span> persone: chiamaci allo <a href="tel:+393491500498">349 150 0498</a>.</p>
       </div>
 
-      <form class="panel" id="bookForm" novalidate>
+      <form class="panel reveal" id="bookForm" novalidate>
         <div class="grid2">
           <div class="field">
             <label for="f-date">Giorno</label>
@@ -367,22 +546,50 @@ const CONFIG = {
   ]
 };
 
+// [categoria, nome, descrizione, illustrazione, colore di sfondo]
 const DISHES = [
-  ["Antipasto", "Porcini fritti e trifolati", "Il piatto più richiesto: metà croccanti in pastella, metà in padella con aglio e prezzemolo."],
-  ["Primo", "Tagliatelle ai funghi porcini", "Pasta all'uovo con sugo di porcini."],
-  ["Primo", "Risotto ai funghi", "Mantecato con i porcini della valle."],
-  ["Secondo", "Frittata di funghi", "Uova e porcini, alta e morbida come una volta."],
-  ["Contorno", "Funghi trifolati", "In padella con aglio, olio e prezzemolo."],
-  ["Dolce", "Tiramisù della casa", "Fatto da noi ogni giorno."],
-  ["Cantina", "Vino rosso della casa", "Da accompagnare a tutto il menù."],
-  ["Digestivo", "Limoncello", "Per chiudere la serata."]
+  ["Antipasto", "Porcini fritti e trifolati", "Il piatto più richiesto: metà croccanti in pastella, metà in padella con aglio e prezzemolo.", "d-fritti", "#e9c98f"],
+  ["Primo", "Tagliatelle ai funghi porcini", "Pasta all'uovo con sugo di porcini.", "d-pasta", "#c9d3a8"],
+  ["Primo", "Risotto ai funghi", "Mantecato con i porcini della valle.", "d-risotto", "#e6c3a2"],
+  ["Secondo", "Frittata di funghi", "Uova e porcini, alta e morbida come una volta.", "d-frittata", "#b9c9c2"],
+  ["Contorno", "Funghi trifolati", "In padella con aglio, olio e prezzemolo.", "d-trifolati", "#dcb48a"],
+  ["Dolce", "Tiramisù della casa", "Fatto da noi ogni giorno.", "d-tiramisu", "#e8d2b8"],
+  ["Cantina", "Vino rosso della casa", "Da accompagnare a tutto il menù.", "d-vino", "#d8aeae"],
+  ["Digestivo", "Limoncello", "Per chiudere la serata.", "d-limoncello", "#d6dba0"]
 ];
 
 /* ============================================================ */
 const $ = s => document.querySelector(s);
-const porcino = '<svg viewBox="0 0 40 40" aria-hidden="true"><path d="M5 19C5 10 12 5 20 5s15 5 15 14c0 2-2 3-4 3H9c-2 0-4-1-4-3Z" fill="var(--cap)"/><path d="M14 22h12l1 9c0 3-3 5-7 5s-7-2-7-5Z" fill="var(--line)" stroke="var(--muted)" stroke-width="1"/></svg>';
-$("#dishes").innerHTML = DISHES.map(([t,n,d]) =>
-  `<article class="dish">${porcino}<div><span class="tag">${t}</span><h3>${n}</h3><p>${d}</p></div></article>`).join("");
+$("#dishes").innerHTML = DISHES.map(([t,n,d,ill,bg]) =>
+  `<article class="dish reveal"><div class="ph" style="background:radial-gradient(circle at 35% 30%, #fff8 0, transparent 55%), ${bg}"><svg viewBox="0 0 100 100" aria-hidden="true"><use href="#${ill}"/></svg></div><div><span class="tag">${t}</span><h3>${n}</h3><p>${d}</p></div></article>`).join("");
+
+/* Foglie di castagno che cadono nella hero */
+(function leaves(){
+  const cv = $("#leaves");
+  if (!cv || matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+  const ctx = cv.getContext("2d"), cols = ["#c8743a","#a85a2a","#d99a4e","#8a5a2c"];
+  let W, H, items = [];
+  const size = () => { const r = cv.getBoundingClientRect(), dpr = Math.min(2, devicePixelRatio || 1); W = r.width; H = r.height; cv.width = W*dpr; cv.height = H*dpr; ctx.setTransform(dpr,0,0,dpr,0,0); };
+  size(); addEventListener("resize", size);
+  const n = W < 600 ? 10 : 18;
+  for (let i = 0; i < n; i++) items.push({ x: Math.random()*W, y: Math.random()*H, s: 7 + Math.random()*9, v: .35 + Math.random()*.6, a: Math.random()*6.28, w: .01 + Math.random()*.02, r: Math.random()*6.28, c: cols[i % cols.length] });
+  let visible = true;
+  new IntersectionObserver(([e]) => visible = e.isIntersecting).observe(cv);
+  (function frame(t){
+    if (visible) {
+      ctx.clearRect(0,0,W,H);
+      for (const l of items) {
+        l.y += l.v; l.a += l.w; l.x += Math.sin(l.a) * .8; l.r += l.w * 1.5;
+        if (l.y > H + 20) { l.y = -20; l.x = Math.random()*W; }
+        ctx.save(); ctx.translate(l.x, l.y); ctx.rotate(l.r); ctx.globalAlpha = .55;
+        ctx.fillStyle = l.c; ctx.beginPath(); ctx.ellipse(0, 0, l.s*.38, l.s, 0, 0, 6.28); ctx.fill();
+        ctx.strokeStyle = "rgba(60,30,10,.5)"; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(0,-l.s); ctx.lineTo(0,l.s+3); ctx.stroke();
+        ctx.restore();
+      }
+    }
+    requestAnimationFrame(frame);
+  })();
+})();
 $("#hours").innerHTML = CONFIG.HOURS.map(([a,b]) => `<dt>${a}</dt><dd>${b}</dd>`).join("");
 $("#year").textContent = new Date().getFullYear();
 document.querySelector("[data-max-online]").textContent = CONFIG.MAX_ONLINE_PARTY;

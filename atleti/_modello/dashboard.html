@@ -1,0 +1,399 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Atleti Runner Progression</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=Barlow:wght@400;500;600&display=swap">
+<style>
+/* Layout: testata stretta, griglia di schede atleta (panoramica) / scheda singola con
+   riquadri numerici, tre grafici settimanali e tabelle (dettaglio, via #slug). */
+:root {
+  --bg: #f5f7f8;
+  --surface: #ffffff;
+  --ink: #101418;
+  --ink-2: #4a545c;
+  --ink-3: #79838b;
+  --line: #dfe4e7;
+  --grid: #e9edef;
+  --accent: #2a78d6;      /* km */
+  --accent-2: #eb6834;    /* dislivello */
+  --band: rgba(27, 175, 122, .12);
+  --good: #18794e; --good-bg: #e3f4ea;
+  --warn: #a35c00; --warn-bg: #fdf0da;
+  --bad: #c22f2f;  --bad-bg: #fbe5e5;
+  --display: "Barlow Condensed", "Arial Narrow", "Roboto Condensed", system-ui, sans-serif;
+  --body: "Barlow", system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0f1316; --surface: #171c20; --ink: #eef1f3; --ink-2: #b4bdc4; --ink-3: #87919a;
+    --line: #2a3238; --grid: #222a2f; --accent: #3987e5; --accent-2: #d95926;
+    --band: rgba(25, 158, 112, .16);
+    --good: #4cc38a; --good-bg: #12301f; --warn: #e0a23a; --warn-bg: #34260f;
+    --bad: #f07070; --bad-bg: #3a1717; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0f1316; --surface: #171c20; --ink: #eef1f3; --ink-2: #b4bdc4; --ink-3: #87919a;
+  --line: #2a3238; --grid: #222a2f; --accent: #3987e5; --accent-2: #d95926;
+  --band: rgba(25, 158, 112, .16);
+  --good: #4cc38a; --good-bg: #12301f; --warn: #e0a23a; --warn-bg: #34260f;
+  --bad: #f07070; --bad-bg: #3a1717; color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0; background: var(--bg); color: var(--ink); font: 15px/1.5 var(--body);
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+.wrap { max-width: 1080px; margin: 0 auto; padding-block: 24px 56px; display: grid; gap: 28px; }
+h1, h2, h3 { font-family: var(--display); margin: 0; text-wrap: balance; letter-spacing: .01em; }
+h1 { font-size: 2.4rem; line-height: 1; font-weight: 700; text-transform: uppercase; }
+h2 { font-size: 1.35rem; font-weight: 600; text-transform: uppercase; letter-spacing: .04em; }
+a { color: inherit; }
+.num, td.n, .tile b { font-variant-numeric: tabular-nums; }
+.top { display: flex; flex-wrap: wrap; align-items: end; justify-content: space-between; gap: 8px 24px;
+  border-bottom: 3px solid var(--ink); padding-bottom: 12px; }
+.brand { font-family: var(--display); font-weight: 600; font-size: .9rem; letter-spacing: .14em;
+  text-transform: uppercase; color: var(--ink-2); }
+.meta { color: var(--ink-3); font-size: .9rem; }
+.esempio { background: var(--warn-bg); color: var(--warn); border-radius: 6px; padding: 10px 14px; font-weight: 500; }
+.riassunto { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; }
+.tile { background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 14px 16px;
+  display: grid; gap: 2px; align-content: start; min-width: 0; }
+.tile span { font-size: .78rem; text-transform: uppercase; letter-spacing: .08em; color: var(--ink-3); font-weight: 600; }
+.tile b { font-family: var(--display); font-size: 2rem; line-height: 1.1; font-weight: 600; }
+.tile small { color: var(--ink-2); font-size: .85rem; }
+.schede { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 14px; }
+.scheda { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 16px;
+  text-decoration: none; display: grid; gap: 10px; min-width: 0; transition: border-color .15s, transform .15s; }
+.scheda:hover, .scheda:focus-visible { border-color: var(--ink-3); transform: translateY(-1px); }
+.scheda:focus-visible, button:focus-visible, a:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.scheda header { display: flex; justify-content: space-between; align-items: start; gap: 8px; }
+.scheda h3 { font-size: 1.45rem; font-weight: 600; line-height: 1.1; }
+.scheda .riga { display: flex; gap: 18px; flex-wrap: wrap; }
+.scheda .riga div { display: grid; }
+.scheda .riga span { font-size: .72rem; text-transform: uppercase; letter-spacing: .08em; color: var(--ink-3); font-weight: 600; }
+.scheda .riga b { font-family: var(--display); font-size: 1.5rem; font-weight: 600; font-variant-numeric: tabular-nums; }
+.delta { font-size: .85rem; color: var(--ink-2); }
+.pill { display: inline-flex; align-items: center; gap: 5px; border-radius: 999px; padding: 2px 10px;
+  font-size: .8rem; font-weight: 600; max-width: 100%; width: fit-content; line-height: 1.3; }
+.pill.ok { color: var(--good); background: var(--good-bg); }
+.pill.warn { color: var(--warn); background: var(--warn-bg); }
+.pill.bad { color: var(--bad); background: var(--bad-bg); }
+.pill.nd { color: var(--ink-3); background: var(--grid); }
+.foot { color: var(--ink-3); font-size: .8rem; }
+.vuoto { background: var(--surface); border: 1px dashed var(--line); border-radius: 10px; padding: 28px; color: var(--ink-2); }
+.vuoto code { background: var(--grid); padding: 2px 6px; border-radius: 4px; }
+.indietro { display: inline-flex; gap: 6px; align-items: center; text-decoration: none; color: var(--ink-2);
+  font-weight: 600; font-size: .9rem; width: fit-content; }
+.indietro:hover { color: var(--ink); }
+.grafici { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 460px), 1fr)); gap: 16px; }
+.grafico { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 16px; min-width: 0; position: relative; }
+.grafico h3 { font-size: 1.1rem; font-weight: 600; text-transform: uppercase; letter-spacing: .04em; }
+.grafico p { margin: 2px 0 8px; color: var(--ink-3); font-size: .85rem; }
+.grafico svg { display: block; width: 100%; height: auto; overflow: visible; }
+.grafico.largo { grid-column: 1 / -1; }
+.sez { display: grid; gap: 10px; min-width: 0; }
+.tab { overflow-x: auto; background: var(--surface); border: 1px solid var(--line); border-radius: 10px; }
+table { border-collapse: collapse; width: 100%; font-size: .9rem; }
+th, td { text-align: left; padding: 8px 12px; border-bottom: 1px solid var(--grid); white-space: nowrap; }
+th { font-size: .72rem; text-transform: uppercase; letter-spacing: .08em; color: var(--ink-3); font-weight: 600; }
+td.n, th.n { text-align: right; }
+td.t { white-space: normal; min-width: 160px; }
+tr:last-child td { border-bottom: 0; }
+.due { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 420px), 1fr)); gap: 16px; }
+#tip { position: fixed; pointer-events: none; background: var(--surface); color: var(--ink); border: 1px solid var(--line);
+  border-radius: 6px; padding: 8px 10px; font-size: .82rem; box-shadow: 0 4px 16px rgba(0,0,0,.12); z-index: 20;
+  display: grid; gap: 2px; max-width: 240px; }
+#tip b { font-size: 1rem; font-variant-numeric: tabular-nums; }
+#tip span { color: var(--ink-2); }
+.axis { fill: var(--ink-3); font: 11px var(--body); font-variant-numeric: tabular-nums; }
+@media (prefers-reduced-motion: reduce) { .scheda { transition: none; } .scheda:hover { transform: none; } }
+@media (max-width: 480px) { h1 { font-size: 1.9rem; } .tile b { font-size: 1.6rem; } }
+</style>
+</head>
+<body>
+<main class="wrap" id="app"></main>
+<div id="tip" hidden></div>
+<script type="application/json" id="dati">{"__DATI__": true}</script>
+<script>
+"use strict";
+const D = JSON.parse(document.getElementById("dati").textContent);
+const app = document.getElementById("app");
+const tip = document.getElementById("tip");
+const NS = "http://www.w3.org/2000/svg";
+
+// ---------- utilità ----------
+function el(tag, attrs, ...figli) {
+  const e = document.createElement(tag);
+  for (const [k, v] of Object.entries(attrs || {})) {
+    if (v == null) continue;
+    if (k === "class") e.className = v; else if (k === "text") e.textContent = v; else e.setAttribute(k, v);
+  }
+  for (const f of figli.flat()) if (f != null) e.append(f);
+  return e;
+}
+function svg(tag, attrs) {
+  const e = document.createElementNS(NS, tag);
+  for (const [k, v] of Object.entries(attrs || {})) e.setAttribute(k, v);
+  return e;
+}
+const fmt1 = v => (v == null ? "—" : v.toLocaleString("it-IT", { minimumFractionDigits: 1, maximumFractionDigits: 1 }));
+const fmt0 = v => (v == null ? "—" : Math.round(v).toLocaleString("it-IT"));
+const ore = m => (m == null ? "—" : `${Math.floor(m / 60)}h${String(Math.round(m % 60)).padStart(2, "0")}`);
+const giorno = iso => { if (!iso) return "—"; const [a, m, g] = iso.split("-"); return `${g}/${m}/${a}`; };
+const giornoBreve = iso => { const [, m, g] = iso.split("-"); return `${g}/${m}`; };
+const MESI = ["gen","feb","mar","apr","mag","giu","lug","ago","set","ott","nov","dic"];
+const mese = k => { const [a, m] = k.split("-"); return `${MESI[+m - 1]} ${a}`; };
+function giorniFa(iso) {
+  if (!iso) return null;
+  return Math.round((new Date(D.aggiornato) - new Date(iso)) / 86400000);
+}
+function stato(acwr) {
+  if (acwr == null) return { cls: "nd", testo: "Carico n.d.", icona: "–" };
+  const v = acwr.toLocaleString("it-IT", { minimumFractionDigits: 2 });
+  if (acwr > 1.5) return { cls: "bad", testo: `Picco di carico · ${v}`, icona: "▲" };
+  if (acwr > 1.3) return { cls: "warn", testo: `Carico in salita · ${v}`, icona: "↗" };
+  if (acwr < 0.8) return { cls: "warn", testo: `Scarico / stop · ${v}`, icona: "▼" };
+  return { cls: "ok", testo: `Carico regolare · ${v}`, icona: "●" };
+}
+function pill(acwr) { const s = stato(acwr); return el("span", { class: `pill ${s.cls}` }, el("span", { "aria-hidden": "true", text: s.icona }), s.testo); }
+
+function mostraTip(ev, righe) {
+  tip.replaceChildren(...righe.map(([testo, forte]) => el(forte ? "b" : "span", { text: testo })));
+  tip.hidden = false;
+  const r = tip.getBoundingClientRect();
+  let x = ev.clientX + 14, y = ev.clientY + 14;
+  if (x + r.width > innerWidth - 8) x = ev.clientX - r.width - 14;
+  if (y + r.height > innerHeight - 8) y = ev.clientY - r.height - 14;
+  tip.style.left = `${Math.max(8, x)}px`; tip.style.top = `${Math.max(8, y)}px`;
+}
+function nascondiTip() { tip.hidden = true; }
+
+// Passo "tondo" (1, 2, 2,5, 5 × 10^n) tale che 4 tacche coprano il massimo
+function passoTondo(v) {
+  if (!v || v <= 0) return 1;
+  const grezzo = v / 4, p = Math.pow(10, Math.floor(Math.log10(grezzo)));
+  for (const m of [1, 2, 2.5, 5, 10]) if (m * p >= grezzo) return m * p;
+  return 10 * p;
+}
+
+// ---------- grafici ----------
+// Barre settimanali, una serie. dati: [{x, v, tip:[[testo,forte],...]}]
+function grafBarre(dati, colore, unita) {
+  const W = 640, H = 220, L = 44, R = 8, T = 10, B = 28;
+  const passo = passoTondo(Math.max(...dati.map(d => d.v)));
+  const max = passo * Math.max(1, Math.ceil(Math.max(...dati.map(d => d.v)) / passo));
+  const tacche = Math.round(max / passo);
+  const s = svg("svg", { viewBox: `0 0 ${W} ${H}`, role: "img" });
+  const pw = W - L - R, ph = H - T - B, slot = pw / dati.length, bw = Math.max(6, slot - 8);
+  for (let i = 0; i <= tacche; i++) {
+    const val = passo * i, y = T + ph - ph * i / tacche;
+    s.append(svg("line", { x1: L, x2: W - R, y1: y, y2: y, stroke: "var(--grid)", "stroke-width": 1 }));
+    const t = svg("text", { x: L - 8, y: y + 4, "text-anchor": "end", class: "axis" });
+    t.textContent = `${fmt0(val)}${i === tacche ? " " + unita : ""}`; s.append(t);
+  }
+  dati.forEach((d, i) => {
+    const h = ph * d.v / max, x = L + slot * i + (slot - bw) / 2, y = T + ph - h, r = Math.min(4, h / 2, bw / 2);
+    if (h > 0) s.append(svg("path", {
+      d: `M${x},${T + ph} V${y + r} Q${x},${y} ${x + r},${y} H${x + bw - r} Q${x + bw},${y} ${x + bw},${y + r} V${T + ph} Z`,
+      fill: colore, "fill-opacity": i === dati.length - 1 ? 1 : .78 }));
+    if (i % 2 === (dati.length - 1) % 2) {
+      const t = svg("text", { x: x + bw / 2, y: H - 8, "text-anchor": "middle", class: "axis" });
+      t.textContent = d.x; s.append(t);
+    }
+    const hit = svg("rect", { x: L + slot * i, y: T, width: slot, height: ph, fill: "transparent", tabindex: 0 });
+    hit.addEventListener("pointermove", ev => mostraTip(ev, d.tip));
+    hit.addEventListener("pointerleave", nascondiTip);
+    hit.addEventListener("focus", () => { const b = hit.getBoundingClientRect(); mostraTip({ clientX: b.right, clientY: b.top }, d.tip); });
+    hit.addEventListener("blur", nascondiTip);
+    s.append(hit);
+  });
+  s.append(svg("line", { x1: L, x2: W - R, y1: T + ph, y2: T + ph, stroke: "var(--ink-3)", "stroke-width": 1 }));
+  return s;
+}
+
+// Linea ACWR con fascia 0,8–1,3 e soglia 1,5
+function grafAcwr(sett) {
+  const W = 1000, H = 220, L = 44, R = 16, T = 12, B = 28;
+  const vals = sett.map(w => w.acwr);
+  const max = Math.max(2, Math.ceil((Math.max(...vals.filter(v => v != null), 0) + .1) * 2) / 2);
+  const s = svg("svg", { viewBox: `0 0 ${W} ${H}`, role: "img" });
+  const pw = W - L - R, ph = H - T - B;
+  const X = i => L + (sett.length === 1 ? pw / 2 : pw * i / (sett.length - 1));
+  const Y = v => T + ph - ph * v / max;
+  s.append(svg("rect", { x: L, width: pw, y: Y(1.3), height: Y(0.8) - Y(1.3), fill: "var(--band)" }));
+  for (let v = 0; v <= max + 1e-9; v += .5) {
+    s.append(svg("line", { x1: L, x2: W - R, y1: Y(v), y2: Y(v), stroke: "var(--grid)", "stroke-width": 1 }));
+    const t = svg("text", { x: L - 8, y: Y(v) + 4, "text-anchor": "end", class: "axis" });
+    t.textContent = v.toLocaleString("it-IT", { minimumFractionDigits: 1 }); s.append(t);
+  }
+  s.append(svg("line", { x1: L, x2: W - R, y1: Y(1.5), y2: Y(1.5), stroke: "var(--bad)", "stroke-width": 1.5, "stroke-dasharray": "5 4" }));
+  const lb = svg("text", { x: W - R, y: Y(1.5) - 6, "text-anchor": "end", class: "axis" }); lb.textContent = "1,5 soglia di attenzione"; s.append(lb);
+  const lz = svg("text", { x: L + 8, y: Y(1.3) + 14, "text-anchor": "start", class: "axis" }); lz.textContent = "zona 0,8–1,3"; s.append(lz);
+  let d = "", su = false;
+  vals.forEach((v, i) => { if (v == null) { su = false; return; } d += `${su ? "L" : "M"}${X(i)},${Y(v)} `; su = true; });
+  if (d) s.append(svg("path", { d, fill: "none", stroke: "var(--ink)", "stroke-width": 2, "stroke-linejoin": "round" }));
+  vals.forEach((v, i) => {
+    if (v == null) return;
+    const ultimo = i === vals.length - 1;
+    const c = v > 1.5 ? "var(--bad)" : (v < 0.8 || v > 1.3) ? "var(--warn)" : "var(--good)";
+    s.append(svg("circle", { cx: X(i), cy: Y(v), r: ultimo ? 6 : 4.5, fill: c, stroke: "var(--surface)", "stroke-width": 2 }));
+  });
+  sett.forEach((w, i) => {
+    if (i % 2 === (sett.length - 1) % 2) {
+      const t = svg("text", { x: X(i), y: H - 8, "text-anchor": "middle", class: "axis" });
+      t.textContent = giornoBreve(w.inizio); s.append(t);
+    }
+    const passo = sett.length > 1 ? pw / (sett.length - 1) : pw;
+    const hit = svg("rect", { x: X(i) - passo / 2, y: T, width: passo, height: ph, fill: "transparent", tabindex: 0 });
+    const righe = [[w.acwr == null ? "n.d." : w.acwr.toLocaleString("it-IT", { minimumFractionDigits: 2 }), true],
+      [`ACWR · settimana del ${giornoBreve(w.inizio)}`], [`${ore(w.min_tot)} di allenamento (tutti gli sport)`]];
+    hit.addEventListener("pointermove", ev => mostraTip(ev, righe));
+    hit.addEventListener("pointerleave", nascondiTip);
+    hit.addEventListener("focus", () => { const b = hit.getBoundingClientRect(); mostraTip({ clientX: b.right, clientY: b.top }, righe); });
+    hit.addEventListener("blur", nascondiTip);
+    s.append(hit);
+  });
+  return s;
+}
+
+function sparkline(sett) {
+  const W = 240, H = 44, vals = sett.map(w => w.km), max = Math.max(...vals, 1);
+  const s = svg("svg", { viewBox: `0 0 ${W} ${H}`, width: "100%", height: H, preserveAspectRatio: "none", "aria-hidden": "true" });
+  const slot = W / vals.length, bw = slot - 3;
+  vals.forEach((v, i) => {
+    const h = Math.max(v > 0 ? 2 : 0, (H - 2) * v / max);
+    s.append(svg("rect", { x: i * slot, y: H - h, width: bw, height: h, rx: Math.min(2, bw / 2),
+      fill: "var(--accent)", "fill-opacity": i === vals.length - 1 ? 1 : .45 }));
+  });
+  return s;
+}
+
+function tabella(colonne, righe) {
+  return el("div", { class: "tab" }, el("table", {},
+    el("thead", {}, el("tr", {}, colonne.map(([t, n]) => el("th", { class: n ? "n" : null, text: t })))),
+    el("tbody", {}, righe.map(r => el("tr", {}, r.map((v, i) =>
+      el("td", { class: colonne[i][1] ? "n" : (colonne[i][2] || null), text: v == null || v === "" ? "—" : String(v) })))))));
+}
+
+// ---------- viste ----------
+function testata(titolo, sotto) {
+  return el("header", { class: "top" },
+    el("div", {}, el("div", { class: "brand", text: "Runner Progression · Coaching" }), el("h1", { text: titolo })),
+    el("div", { class: "meta", text: sotto }));
+}
+function bannerEsempio() {
+  return D.esempio ? el("div", { class: "esempio", text: "Dati di esempio: atleti e allenamenti inventati per mostrare come sarà la pagina. Quella vera la genera rp.py con i tuoi atleti." }) : null;
+}
+
+function panoramica() {
+  const A = D.atleti;
+  const ultima = a => a.settimane[a.settimane.length - 1], prec = a => a.settimane[a.settimane.length - 2];
+  const kmSquadra = A.reduce((t, a) => t + ultima(a).km, 0);
+  const dplusSquadra = A.reduce((t, a) => t + ultima(a).dplus, 0);
+  const daGuardare = A.filter(a => a.acwr != null && (a.acwr > 1.3 || a.acwr < 0.8)).length;
+  const fermi = A.filter(a => (giorniFa(a.ultima) ?? 99) > 7).length;
+
+  const viste = [testata("I tuoi atleti", `Aggiornato il ${giorno(D.aggiornato)}`), bannerEsempio()];
+  if (!A.length) {
+    viste.push(el("div", { class: "vuoto" }, "Nessun atleta in archivio. Aggiungine uno con ",
+      el("code", { text: 'python3 atleti/rp.py nuovo-atleta "Nome Cognome"' }), " e poi collega Strava o importa un CSV Garmin."));
+    return viste;
+  }
+  viste.push(el("section", { class: "riassunto", "aria-label": "Riepilogo squadra" },
+    el("div", { class: "tile" }, el("span", { text: "Atleti" }), el("b", { text: A.length }), el("small", { text: `${A.filter(a => a.fonte === "Strava").length} collegati a Strava` })),
+    el("div", { class: "tile" }, el("span", { text: "Km squadra, questa settimana" }), el("b", { text: fmt1(kmSquadra) }), el("small", { text: `${fmt0(dplusSquadra)} m D+` })),
+    el("div", { class: "tile" }, el("span", { text: "Carico da controllare" }), el("b", { text: daGuardare }), el("small", { text: "ACWR sopra 1,3 o sotto 0,8" })),
+    el("div", { class: "tile" }, el("span", { text: "Fermi da oltre 7 giorni" }), el("b", { text: fermi }), el("small", { text: "nessuna attività registrata" }))));
+
+  const ordinati = [...A].sort((a, b) => {
+    const p = x => x.acwr == null ? 1 : x.acwr > 1.5 ? 4 : (x.acwr > 1.3 || x.acwr < 0.8) ? 3 : 2;
+    return p(b) - p(a) || a.nome.localeCompare(b.nome);
+  });
+  viste.push(el("section", { class: "sez" }, el("h2", { text: "Atleti" }), el("p", { class: "foot", style: "margin:0", text: "In alto chi ha il carico da controllare. Tocca un atleta per il dettaglio." }),
+    el("div", { class: "schede" }, ordinati.map(a => {
+      const u = ultima(a), p = prec(a), diff = u.km - p.km, gg = giorniFa(a.ultima);
+      return el("a", { class: "scheda", href: `#${a.slug}` },
+        el("header", {}, el("h3", { text: a.nome }), pill(a.acwr)),
+        el("div", { class: "riga" },
+          el("div", {}, el("span", { text: "Km sett." }), el("b", { text: fmt1(u.km) })),
+          el("div", {}, el("span", { text: "D+ sett." }), el("b", { text: fmt0(u.dplus) })),
+          el("div", {}, el("span", { text: "Uscite" }), el("b", { text: u.uscite }))),
+        el("div", { class: "delta", text: `${diff >= 0 ? "+" : "−"}${fmt1(Math.abs(diff))} km rispetto alla settimana scorsa (${fmt1(p.km)})` }),
+        sparkline(a.settimane),
+        el("div", { class: "foot", text: `Km delle ultime 12 settimane · ultima attività ${gg === 0 ? "oggi" : gg === 1 ? "ieri" : gg == null ? "—" : gg + " giorni fa"} · ${a.fonte}` }));
+    }))));
+  viste.push(el("p", { class: "foot", text: "Km e D+ contano solo la corsa (strada, trail, tapis roulant). L'ACWR confronta i minuti di allenamento degli ultimi 7 giorni con la media settimanale delle ultime 4, tutti gli sport inclusi: è un campanello d'allarme, non una diagnosi." }));
+  return viste;
+}
+
+function dettaglio(a) {
+  const S = a.settimane, u = S[S.length - 1];
+  const media4 = S.slice(-4).reduce((t, w) => t + w.km, 0) / 4;
+  const tipSett = (w, prima) => [[prima, true], [`Settimana dal ${giornoBreve(w.inizio)}`],
+    [`${w.uscite} uscite · ${ore(w.min)} di corsa`], [`Lungo ${fmt1(w.lungo)} km${w.fc ? ` · FC media ${w.fc}` : ""}`]];
+
+  const viste = [
+    el("a", { class: "indietro", href: "#" }, el("span", { "aria-hidden": "true", text: "←" }), "Tutti gli atleti"),
+    testata(a.nome, `${a.fonte} · ${a.totale_attivita} attività · ultima ${giorno(a.ultima)}`),
+    bannerEsempio(),
+    el("section", { class: "riassunto", "aria-label": "Numeri della settimana" },
+      el("div", { class: "tile" }, el("span", { text: "Km questa settimana" }), el("b", { text: fmt1(u.km) }), el("small", { text: `media 4 settimane ${fmt1(media4)}` })),
+      el("div", { class: "tile" }, el("span", { text: "Dislivello positivo" }), el("b", { text: `${fmt0(u.dplus)} m` }), el("small", { text: `${u.uscite} uscite di corsa` })),
+      el("div", { class: "tile" }, el("span", { text: "Allenamento 7 giorni" }), el("b", { text: ore(a.acuto_min) }), el("small", { text: `media settimanale ${ore(a.cronico_min)}` })),
+      el("div", { class: "tile" }, el("span", { text: "Carico acuto/cronico" }), el("b", { text: a.acwr == null ? "—" : a.acwr.toLocaleString("it-IT", { minimumFractionDigits: 2 }) }), pill(a.acwr))),
+    el("section", { class: "grafici" },
+      el("div", { class: "grafico" }, el("h3", { text: "Km a settimana" }), el("p", { text: "Solo corsa, ultime 12 settimane. La barra piena è la settimana in corso." }),
+        grafBarre(S.map(w => ({ x: giornoBreve(w.inizio), v: w.km, tip: tipSett(w, `${fmt1(w.km)} km`) })), "var(--accent)", "km")),
+      el("div", { class: "grafico" }, el("h3", { text: "Dislivello positivo a settimana" }), el("p", { text: "Metri D+ nelle uscite di corsa." }),
+        grafBarre(S.map(w => ({ x: giornoBreve(w.inizio), v: w.dplus, tip: tipSett(w, `${fmt0(w.dplus)} m D+`) })), "var(--accent-2)", "m")),
+      el("div", { class: "grafico largo" }, el("h3", { text: "Carico acuto/cronico (ACWR)" }),
+        el("p", { text: "Valore a fine settimana. Nella fascia verde la progressione è graduale; sopra la linea rossa il carico è salito di colpo." }),
+        grafAcwr(S))),
+  ];
+
+  const tabSett = tabella([["Settimana"], ["Uscite", 1], ["Km", 1], ["D+ m", 1], ["Tempo", 1], ["Lungo km", 1], ["FC media", 1], ["ACWR", 1]],
+    [...S].reverse().map(w => [`dal ${giorno(w.inizio)}`, w.uscite, fmt1(w.km), fmt0(w.dplus), ore(w.min), fmt1(w.lungo), w.fc,
+      w.acwr == null ? null : w.acwr.toLocaleString("it-IT", { minimumFractionDigits: 2 })]));
+  viste.push(el("section", { class: "sez" }, el("h2", { text: "Settimana per settimana" }), tabSett));
+
+  const blocchi = [];
+  if (a.mesi.length) blocchi.push(el("section", { class: "sez" }, el("h2", { text: "Mese per mese" }),
+    tabella([["Mese"], ["Uscite", 1], ["Km", 1], ["D+ m", 1], ["Tempo", 1]],
+      a.mesi.map(m => [mese(m.mese), m.uscite, fmt1(m.km), fmt0(m.dplus), ore(m.min)]))));
+  if (a.record.length) blocchi.push(el("section", { class: "sez" }, el("h2", { text: "Migliori prestazioni in archivio" }),
+    tabella([["Cosa", 0, "t"], ["Valore", 1], ["Km", 1], ["Data"]],
+      a.record.map(r => [r.nome, r.nome.startsWith("Passo") ? `${r.passo} /km` : r.nome === "Più dislivello" ? `${fmt0(r.dplus)} m` : `${fmt1(r.km)} km`,
+        fmt1(r.km), giorno(r.data)]))));
+  if (blocchi.length) viste.push(el("div", { class: "due" }, blocchi));
+
+  viste.push(el("section", { class: "sez" }, el("h2", { text: "Test atletici" }),
+    a.test.length ? tabella([["Data"], ["Test", 0, "t"], ["Risultato", 1], ["Unità"], ["Note", 0, "t"]],
+      a.test.map(t => [giorno(t.data), t.test, t.risultato, t.unita, t.note]))
+      : el("div", { class: "vuoto", text: `Nessun test registrato. Aggiungili in atleti/${a.slug}/test.csv (data,test,risultato,unita,note).` })));
+
+  viste.push(el("section", { class: "sez" }, el("h2", { text: "Ultime attività" }),
+    tabella([["Data"], ["Sport"], ["Titolo", 0, "t"], ["Km", 1], ["Tempo", 1], ["D+ m", 1], ["Passo", 1], ["FC", 1]],
+      a.ultime.map(x => [giorno(x.data), x.sport, x.titolo, fmt1(x.km), ore(x.min), fmt0(x.dplus), x.passo, x.fc]))));
+  viste.push(el("p", { class: "foot", text: `Le note del coach sono in atleti/${a.slug}/diario.md e il profilo in atleti/${a.slug}/profilo.md.` }));
+  return viste;
+}
+
+function mostra() {
+  nascondiTip();
+  const slug = decodeURIComponent(location.hash.slice(1));
+  const a = D.atleti.find(x => x.slug === slug);
+  app.replaceChildren(...(a ? dettaglio(a) : panoramica()).filter(Boolean));
+  document.title = a ? `${a.nome} · Runner Progression` : "Atleti Runner Progression";
+  window.scrollTo(0, 0);
+}
+addEventListener("hashchange", mostra);
+mostra();
+</script>
+</body>
+</html>

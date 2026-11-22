@@ -2,11 +2,14 @@
 
 Una cartella per ogni atleta, con le attività scaricate da Strava/Garmin, i test, il
 diario del coach e un report dei progressi che si aggiorna da solo.
-Il riepilogo di tutti gli atleti sta in [`DASHBOARD.md`](DASHBOARD.md).
+Il riepilogo di tutti gli atleti sta in **`dashboard.html`** (aprila con un doppio clic:
+si vede nel browser, anche dal telefono e anche senza internet) e in versione testo in
+[`DASHBOARD.md`](DASHBOARD.md).
 
 ```
 atleti/
-├── DASHBOARD.md          ← tutti gli atleti a colpo d'occhio (generato)
+├── dashboard.html        ← pagina web con grafici, tutti gli atleti (generata)
+├── DASHBOARD.md          ← stesso riepilogo in versione testo (generato)
 ├── rp.py                 ← lo strumento (Python 3, niente da installare)
 ├── _modello/             ← modelli usati per i nuovi atleti
 ├── .segreti/             ← chiavi Strava e token: NON va su GitHub (.gitignore)
@@ -107,7 +110,16 @@ La prima volta prende gli ultimi 12 mesi; per andare più indietro:
   ```
 - **Ultime 10 attività.**
 
-`report.md` e `DASHBOARD.md` vengono riscritti a ogni sync: le note vanno in `diario.md`
+## La pagina web
+
+`dashboard.html` si rigenera a ogni `sync`, `importa-garmin` o `report`. La prima schermata
+mostra la squadra: i totali della settimana, quanti atleti hanno il carico da controllare
+e una scheda per atleta (in alto chi ha bisogno di attenzione). Toccando un atleta si
+apre il suo dettaglio con i grafici di km e dislivello delle ultime 12 settimane,
+l'andamento dell'ACWR con la fascia 0,8–1,3, le tabelle settimanali e mensili, le
+migliori prestazioni, i test e le ultime attività.
+
+`report.md`, `DASHBOARD.md` e `dashboard.html` vengono riscritti a ogni sync: le note vanno in `diario.md`
 e `profilo.md`, che lo script non tocca mai.
 
 ## Privacy

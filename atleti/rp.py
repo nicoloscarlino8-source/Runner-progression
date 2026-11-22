@@ -625,14 +625,70 @@ def scrivi_report(cartella: Path, st: dict, oggi: date) -> None:
     (cartella / "report.md").write_text("\n".join(L), encoding="utf-8")
 
 
+def acwr_al(att: list[dict], giorno: date):
+    acuto = sum(x["_min"] for x in att if giorno - timedelta(days=6) <= x["_dt"].date() <= giorno)
+    cronico = sum(x["_min"] for x in att if giorno - timedelta(days=27) <= x["_dt"].date() <= giorno) / 4
+    return round(acuto / cronico, 2) if cronico > 0 else None
+
+
+def dati_pagina(s: str, cartella: Path, st: dict, oggi: date) -> dict:
+    """Tutto quello che serve a dashboard.html per un atleta."""
+    settimane = []
+    for w, x in sorted(st["settimane"].items()):
+        fine = min(w + timedelta(days=6), oggi)
+        settimane.append({
+            "inizio": w.isoformat(), "uscite": x["n"], "km": round(x["km"], 1),
+            "dplus": round(x["dplus"]), "min": round(x["min"]), "min_tot": round(x["min_tot"]),
+            "lungo": round(x["lungo"], 1),
+            "fc": round(sum(x["fc"]) / len(x["fc"])) if x["fc"] else None,
+            "acwr": acwr_al(st["att"], fine),
+        })
+
+    def breve(a):
+        return {"data": a["_dt"].strftime("%Y-%m-%d"), "titolo": a["titolo"], "km": round(a["_km"], 1),
+                "min": round(a["_min"]), "dplus": round(a["_dplus"]), "passo": a["passo_min_km"]}
+
+    record = [{"nome": f"Passo più veloce su uscita da {k}", **breve(a)} for k, a in st["record"].items()]
+    if st["piu_lunga"]:
+        record.append({"nome": "Uscita più lunga", **breve(st["piu_lunga"])})
+    if st["piu_dplus"] and st["piu_dplus"]["_dplus"] > 0:
+        record.append({"nome": "Più dislivello", **breve(st["piu_dplus"])})
+    ultime = [{**breve(a), "sport": a["sport"], "fc": a["fc_media"], "corsa": a["_corsa"]}
+              for a in sorted(st["att"], key=lambda a: a["_dt"], reverse=True)[:10]]
+    return {
+        "slug": s, "nome": nome_atleta(cartella),
+        "fonte": "Strava" if file_token(s).exists() else "Garmin / manuale",
+        "ultima": st["ultima"].strftime("%Y-%m-%d") if st["ultima"] else None,
+        "totale_attivita": len(st["att"]),
+        "acwr": round(st["acwr"], 2) if st["acwr"] is not None else None,
+        "acuto_min": round(st["acuto"]), "cronico_min": round(st["cronico"]),
+        "settimane": settimane,
+        "mesi": [{"mese": k, "uscite": m["n"], "km": round(m["km"], 1), "dplus": round(m["dplus"]),
+                  "min": round(m["min"])} for k, m in sorted(st["mesi"].items(), reverse=True)[:12]],
+        "record": record,
+        "test": sorted(leggi_test(cartella), key=lambda t: t["data"], reverse=True),
+        "ultime": ultime,
+    }
+
+
+def scrivi_pagina(atleti: list[dict], oggi: date, esempio: bool = False) -> Path:
+    dati = {"aggiornato": oggi.isoformat(), "esempio": esempio, "atleti": atleti}
+    blob = json.dumps(dati, ensure_ascii=False).replace("<", "\\u003c")
+    modello = (MODELLO / "dashboard.html").read_text(encoding="utf-8")
+    pagina = BASE / "dashboard.html"
+    pagina.write_text(modello.replace("{\"__DATI__\": true}", blob), encoding="utf-8")
+    return pagina
+
+
 def cmd_report(args):
     oggi = date.today()
     atleti = [cartella_atleta(args.atleta).name] if args.atleta else tutti_gli_atleti()
-    righe_dash = []
+    righe_dash, pagina = [], []
     for s in atleti:
         cartella = BASE / s
         st = statistiche(leggi_attivita(cartella), oggi)
         scrivi_report(cartella, st, oggi)
+        pagina.append(dati_pagina(s, cartella, st, oggi))
         sett = list(st["settimane"].values())
         km_4 = sum(x["km"] for x in sett[:4]) / 4
         ultima = f"{st['ultima']:%d/%m/%Y}" if st["ultima"] else "—"
@@ -653,7 +709,9 @@ def cmd_report(args):
     D += righe_dash or ["| _nessun atleta: usa `rp.py nuovo-atleta`_ | | | | | | | |"]
     D.append("")
     (BASE / "DASHBOARD.md").write_text("\n".join(D), encoding="utf-8")
-    print(f"Report aggiornati per {len(atleti)} atleti. Riepilogo: atleti/DASHBOARD.md")
+    scrivi_pagina(pagina, oggi, getattr(args, "esempio", False))
+    print(f"Report aggiornati per {len(atleti)} atleti. Riepilogo: atleti/DASHBOARD.md "
+          "e atleti/dashboard.html (aprila nel browser)")
 
 
 # --------------------------------------------------------------------------

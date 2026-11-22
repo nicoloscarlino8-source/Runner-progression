@@ -1,0 +1,5 @@
+# Chiavi Strava e token degli atleti: non devono MAI finire su GitHub
+.segreti/
+# Export Garmin scaricati: tienili qui solo il tempo di importarli
+_import/
+__pycache__/
